@@ -2,152 +2,164 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowRight, FiStar, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiArrowRight, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useModal } from '../../../hooks/useModal';
+
+const HeroOuter = styled.div`
+  padding: 0 ${props => props.theme.spacing.xl};
+  background: ${props => props.theme.colors.white};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 0 ${props => props.theme.spacing.md};
+  }
+`;
 
 const HeroContainer = styled.section`
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: ${props => props.theme.colors.primary};
   display: flex;
-  align-items: center;
+  align-items: stretch;
   position: relative;
   overflow: hidden;
-`;
-
-const HeroBackground = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover;
-  opacity: 0.1;
-  z-index: 1;
+  border-radius: 24px;
 `;
 
 const HeroContent = styled.div`
   position: relative;
   z-index: 2;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 ${props => props.theme.spacing.md};
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: ${props => props.theme.spacing['4xl']};
-  align-items: center;
+  min-height: 100vh;
 
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     grid-template-columns: 1fr;
-    gap: ${props => props.theme.spacing['2xl']};
-    text-align: center;
   }
 `;
 
 const HeroText = styled.div`
-  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: ${props => props.theme.spacing['5xl']} ${props => props.theme.spacing['3xl']};
+  color: ${props => props.theme.colors.white};
+
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    padding: ${props => props.theme.spacing['4xl']} ${props => props.theme.spacing.xl};
+    min-height: 60vh;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing['4xl']} ${props => props.theme.spacing.md};
+  }
 `;
 
-const Badge = styled(motion.div)`
-  display: inline-flex;
-  align-items: center;
-  gap: ${props => props.theme.spacing.sm};
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.md};
-  border-radius: ${props => props.theme.borderRadius.full};
-  font-size: ${props => props.theme.fontSizes.sm};
+const Overline = styled(motion.div)`
+  font-size: ${props => props.theme.fontSizes.xs};
   font-weight: 500;
-  margin-bottom: ${props => props.theme.spacing.lg};
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: ${props => props.theme.spacing.xl};
 `;
 
 const Title = styled(motion.h1)`
-  font-size: ${props => props.theme.fontSizes['6xl']};
-  font-weight: 700;
-  line-height: 1.1;
-  margin-bottom: ${props => props.theme.spacing.lg};
-  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size: ${props => props.theme.fontSizes['7xl']};
+  font-weight: 400;
+  line-height: 1.0;
+  margin-bottom: ${props => props.theme.spacing.xl};
+  color: ${props => props.theme.colors.white};
+  letter-spacing: -0.03em;
+
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    font-size: ${props => props.theme.fontSizes['5xl']};
+  }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     font-size: ${props => props.theme.fontSizes['4xl']};
   }
 `;
 
+const TitleItalic = styled.em`
+  font-style: italic;
+  font-weight: 400;
+`;
+
 const Subtitle = styled(motion.p)`
-  font-size: ${props => props.theme.fontSizes.xl};
-  line-height: 1.6;
+  font-size: ${props => props.theme.fontSizes.md};
+  line-height: 1.8;
   margin-bottom: ${props => props.theme.spacing['2xl']};
-  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 460px;
+  font-weight: 300;
 `;
 
 const ButtonGroup = styled(motion.div)`
   display: flex;
   gap: ${props => props.theme.spacing.md};
   flex-wrap: wrap;
-
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    justify-content: center;
-  }
+  align-items: center;
 `;
 
-const Button = styled(motion.button)`
+const PrimaryButton = styled(motion.button)`
   display: flex;
   align-items: center;
   gap: ${props => props.theme.spacing.sm};
   padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.xl};
-  border-radius: ${props => props.theme.borderRadius.md};
-  font-weight: 600;
-  font-size: ${props => props.theme.fontSizes.md};
+  background: ${props => props.theme.colors.white};
+  color: ${props => props.theme.colors.primary};
+  border: 1px solid ${props => props.theme.colors.white};
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
-  border: none;
-  outline: none;
 
-  &.primary {
-    background: white;
-    color: ${props => props.theme.colors.primary};
-    box-shadow: ${props => props.theme.shadows.lg};
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: ${props => props.theme.shadows.xl};
-    }
-  }
-
-  &.secondary {
+  &:hover {
     background: transparent;
-    color: white;
-    border: 2px solid white;
-
-    &:hover {
-      background: white;
-      color: ${props => props.theme.colors.primary};
-    }
+    color: ${props => props.theme.colors.white};
   }
 `;
 
-const CarouselContainer = styled(motion.div)`
+const SecondaryButton = styled(motion.button)`
+  display: flex;
+  align-items: center;
+  gap: ${props => props.theme.spacing.sm};
+  padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.xl};
+  background: transparent;
+  color: ${props => props.theme.colors.white};
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: ${props => props.theme.transitions.fast};
+
+  &:hover {
+    border-color: ${props => props.theme.colors.white};
+    background: ${props => props.theme.colors.white};
+    color: ${props => props.theme.colors.primary};
+  }
+`;
+
+const CarouselSection = styled.div`
   position: relative;
-  height: 600px;
-  border-radius: ${props => props.theme.borderRadius.xl};
   overflow: hidden;
-  box-shadow: ${props => props.theme.shadows.xl};
 
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
-    height: 400px;
+    height: 50vh;
   }
 `;
 
-const CarouselImage = styled(motion.img)`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+const CarouselImage = styled(motion.div)`
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  background: url(${props => props.$src}) center/cover no-repeat;
 `;
 
 const CarouselOverlay = styled.div`
@@ -155,112 +167,137 @@ const CarouselOverlay = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-  padding: ${props => props.theme.spacing.xl};
-  color: white;
+  padding: ${props => props.theme.spacing['2xl']};
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+  color: ${props => props.theme.colors.white};
   z-index: 2;
 `;
 
-const CarouselTitle = styled.h3`
-  font-size: ${props => props.theme.fontSizes.xl};
-  font-weight: 600;
-  margin-bottom: ${props => props.theme.spacing.sm};
+const CarouselLabel = styled.div`
+  font-size: ${props => props.theme.fontSizes.xs};
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: ${props => props.theme.spacing.xs};
 `;
 
-const CarouselDescription = styled.p`
-  font-size: ${props => props.theme.fontSizes.sm};
-  opacity: 0.9;
-  line-height: 1.4;
+const CarouselTitle = styled.h3`
+  font-family: ${props => props.theme.fonts.secondary};
+  font-size: ${props => props.theme.fontSizes['2xl']};
+  font-weight: 400;
+  color: ${props => props.theme.colors.white};
+  margin-bottom: 0;
 `;
 
 const CarouselControls = styled.div`
   position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
+  bottom: ${props => props.theme.spacing['2xl']};
+  right: ${props => props.theme.spacing['2xl']};
   display: flex;
-  justify-content: space-between;
-  padding: 0 ${props => props.theme.spacing.md};
+  align-items: center;
+  gap: ${props => props.theme.spacing.lg};
   z-index: 3;
-  pointer-events: none;
+  background: rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 8px 10px;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    right: ${props => props.theme.spacing.md};
+    gap: ${props => props.theme.spacing.sm};
+    padding: 6px 8px;
+  }
 `;
 
-const CarouselButton = styled(motion.button)`
-  width: 50px;
-  height: 50px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  border: none;
+const CarouselButton = styled.button`
+  width: 58px;
+  height: 58px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: ${props => props.theme.fontSizes.lg};
-  color: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.white};
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
-  pointer-events: all;
-  box-shadow: ${props => props.theme.shadows.md};
 
   &:hover {
-    background: white;
-    transform: scale(1.1);
+    background: ${props => props.theme.colors.white};
+    color: ${props => props.theme.colors.primary};
+    border-color: ${props => props.theme.colors.white};
   }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 48px;
+    height: 48px;
   }
 `;
 
-const CarouselDots = styled.div`
-  position: absolute;
-  bottom: ${props => props.theme.spacing.md};
-  left: 50%;
-  transform: translateX(-50%);
+const CarouselProgress = styled.div`
+  width: clamp(120px, 20vw, 170px);
+  min-width: 0;
   display: flex;
+  align-items: center;
   gap: ${props => props.theme.spacing.sm};
-  z-index: 3;
 `;
 
-const Dot = styled(motion.button)`
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: none;
-  background: ${props => props.active ? 'white' : 'rgba(255, 255, 255, 0.5)'};
-  cursor: pointer;
-  transition: ${props => props.theme.transitions.fast};
+const CarouselCount = styled.span`
+  min-width: 12px;
+  font-weight: 600;
+  font-size: ${props => props.theme.fontSizes.sm};
+  color: rgba(255, 255, 255, 0.95);
+`;
 
-  &:hover {
-    background: white;
-  }
+const CarouselLine = styled.div`
+  position: relative;
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.38);
+  overflow: hidden;
+`;
+
+const CarouselLineFill = styled.span`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: ${props => props.$progress}%;
+  background: rgba(255, 255, 255, 0.95);
+  transition: width 0.35s ease;
 `;
 
 const Stats = styled(motion.div)`
   display: flex;
   gap: ${props => props.theme.spacing['2xl']};
-  margin-top: ${props => props.theme.spacing['2xl']};
+  margin-top: ${props => props.theme.spacing['3xl']};
+  padding-top: ${props => props.theme.spacing['2xl']};
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    justify-content: center;
+    gap: ${props => props.theme.spacing.xl};
   }
 `;
 
 const StatItem = styled.div`
-  text-align: center;
-  color: white;
+  color: ${props => props.theme.colors.white};
 `;
 
 const StatNumber = styled.div`
+  font-family: ${props => props.theme.fonts.secondary};
   font-size: ${props => props.theme.fontSizes['3xl']};
-  font-weight: 700;
-  margin-bottom: ${props => props.theme.spacing.sm};
+  font-weight: 400;
+  margin-bottom: ${props => props.theme.spacing.xs};
+  letter-spacing: -0.02em;
 `;
 
 const StatLabel = styled.div`
-  font-size: ${props => props.theme.fontSizes.sm};
-  opacity: 0.8;
+  font-size: ${props => props.theme.fontSizes.xs};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
 `;
 
 const Hero = () => {
@@ -272,33 +309,27 @@ const Hero = () => {
     {
       id: 1,
       image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-      title: 'Современная кухня',
-      description: 'Минималистичный дизайн с функциональными решениями'
+      label: 'Композиция',
+      title: 'Современная кухня'
     },
     {
       id: 2,
       image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-      title: 'Классическая кухня',
-      description: 'Элегантность и роскошь в традиционном стиле'
+      label: 'Композиция',
+      title: 'Классическая элегантность'
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-      title: 'Скандинавская кухня',
-      description: 'Светлые тона и натуральные материалы'
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+      label: 'Композиция',
+      title: 'Скандинавский минимализм'
     },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-      title: 'Лофт кухня',
-      description: 'Индустриальный стиль с современными технологиями'
-    }
   ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % carouselData.length);
-    }, 5000);
+    }, 6000);
 
     return () => clearInterval(timer);
   }, [carouselData.length]);
@@ -311,138 +342,112 @@ const Hero = () => {
     setCurrentSlide((prev) => (prev - 1 + carouselData.length) % carouselData.length);
   };
 
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
-  };
-
   return (
+    <HeroOuter>
     <HeroContainer>
-      <HeroBackground />
       <HeroContent>
         <HeroText>
-          <Badge
+          <Overline
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <FiStar />
-            Лидер рынка кухонь в Саратове
-          </Badge>
+            Кухни и мебель по индивидуальным проектам
+          </Overline>
 
           <Title
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
           >
-            Создаем кухни мечты с индивидуальным подходом
+            Интерьеры в которых хочется <TitleItalic>жить</TitleItalic>
           </Title>
 
           <Subtitle
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
           >
-            Более 10 лет создаем уникальные кухни из качественных материалов. 
-            Дизайн, изготовление, доставка и монтаж под ключ.
+            Создаём уникальные кухни из качественных материалов. 
+            Индивидуальный дизайн, производство, доставка и монтаж под ключ.
           </Subtitle>
 
           <ButtonGroup
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
           >
-            <Button
-              className="primary"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/calculator')}
+            <PrimaryButton
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('/catalog')}
             >
-              Рассчитать проект
-              <FiArrowRight />
-            </Button>
-            <Button
-              className="secondary"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              Смотреть каталог
+              <FiArrowRight size={14} />
+            </PrimaryButton>
+            <SecondaryButton
+              whileTap={{ scale: 0.98 }}
               onClick={() => openModal('callback')}
             >
-              Получить консультацию
-            </Button>
+              Узнать стоимость
+            </SecondaryButton>
           </ButtonGroup>
 
           <Stats
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
           >
             <StatItem>
               <StatNumber>500+</StatNumber>
-              <StatLabel>Довольных клиентов</StatLabel>
+              <StatLabel>Проектов</StatLabel>
             </StatItem>
             <StatItem>
               <StatNumber>10+</StatNumber>
               <StatLabel>Лет опыта</StatLabel>
             </StatItem>
             <StatItem>
-              <StatNumber>24/7</StatNumber>
-              <StatLabel>Поддержка</StatLabel>
+              <StatNumber>5</StatNumber>
+              <StatLabel>Лет гарантии</StatLabel>
             </StatItem>
           </Stats>
         </HeroText>
 
-        <CarouselContainer
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-        >
+        <CarouselSection>
           <AnimatePresence mode="wait">
             <CarouselImage
               key={currentSlide}
-              src={carouselData[currentSlide].image}
-              alt={carouselData[currentSlide].title}
-              initial={{ opacity: 0, scale: 1.1 }}
+              $src={carouselData[currentSlide].image}
+              initial={{ opacity: 0, scale: 1.05 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
             />
           </AnimatePresence>
 
           <CarouselOverlay>
+            <CarouselLabel>{carouselData[currentSlide].label}</CarouselLabel>
             <CarouselTitle>{carouselData[currentSlide].title}</CarouselTitle>
-            <CarouselDescription>{carouselData[currentSlide].description}</CarouselDescription>
           </CarouselOverlay>
 
           <CarouselControls>
-            <CarouselButton
-              onClick={prevSlide}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <FiChevronLeft />
+            <CarouselButton onClick={prevSlide}>
+              <FiChevronLeft size={18} />
             </CarouselButton>
-            <CarouselButton
-              onClick={nextSlide}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <FiChevronRight />
+            <CarouselProgress>
+              <CarouselCount>{currentSlide + 1}</CarouselCount>
+              <CarouselLine>
+                <CarouselLineFill $progress={((currentSlide + 1) / carouselData.length) * 100} />
+              </CarouselLine>
+              <CarouselCount>{carouselData.length}</CarouselCount>
+            </CarouselProgress>
+            <CarouselButton onClick={nextSlide}>
+              <FiChevronRight size={18} />
             </CarouselButton>
           </CarouselControls>
-
-          <CarouselDots>
-            {carouselData.map((_, index) => (
-              <Dot
-                key={index}
-                active={index === currentSlide}
-                onClick={() => goToSlide(index)}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.8 }}
-              />
-            ))}
-          </CarouselDots>
-        </CarouselContainer>
+        </CarouselSection>
       </HeroContent>
     </HeroContainer>
+    </HeroOuter>
   );
 };
 

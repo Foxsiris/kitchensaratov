@@ -1,83 +1,87 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiStar, FiMessageSquare } from 'react-icons/fi';
+import { FiStar } from 'react-icons/fi';
 
 const TestimonialsContainer = styled.section`
-  padding: ${props => props.theme.spacing['4xl']} 0;
-  background: white;
+  padding: ${props => props.theme.spacing['5xl']} 0;
+  background: ${props => props.theme.colors.light};
 `;
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 ${props => props.theme.spacing.md};
+  padding: 0 ${props => props.theme.spacing.xl};
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
-  margin-bottom: ${props => props.theme.spacing['3xl']};
+  margin-bottom: ${props => props.theme.spacing['4xl']};
+`;
+
+const Overline = styled(motion.div)`
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: ${props => props.theme.colors.gray};
+  margin-bottom: ${props => props.theme.spacing.md};
 `;
 
 const SectionTitle = styled(motion.h2)`
   font-size: ${props => props.theme.fontSizes['4xl']};
   color: ${props => props.theme.colors.primary};
-  margin-bottom: ${props => props.theme.spacing.md};
-`;
-
-const SectionSubtitle = styled(motion.p)`
-  font-size: ${props => props.theme.fontSizes.xl};
-  color: ${props => props.theme.colors.gray};
-  max-width: 600px;
-  margin: 0 auto;
+  font-weight: 400;
+  letter-spacing: -0.02em;
 `;
 
 const TestimonialsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: ${props => props.theme.spacing['2xl']};
-`;
+  grid-template-columns: repeat(2, 1fr);
+  gap: ${props => props.theme.spacing.md};
 
-const TestimonialCard = styled(motion.div)`
-  background: ${props => props.theme.colors.light};
-  padding: ${props => props.theme.spacing['2xl']};
-  border-radius: ${props => props.theme.borderRadius.xl};
-  position: relative;
-  box-shadow: ${props => props.theme.shadows.md};
-  transition: ${props => props.theme.transitions.normal};
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: ${props => props.theme.shadows.lg};
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    grid-template-columns: 1fr;
   }
 `;
 
-const QuoteIcon = styled.div`
-  position: absolute;
-  top: ${props => props.theme.spacing.lg};
-  right: ${props => props.theme.spacing.lg};
-  color: ${props => props.theme.colors.primary};
-  opacity: 0.3;
-  font-size: ${props => props.theme.fontSizes['3xl']};
+const TestimonialCard = styled(motion.div)`
+  background: ${props => props.theme.colors.white};
+  padding: ${props => props.theme.spacing['2xl']};
+  border: 1px solid ${props => props.theme.colors.border};
+  transition: ${props => props.theme.transitions.normal};
+
+  &:hover {
+    border-color: ${props => props.theme.colors.primary};
+  }
 `;
 
 const Rating = styled.div`
   display: flex;
-  gap: ${props => props.theme.spacing.xs};
-  margin-bottom: ${props => props.theme.spacing.md};
+  gap: 2px;
+  margin-bottom: ${props => props.theme.spacing.lg};
 `;
 
 const Star = styled.div`
-  color: ${props => props.theme.colors.accent};
-  font-size: ${props => props.theme.fontSizes.lg};
+  color: ${props => props.theme.colors.primary};
+  font-size: ${props => props.theme.fontSizes.sm};
 `;
 
 const TestimonialText = styled.p`
-  font-size: ${props => props.theme.fontSizes.md};
+  font-family: ${props => props.theme.fonts.secondary};
+  font-size: ${props => props.theme.fontSizes.xl};
   line-height: 1.6;
-  color: ${props => props.theme.colors.dark};
-  margin-bottom: ${props => props.theme.spacing.lg};
+  color: ${props => props.theme.colors.primary};
+  margin-bottom: ${props => props.theme.spacing.xl};
+  font-weight: 400;
   font-style: italic;
+`;
+
+const Divider = styled.div`
+  width: 40px;
+  height: 1px;
+  background: ${props => props.theme.colors.border};
+  margin-bottom: ${props => props.theme.spacing.lg};
 `;
 
 const Author = styled.div`
@@ -87,31 +91,31 @@ const Author = styled.div`
 `;
 
 const AuthorAvatar = styled.div`
-  width: 50px;
-  height: 50px;
-  background: ${props => props.theme.colors.gradient};
-  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  background: ${props => props.theme.colors.primary};
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-weight: 600;
+  color: ${props => props.theme.colors.white};
+  font-family: ${props => props.theme.fonts.secondary};
   font-size: ${props => props.theme.fontSizes.lg};
+  font-weight: 400;
 `;
 
-const AuthorInfo = styled.div`
-  flex: 1;
-`;
+const AuthorInfo = styled.div``;
 
 const AuthorName = styled.div`
-  font-weight: 600;
+  font-weight: 500;
   color: ${props => props.theme.colors.primary};
-  margin-bottom: ${props => props.theme.spacing.xs};
+  font-size: ${props => props.theme.fontSizes.sm};
+  letter-spacing: 0.02em;
 `;
 
 const AuthorTitle = styled.div`
-  font-size: ${props => props.theme.fontSizes.sm};
+  font-size: ${props => props.theme.fontSizes.xs};
   color: ${props => props.theme.colors.gray};
+  letter-spacing: 0.02em;
 `;
 
 const Testimonials = () => {
@@ -119,7 +123,7 @@ const Testimonials = () => {
     {
       id: 1,
       rating: 5,
-      text: 'Очень довольна результатом! Кухня получилась именно такой, как я мечтала. Качество материалов отличное, монтаж выполнен профессионально. Рекомендую всем!',
+      text: 'Очень довольна результатом! Кухня получилась именно такой, как я мечтала. Качество материалов отличное, монтаж выполнен профессионально.',
       author: {
         name: 'Анна Петрова',
         title: 'Домохозяйка',
@@ -129,7 +133,7 @@ const Testimonials = () => {
     {
       id: 2,
       rating: 5,
-      text: 'Заказывали кухню для нового дома. Дизайнер учла все наши пожелания, предложила отличные решения. Сроки соблюдены, цена адекватная. Спасибо!',
+      text: 'Заказывали кухню для нового дома. Дизайнер учла все наши пожелания, предложила отличные решения. Сроки соблюдены, цена адекватная.',
       author: {
         name: 'Михаил Соколов',
         title: 'Инженер',
@@ -149,7 +153,7 @@ const Testimonials = () => {
     {
       id: 4,
       rating: 5,
-      text: 'Профессиональный подход на всех этапах. От консультации до установки - все четко и качественно. Кухня превзошла ожидания!',
+      text: 'Профессиональный подход на всех этапах. От консультации до установки — всё чётко и качественно. Кухня превзошла ожидания!',
       author: {
         name: 'Дмитрий Волков',
         title: 'Предприниматель',
@@ -162,48 +166,46 @@ const Testimonials = () => {
     <TestimonialsContainer>
       <Container>
         <SectionHeader>
-          <SectionTitle
-            initial={{ opacity: 0, y: 30 }}
+          <Overline
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            Отзывы клиентов
-          </SectionTitle>
-          <SectionSubtitle
-            initial={{ opacity: 0, y: 30 }}
+            Отзывы
+          </Overline>
+          <SectionTitle
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            Что говорят о нас наши довольные клиенты
-          </SectionSubtitle>
+            Что говорят наши клиенты
+          </SectionTitle>
         </SectionHeader>
 
         <TestimonialsGrid>
           {testimonials.map((testimonial, index) => (
             <TestimonialCard
               key={testimonial.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: index * 0.08 }}
               viewport={{ once: true }}
             >
-              <QuoteIcon>
-                <FiMessageSquare />
-              </QuoteIcon>
-              
               <Rating>
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <Star key={i}>
-                    <FiStar />
+                    <FiStar fill="currentColor" />
                   </Star>
                 ))}
               </Rating>
               
               <TestimonialText>
-                "{testimonial.text}"
+                &laquo;{testimonial.text}&raquo;
               </TestimonialText>
+
+              <Divider />
               
               <Author>
                 <AuthorAvatar>

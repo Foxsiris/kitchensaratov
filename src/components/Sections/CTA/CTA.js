@@ -1,32 +1,30 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
 import { FiArrowRight, FiPhone, FiMail, FiMapPin } from 'react-icons/fi';
 import { useModal } from '../../../hooks/useModal';
 
-const CTAContainer = styled.section`
-  padding: ${props => props.theme.spacing['4xl']} 0;
-  background: ${props => props.theme.colors.primary};
-  color: white;
-  position: relative;
-  overflow: hidden;
+const CTAOuter = styled.div`
+  padding: 0 ${props => props.theme.spacing.xl} ${props => props.theme.spacing['3xl']};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 0 ${props => props.theme.spacing.md} ${props => props.theme.spacing['2xl']};
+  }
 `;
 
-const BackgroundPattern = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-  opacity: 0.3;
+const CTAContainer = styled.section`
+  padding: ${props => props.theme.spacing['5xl']} 0;
+  background: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.white};
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
 `;
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 ${props => props.theme.spacing.md};
+  padding: 0 ${props => props.theme.spacing.xl};
   position: relative;
   z-index: 2;
 `;
@@ -44,79 +42,101 @@ const CTAContent = styled.div`
   }
 `;
 
-const CTAText = styled.div`
-  h2 {
-    font-size: ${props => props.theme.fontSizes['4xl']};
-    margin-bottom: ${props => props.theme.spacing.lg};
-    line-height: 1.2;
-  }
+const CTAText = styled.div``;
 
-  p {
-    font-size: ${props => props.theme.fontSizes.xl};
-    line-height: 1.6;
-    margin-bottom: ${props => props.theme.spacing['2xl']};
-    opacity: 0.9;
+const Overline = styled(motion.div)`
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: ${props => props.theme.spacing.lg};
+`;
+
+const CTATitle = styled(motion.h2)`
+  font-family: ${props => props.theme.fonts.secondary};
+  font-size: ${props => props.theme.fontSizes['4xl']};
+  font-weight: 400;
+  color: ${props => props.theme.colors.white};
+  margin-bottom: ${props => props.theme.spacing.lg};
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+`;
+
+const CTADescription = styled(motion.p)`
+  font-size: ${props => props.theme.fontSizes.md};
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: ${props => props.theme.spacing['2xl']};
+  max-width: 480px;
+
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    margin: 0 auto ${props => props.theme.spacing['2xl']};
   }
 `;
 
-const ButtonGroup = styled.div`
+const ButtonGroup = styled(motion.div)`
   display: flex;
   gap: ${props => props.theme.spacing.md};
   flex-wrap: wrap;
 
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     justify-content: center;
   }
 `;
 
-const Button = styled(motion.button)`
+const PrimaryButton = styled(motion.button)`
   display: flex;
   align-items: center;
   gap: ${props => props.theme.spacing.sm};
   padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.xl};
-  border-radius: ${props => props.theme.borderRadius.md};
-  font-weight: 600;
-  font-size: ${props => props.theme.fontSizes.md};
+  background: ${props => props.theme.colors.white};
+  color: ${props => props.theme.colors.primary};
+  border: 1px solid ${props => props.theme.colors.white};
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
-  border: none;
-  outline: none;
 
-  &.primary {
-    background: white;
-    color: ${props => props.theme.colors.primary};
-    box-shadow: ${props => props.theme.shadows.lg};
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: ${props => props.theme.shadows.xl};
-    }
-  }
-
-  &.secondary {
+  &:hover {
     background: transparent;
-    color: white;
-    border: 2px solid white;
-
-    &:hover {
-      background: white;
-      color: ${props => props.theme.colors.primary};
-    }
+    color: ${props => props.theme.colors.white};
   }
 `;
 
-const ContactInfo = styled.div`
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+const SecondaryButton = styled(motion.button)`
+  display: flex;
+  align-items: center;
+  gap: ${props => props.theme.spacing.sm};
+  padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.xl};
+  background: transparent;
+  color: ${props => props.theme.colors.white};
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: ${props => props.theme.transitions.fast};
+
+  &:hover {
+    border-color: ${props => props.theme.colors.white};
+  }
+`;
+
+const ContactInfo = styled(motion.div)`
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: ${props => props.theme.spacing['2xl']};
-  border-radius: ${props => props.theme.borderRadius.xl};
-  border: 1px solid rgba(255, 255, 255, 0.2);
 `;
 
 const ContactTitle = styled.h3`
+  font-family: ${props => props.theme.fonts.secondary};
   font-size: ${props => props.theme.fontSizes['2xl']};
-  margin-bottom: ${props => props.theme.spacing.lg};
-  text-align: center;
+  font-weight: 400;
+  color: ${props => props.theme.colors.white};
+  margin-bottom: ${props => props.theme.spacing.xl};
 `;
 
 const ContactList = styled.div`
@@ -130,26 +150,28 @@ const ContactItem = styled.div`
   align-items: center;
   gap: ${props => props.theme.spacing.md};
   padding: ${props => props.theme.spacing.md};
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: ${props => props.theme.borderRadius.md};
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   transition: ${props => props.theme.transitions.fast};
 
+  &:last-child {
+    border-bottom: none;
+  }
+
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateX(5px);
+    padding-left: ${props => props.theme.spacing.lg};
   }
 `;
 
 const ContactIcon = styled.div`
   width: 40px;
   height: 40px;
-  background: ${props => props.theme.colors.gradient};
-  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: ${props => props.theme.fontSizes.lg};
+  color: ${props => props.theme.colors.white};
+  font-size: ${props => props.theme.fontSizes.md};
+  flex-shrink: 0;
 `;
 
 const ContactDetails = styled.div`
@@ -157,117 +179,121 @@ const ContactDetails = styled.div`
 `;
 
 const ContactLabel = styled.div`
-  font-size: ${props => props.theme.fontSizes.sm};
-  opacity: 0.8;
-  margin-bottom: ${props => props.theme.spacing.xs};
+  font-size: ${props => props.theme.fontSizes.xs};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 2px;
 `;
 
 const ContactValue = styled.div`
-  font-weight: 600;
+  font-weight: 400;
   font-size: ${props => props.theme.fontSizes.md};
+  color: ${props => props.theme.colors.white};
 `;
 
 const CTA = () => {
-  const navigate = useNavigate();
   const { openModal } = useModal();
 
   const contactItems = [
     {
-      icon: <FiPhone />,
+      icon: <FiPhone size={16} />,
       label: 'Телефон',
       value: '+7 (900) 000-00-00'
     },
     {
-      icon: <FiMail />,
+      icon: <FiMail size={16} />,
       label: 'Email',
       value: 'info@kitchensaratov.ru'
     },
     {
-      icon: <FiMapPin />,
+      icon: <FiMapPin size={16} />,
       label: 'Адрес',
       value: 'г. Саратов, ул. Примерная, 123'
     }
   ];
 
   return (
+    <CTAOuter>
     <CTAContainer>
-      <BackgroundPattern />
       <Container>
         <CTAContent>
           <CTAText>
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
+            <Overline
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               viewport={{ once: true }}
             >
+              Свяжитесь с нами
+            </Overline>
+
+            <CTATitle
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+            >
               Готовы создать кухню мечты?
-            </motion.h2>
+            </CTATitle>
             
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
+            <CTADescription
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
             >
-              Свяжитесь с нами прямо сейчас и получите бесплатную консультацию 
-              от наших дизайнеров. Мы поможем воплотить ваши идеи в жизнь!
-            </motion.p>
+              Свяжитесь с нами и получите бесплатную консультацию 
+              от наших дизайнеров. Мы поможем воплотить ваши идеи в жизнь.
+            </CTADescription>
             
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
+            <ButtonGroup
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <ButtonGroup>
-                <Button
-                  className="primary"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/calculator')}
-                >
-                  Рассчитать проект
-                  <FiArrowRight />
-                </Button>
-                <Button
-                  className="secondary"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => openModal('callback')}
-                >
-                  Заказать звонок
-                </Button>
-              </ButtonGroup>
-            </motion.div>
+              <PrimaryButton
+                whileTap={{ scale: 0.98 }}
+                onClick={() => openModal('callback')}
+              >
+                Узнать стоимость
+                <FiArrowRight size={14} />
+              </PrimaryButton>
+              <SecondaryButton
+                whileTap={{ scale: 0.98 }}
+                onClick={() => openModal('callback')}
+              >
+                Заказать звонок
+              </SecondaryButton>
+            </ButtonGroup>
           </CTAText>
 
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
+          <ContactInfo
+            initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <ContactInfo>
-              <ContactTitle>Свяжитесь с нами</ContactTitle>
-              <ContactList>
-                {contactItems.map((item, index) => (
-                  <ContactItem key={index}>
-                    <ContactIcon>
-                      {item.icon}
-                    </ContactIcon>
-                    <ContactDetails>
-                      <ContactLabel>{item.label}</ContactLabel>
-                      <ContactValue>{item.value}</ContactValue>
-                    </ContactDetails>
-                  </ContactItem>
-                ))}
-              </ContactList>
-            </ContactInfo>
-          </motion.div>
+            <ContactTitle>Контакты</ContactTitle>
+            <ContactList>
+              {contactItems.map((item, index) => (
+                <ContactItem key={index}>
+                  <ContactIcon>
+                    {item.icon}
+                  </ContactIcon>
+                  <ContactDetails>
+                    <ContactLabel>{item.label}</ContactLabel>
+                    <ContactValue>{item.value}</ContactValue>
+                  </ContactDetails>
+                </ContactItem>
+              ))}
+            </ContactList>
+          </ContactInfo>
         </CTAContent>
       </Container>
     </CTAContainer>
+    </CTAOuter>
   );
 };
 

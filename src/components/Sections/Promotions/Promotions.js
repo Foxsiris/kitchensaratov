@@ -1,159 +1,242 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiPercent, FiGift, FiClock, FiArrowRight } from 'react-icons/fi';
+import { FiArrowRight } from 'react-icons/fi';
 import { useModal } from '../../../hooks/useModal';
 
 const PromotionsContainer = styled.section`
-  padding: ${props => props.theme.spacing['4xl']} 0;
-  background: white;
+  padding: ${props => props.theme.spacing['5xl']} 0;
+  background: ${props => props.theme.colors.white};
 `;
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 ${props => props.theme.spacing.md};
+  padding: 0 ${props => props.theme.spacing.xl};
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
-  margin-bottom: ${props => props.theme.spacing['3xl']};
+  margin-bottom: ${props => props.theme.spacing['4xl']};
+`;
+
+const Overline = styled(motion.div)`
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: ${props => props.theme.colors.gray};
+  margin-bottom: ${props => props.theme.spacing.md};
 `;
 
 const SectionTitle = styled(motion.h2)`
   font-size: ${props => props.theme.fontSizes['4xl']};
   color: ${props => props.theme.colors.primary};
-  margin-bottom: ${props => props.theme.spacing.md};
-`;
-
-const SectionSubtitle = styled(motion.p)`
-  font-size: ${props => props.theme.fontSizes.xl};
-  color: ${props => props.theme.colors.gray};
-  max-width: 600px;
-  margin: 0 auto;
+  font-weight: 400;
+  letter-spacing: -0.02em;
 `;
 
 const PromotionsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: ${props => props.theme.spacing['2xl']};
-  margin-bottom: ${props => props.theme.spacing['2xl']};
+  grid-template-columns: repeat(3, 1fr);
+  gap: ${props => props.theme.spacing.md};
+
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    grid-template-columns: 1fr;
+    gap: ${props => props.theme.spacing.lg};
+  }
 `;
 
 const PromotionCard = styled(motion.div)`
-  background: ${props => props.gradient || 'white'};
-  border-radius: ${props => props.theme.borderRadius.xl};
+  background: ${props => props.$dark ? props.theme.colors.primary : props.theme.colors.light};
+  color: ${props => props.$dark ? props.theme.colors.white : props.theme.colors.primary};
   padding: ${props => props.theme.spacing['2xl']};
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 380px;
+  transition: ${props => props.theme.transitions.normal};
   position: relative;
   overflow: hidden;
-  box-shadow: ${props => props.theme.shadows.lg};
-  color: ${props => props.textColor || props.theme.colors.dark};
-  border: 1px solid rgba(0, 0, 0, 0.05);
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: ${props => props.overlay || 'transparent'};
-    z-index: 1;
-  }
-
-  > * {
-    position: relative;
-    z-index: 2;
+  &:hover {
+    transform: translateY(-4px);
   }
 `;
 
 const PromotionBadge = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: ${props => props.theme.spacing.sm};
-  background: ${props => props.badgeBg || 'rgba(255, 255, 255, 0.2)'};
-  backdrop-filter: blur(10px);
-  padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.md};
-  border-radius: ${props => props.theme.borderRadius.full};
-  font-size: ${props => props.theme.fontSizes.sm};
-  font-weight: 600;
-  margin-bottom: ${props => props.theme.spacing.lg};
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: inline-block;
+  font-size: ${props => props.theme.fontSizes.xs};
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 500;
+  padding: ${props => props.theme.spacing.xs} ${props => props.theme.spacing.md};
+  border: 1px solid ${props => props.$dark ? 'rgba(255,255,255,0.2)' : props.theme.colors.border};
+  margin-bottom: ${props => props.theme.spacing.xl};
+  align-self: flex-start;
 `;
 
 const PromotionTitle = styled.h3`
+  font-family: ${props => props.theme.fonts.secondary};
   font-size: ${props => props.theme.fontSizes['2xl']};
+  font-weight: 400;
   margin-bottom: ${props => props.theme.spacing.md};
-  font-weight: 700;
+  color: inherit;
+  line-height: 1.3;
 `;
 
 const PromotionDescription = styled.p`
-  font-size: ${props => props.theme.fontSizes.md};
-  line-height: 1.6;
-  margin-bottom: ${props => props.theme.spacing.lg};
-  opacity: 0.9;
+  font-size: ${props => props.theme.fontSizes.sm};
+  line-height: 1.7;
+  margin-bottom: ${props => props.theme.spacing.xl};
+  opacity: 0.7;
+  color: inherit;
+  flex: 1;
 `;
 
 const PromotionPrice = styled.div`
+  font-family: ${props => props.theme.fonts.secondary};
   font-size: ${props => props.theme.fontSizes['3xl']};
-  font-weight: 700;
+  font-weight: 400;
   margin-bottom: ${props => props.theme.spacing.lg};
+  letter-spacing: -0.02em;
 `;
 
 const PromotionButton = styled(motion.button)`
-  display: flex;
-  align-items: center;
-  gap: ${props => props.theme.spacing.sm};
-  background: ${props => props.buttonBg || 'white'};
-  color: ${props => props.buttonColor || props.theme.colors.primary};
-  border: none;
-  padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.xl};
-  border-radius: ${props => props.theme.borderRadius.md};
-  font-weight: 600;
-  cursor: pointer;
-  transition: ${props => props.theme.transitions.fast};
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${props => props.theme.shadows.md};
-  }
-`;
-
-const CTA = styled(motion.div)`
-  text-align: center;
-  background: ${props => props.theme.colors.light};
-  padding: ${props => props.theme.spacing['2xl']};
-  border-radius: ${props => props.theme.borderRadius.xl};
-  margin-top: ${props => props.theme.spacing['2xl']};
-`;
-
-const CTATitle = styled.h3`
-  font-size: ${props => props.theme.fontSizes['2xl']};
-  color: ${props => props.theme.colors.primary};
-  margin-bottom: ${props => props.theme.spacing.md};
-`;
-
-const CTADescription = styled.p`
-  color: ${props => props.theme.colors.gray};
-  margin-bottom: ${props => props.theme.spacing.lg};
-`;
-
-const CTAButton = styled(motion.button)`
   display: inline-flex;
   align-items: center;
   gap: ${props => props.theme.spacing.sm};
-  background: ${props => props.theme.colors.gradient};
-  color: white;
-  border: none;
-  padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.xl};
-  border-radius: ${props => props.theme.borderRadius.md};
-  font-weight: 600;
+  background: transparent;
+  color: inherit;
+  border: 1px solid ${props => props.$dark ? 'rgba(255,255,255,0.3)' : props.theme.colors.primary};
+  padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.lg};
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
+  align-self: flex-start;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${props => props.theme.shadows.lg};
+    background: ${props => props.$dark ? props.theme.colors.white : props.theme.colors.primary};
+    color: ${props => props.$dark ? props.theme.colors.primary : props.theme.colors.white};
+    border-color: ${props => props.$dark ? props.theme.colors.white : props.theme.colors.primary};
+  }
+`;
+
+const CTABanner = styled(motion.div)`
+  margin-top: ${props => props.theme.spacing['3xl']};
+  background: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.white};
+  padding: ${props => props.theme.spacing.xl} ${props => props.theme.spacing['2xl']};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 999px;
+  gap: ${props => props.theme.spacing.lg};
+  overflow: hidden;
+
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    flex-direction: column;
+    text-align: left;
+    gap: ${props => props.theme.spacing.lg};
+    border-radius: 24px;
+    padding: ${props => props.theme.spacing.xl};
+  }
+`;
+
+const CTAText = styled.div`
+  flex: 1;
+
+  h3 {
+    font-family: ${props => props.theme.fonts.primary};
+    font-size: ${props => props.theme.fontSizes['3xl']};
+    font-weight: 500;
+    color: ${props => props.theme.colors.white};
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+    margin-bottom: 6px;
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      font-size: ${props => props.theme.fontSizes['2xl']};
+    }
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: ${props => props.theme.fontSizes.sm};
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+`;
+
+const CTAConsultantPill = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 10px 10px 10px 12px;
+  flex-shrink: 0;
+
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    width: 100%;
+    border-radius: 16px;
+    justify-content: space-between;
+  }
+`;
+
+const CTAAvatar = styled.img`
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  object-fit: cover;
+  flex-shrink: 0;
+`;
+
+const CTAConsultantText = styled.div`
+  min-width: 0;
+
+  h4 {
+    margin: 0;
+    font-size: ${props => props.theme.fontSizes.xs};
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.58);
+    line-height: 1.25;
+  }
+`;
+
+const CTAActionButton = styled(motion.button)`
+  display: inline-flex;
+  align-items: center;
+  gap: ${props => props.theme.spacing.sm};
+  background: #0f6b56;
+  color: ${props => props.theme.colors.white};
+  border: none;
+  border-radius: 999px;
+  padding: 14px 18px;
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: ${props => props.theme.transitions.fast};
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #0b5b49;
   }
 `;
 
@@ -162,43 +245,28 @@ const Promotions = () => {
 
   const promotions = [
     {
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      textColor: 'white',
-      badgeBg: 'rgba(255, 255, 255, 0.2)',
-      buttonBg: 'white',
-      buttonColor: '#667eea',
-      icon: <FiPercent />,
+      dark: true,
       badge: 'Скидка 30%',
       title: 'Кухня в рассрочку 0%',
-      description: 'Оформите кухню в рассрочку без переплат на 12 месяцев. Первый взнос всего 30% от стоимости.',
+      description: 'Оформите кухню в рассрочку без переплат на 12 месяцев. Первый взнос всего 30%.',
       price: 'от 15 000 ₽/мес',
-      action: 'Оформить рассрочку'
+      action: 'Оформить'
     },
     {
-      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      textColor: 'white',
-      badgeBg: 'rgba(255, 255, 255, 0.2)',
-      buttonBg: 'white',
-      buttonColor: '#f5576c',
-      icon: <FiGift />,
+      dark: false,
       badge: 'Подарок',
       title: 'Фартук в подарок',
-      description: 'При заказе кухни получайте фартук из керамогранита или стекла в подарок. Экономия до 50 000 рублей.',
+      description: 'При заказе кухни получайте фартук из керамогранита или стекла в подарок.',
       price: 'до 50 000 ₽',
-      action: 'Получить подарок'
+      action: 'Подробнее'
     },
     {
-      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      textColor: 'white',
-      badgeBg: 'rgba(255, 255, 255, 0.2)',
-      buttonBg: 'white',
-      buttonColor: '#4facfe',
-      icon: <FiClock />,
+      dark: false,
       badge: 'Ограничено',
-      title: 'Быстрая доставка',
-      description: 'Закажите кухню до конца месяца и получите бесплатную доставку и монтаж в течение 7 дней.',
+      title: 'Бесплатная доставка',
+      description: 'Закажите кухню до конца месяца и получите бесплатную доставку и монтаж.',
       price: 'Бесплатно',
-      action: 'Заказать сейчас'
+      action: 'Заказать'
     }
   ];
 
@@ -206,80 +274,85 @@ const Promotions = () => {
     <PromotionsContainer>
       <Container>
         <SectionHeader>
-          <SectionTitle
-            initial={{ opacity: 0, y: 30 }}
+          <Overline
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            Акции и скидки
-          </SectionTitle>
-          <SectionSubtitle
-            initial={{ opacity: 0, y: 30 }}
+            Специальные предложения
+          </Overline>
+          <SectionTitle
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            Специальные предложения для наших клиентов
-          </SectionSubtitle>
+            Акции и скидки
+          </SectionTitle>
         </SectionHeader>
 
         <PromotionsGrid>
           {promotions.map((promotion, index) => (
             <PromotionCard
               key={index}
-              gradient={promotion.gradient}
-              textColor={promotion.textColor}
+              $dark={promotion.dark}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              whileHover={{ scale: 1.02 }}
             >
-              <PromotionBadge badgeBg={promotion.badgeBg}>
-                {promotion.icon}
-                {promotion.badge}
-              </PromotionBadge>
+              <div>
+                <PromotionBadge $dark={promotion.dark}>
+                  {promotion.badge}
+                </PromotionBadge>
+                <PromotionTitle>{promotion.title}</PromotionTitle>
+                <PromotionDescription>{promotion.description}</PromotionDescription>
+              </div>
               
-              <PromotionTitle>{promotion.title}</PromotionTitle>
-              
-              <PromotionDescription>{promotion.description}</PromotionDescription>
-              
-              <PromotionPrice>{promotion.price}</PromotionPrice>
-              
-              <PromotionButton
-                buttonBg={promotion.buttonBg}
-                buttonColor={promotion.buttonColor}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => openModal('installment')}
-              >
-                {promotion.action}
-                <FiArrowRight />
-              </PromotionButton>
+              <div>
+                <PromotionPrice>{promotion.price}</PromotionPrice>
+                <PromotionButton
+                  $dark={promotion.dark}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => openModal('installment')}
+                >
+                  {promotion.action}
+                  <FiArrowRight size={14} />
+                </PromotionButton>
+              </div>
             </PromotionCard>
           ))}
         </PromotionsGrid>
 
-        <CTA
+        <CTABanner
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
-          <CTATitle>Не нашли подходящую акцию?</CTATitle>
-          <CTADescription>
-            Свяжитесь с нами, и мы подберем индивидуальное предложение специально для вас
-          </CTADescription>
-          <CTAButton
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => openModal('callback')}
-          >
-            Получить консультацию
-            <FiArrowRight />
-          </CTAButton>
-        </CTA>
+          <CTAText>
+            <h3>Не нашли подходящую акцию?</h3>
+            <p>Свяжитесь с нами для индивидуального предложения</p>
+          </CTAText>
+          <CTAConsultantPill>
+            <CTAAvatar
+              src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=160&q=80"
+              alt="Консультант"
+            />
+            <CTAConsultantText>
+              <h4>Каминская Жанна</h4>
+              <p>Директор шоурума</p>
+            </CTAConsultantText>
+            <CTAActionButton
+              whileTap={{ scale: 0.98 }}
+              onClick={() => openModal('callback')}
+            >
+              Узнайте стоимость<br />вашей кухни
+              <FiArrowRight size={14} />
+            </CTAActionButton>
+          </CTAConsultantPill>
+        </CTABanner>
       </Container>
     </PromotionsContainer>
   );

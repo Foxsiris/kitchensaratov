@@ -9,12 +9,10 @@ import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import Catalog from './pages/Catalog/Catalog';
 import About from './pages/About/About';
-import Salons from './pages/Salons/Salons';
-import Calculator from './pages/Calculator/Calculator';
 import KitchenDetail from './pages/KitchenDetail/KitchenDetail';
+import ProductDetail from './pages/ProductDetail/ProductDetail';
 import CallbackModal from './components/Modals/CallbackModal';
 import InstallmentModal from './components/Modals/InstallmentModal';
-import CalculatorModal from './components/Modals/CalculatorModal';
 
 function App() {
   return (
@@ -28,16 +26,14 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/catalog" element={<Catalog />} />
               <Route path="/about" element={<About />} />
-              <Route path="/salons" element={<Salons />} />
-              <Route path="/calculator" element={<Calculator />} />
               <Route path="/kitchen/:id" element={<KitchenDetail />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
             </Routes>
             <Footer />
             
             {/* Модальные окна */}
             <CallbackModal />
             <InstallmentModal />
-            <CalculatorModal />
           </div>
         </Router>
       </ModalProvider>

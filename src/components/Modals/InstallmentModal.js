@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiCreditCard, FiUser, FiPhone, FiMail, FiDollarSign } from 'react-icons/fi';
+import { FiX, FiUser, FiPhone, FiMail, FiCheck } from 'react-icons/fi';
 import { useModal } from '../../hooks/useModal';
 
 const ModalOverlay = styled(motion.div)`
@@ -10,8 +10,8 @@ const ModalOverlay = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
   z-index: 2000;
   display: flex;
   align-items: center;
@@ -20,15 +20,13 @@ const ModalOverlay = styled(motion.div)`
 `;
 
 const ModalContent = styled(motion.div)`
-  background: white;
-  border-radius: ${props => props.theme.borderRadius.xl};
-  padding: ${props => props.theme.spacing['2xl']};
-  max-width: 600px;
+  background: ${props => props.theme.colors.white};
+  padding: ${props => props.theme.spacing['3xl']};
+  max-width: 560px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: ${props => props.theme.shadows.xl};
 `;
 
 const CloseButton = styled.button`
@@ -37,7 +35,7 @@ const CloseButton = styled.button`
   right: ${props => props.theme.spacing.lg};
   background: none;
   border: none;
-  font-size: ${props => props.theme.fontSizes.xl};
+  font-size: 1.25rem;
   color: ${props => props.theme.colors.gray};
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
@@ -48,39 +46,27 @@ const CloseButton = styled.button`
 `;
 
 const ModalHeader = styled.div`
-  text-align: center;
   margin-bottom: ${props => props.theme.spacing['2xl']};
 `;
 
-const ModalIcon = styled.div`
-  width: 80px;
-  height: 80px;
-  background: ${props => props.theme.colors.gradient};
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto ${props => props.theme.spacing.lg};
-  color: white;
-  font-size: ${props => props.theme.fontSizes['2xl']};
-`;
-
 const ModalTitle = styled.h2`
+  font-family: ${props => props.theme.fonts.secondary};
   font-size: ${props => props.theme.fontSizes['2xl']};
   color: ${props => props.theme.colors.primary};
+  font-weight: 400;
   margin-bottom: ${props => props.theme.spacing.sm};
 `;
 
 const ModalSubtitle = styled.p`
   color: ${props => props.theme.colors.gray};
+  font-size: ${props => props.theme.fontSizes.sm};
   line-height: 1.6;
 `;
 
 const BenefitsList = styled.div`
-  background: ${props => props.theme.colors.light};
+  border: 1px solid ${props => props.theme.colors.border};
   padding: ${props => props.theme.spacing.lg};
-  border-radius: ${props => props.theme.borderRadius.md};
-  margin-bottom: ${props => props.theme.spacing.lg};
+  margin-bottom: ${props => props.theme.spacing.xl};
 `;
 
 const BenefitItem = styled.div`
@@ -88,10 +74,16 @@ const BenefitItem = styled.div`
   align-items: center;
   gap: ${props => props.theme.spacing.sm};
   margin-bottom: ${props => props.theme.spacing.sm};
-  color: ${props => props.theme.colors.dark};
+  color: ${props => props.theme.colors.grayDark};
+  font-size: ${props => props.theme.fontSizes.sm};
 
   &:last-child {
     margin-bottom: 0;
+  }
+
+  svg {
+    color: ${props => props.theme.colors.primary};
+    flex-shrink: 0;
   }
 `;
 
@@ -101,87 +93,94 @@ const Form = styled.form`
   gap: ${props => props.theme.spacing.lg};
 `;
 
+const FormRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${props => props.theme.spacing.md};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    grid-template-columns: 1fr;
+  }
+`;
+
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${props => props.theme.spacing.sm};
+  gap: ${props => props.theme.spacing.xs};
 `;
 
 const Label = styled.label`
+  font-size: ${props => props.theme.fontSizes.xs};
   font-weight: 500;
-  color: ${props => props.theme.colors.dark};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: ${props => props.theme.colors.grayDark};
   display: flex;
   align-items: center;
-  gap: ${props => props.theme.spacing.sm};
+  gap: ${props => props.theme.spacing.xs};
 `;
 
 const Input = styled.input`
   padding: ${props => props.theme.spacing.md};
-  border: 2px solid ${props => props.theme.colors.light};
-  border-radius: ${props => props.theme.borderRadius.md};
-  font-size: ${props => props.theme.fontSizes.md};
+  border: 1px solid ${props => props.theme.colors.border};
+  font-size: ${props => props.theme.fontSizes.sm};
   transition: ${props => props.theme.transitions.fast};
 
   &:focus {
     border-color: ${props => props.theme.colors.primary};
     outline: none;
-    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
   }
 
   &::placeholder {
-    color: ${props => props.theme.colors.gray};
+    color: ${props => props.theme.colors.grayLight};
   }
 `;
 
 const Select = styled.select`
   padding: ${props => props.theme.spacing.md};
-  border: 2px solid ${props => props.theme.colors.light};
-  border-radius: ${props => props.theme.borderRadius.md};
-  font-size: ${props => props.theme.fontSizes.md};
-  background: white;
+  border: 1px solid ${props => props.theme.colors.border};
+  font-size: ${props => props.theme.fontSizes.sm};
+  background: ${props => props.theme.colors.white};
   transition: ${props => props.theme.transitions.fast};
+  border-radius: 0;
+  appearance: auto;
 
   &:focus {
     border-color: ${props => props.theme.colors.primary};
     outline: none;
-    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
   }
 `;
 
 const SubmitButton = styled(motion.button)`
-  background: ${props => props.theme.colors.gradient};
-  color: white;
-  border: none;
+  background: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.white};
+  border: 1px solid ${props => props.theme.colors.primary};
   padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.xl};
-  border-radius: ${props => props.theme.borderRadius.md};
-  font-size: ${props => props.theme.fontSizes.md};
-  font-weight: 600;
+  font-size: ${props => props.theme.fontSizes.xs};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: ${props => props.theme.spacing.sm};
+  width: 100%;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${props => props.theme.shadows.lg};
+    background: transparent;
+    color: ${props => props.theme.colors.primary};
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
   }
 `;
 
 const SuccessMessage = styled(motion.div)`
-  background: ${props => props.theme.colors.success};
-  color: white;
-  padding: ${props => props.theme.spacing.md};
-  border-radius: ${props => props.theme.borderRadius.md};
+  background: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.white};
+  padding: ${props => props.theme.spacing.lg};
   text-align: center;
-  font-weight: 500;
+  font-size: ${props => props.theme.fontSizes.sm};
 `;
 
 const InstallmentModal = () => {
@@ -201,33 +200,18 @@ const InstallmentModal = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Имитация отправки формы
     await new Promise(resolve => setTimeout(resolve, 2000));
-
     setIsSubmitting(false);
     setIsSuccess(true);
-
-    // Сброс формы через 3 секунды
     setTimeout(() => {
       setIsSuccess(false);
-      setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        amount: '',
-        period: '12',
-        income: ''
-      });
+      setFormData({ name: '', phone: '', email: '', amount: '', period: '12', income: '' });
       closeModal();
     }, 3000);
   };
@@ -250,9 +234,9 @@ const InstallmentModal = () => {
           onClick={closeModal}
         >
           <ModalContent
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
             onClick={(e) => e.stopPropagation()}
           >
             <CloseButton onClick={closeModal}>
@@ -260,9 +244,6 @@ const InstallmentModal = () => {
             </CloseButton>
 
             <ModalHeader>
-              <ModalIcon>
-                <FiCreditCard />
-              </ModalIcon>
               <ModalTitle>Оформить рассрочку</ModalTitle>
               <ModalSubtitle>
                 Получите кухню в рассрочку без переплат и скрытых комиссий
@@ -272,7 +253,7 @@ const InstallmentModal = () => {
             <BenefitsList>
               {benefits.map((benefit, index) => (
                 <BenefitItem key={index}>
-                  <FiDollarSign />
+                  <FiCheck size={14} />
                   {benefit}
                 </BenefitItem>
               ))}
@@ -280,48 +261,40 @@ const InstallmentModal = () => {
 
             {isSuccess ? (
               <SuccessMessage
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                Заявка отправлена! Наш менеджер свяжется с вами в течение 15 минут.
+                Заявка отправлена! Менеджер свяжется с вами в течение 15 минут.
               </SuccessMessage>
             ) : (
               <Form onSubmit={handleSubmit}>
-                <FormGroup>
-                  <Label>
-                    <FiUser />
-                    Ваше имя
-                  </Label>
-                  <Input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="Введите ваше имя"
-                    required
-                  />
-                </FormGroup>
+                <FormRow>
+                  <FormGroup>
+                    <Label><FiUser size={12} /> Имя</Label>
+                    <Input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Ваше имя"
+                      required
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label><FiPhone size={12} /> Телефон</Label>
+                    <Input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="+7 (___) ___-__-__"
+                      required
+                    />
+                  </FormGroup>
+                </FormRow>
 
                 <FormGroup>
-                  <Label>
-                    <FiPhone />
-                    Телефон
-                  </Label>
-                  <Input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="+7 (___) ___-__-__"
-                    required
-                  />
-                </FormGroup>
-
-                <FormGroup>
-                  <Label>
-                    <FiMail />
-                    Email
-                  </Label>
+                  <Label><FiMail size={12} /> Email</Label>
                   <Input
                     type="email"
                     name="email"
@@ -332,60 +305,40 @@ const InstallmentModal = () => {
                   />
                 </FormGroup>
 
-                <FormGroup>
-                  <Label>
-                    <FiDollarSign />
-                    Сумма покупки
-                  </Label>
-                  <Input
-                    type="number"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleInputChange}
-                    placeholder="Введите сумму в рублях"
-                    required
-                  />
-                </FormGroup>
-
-                <FormGroup>
-                  <Label>
-                    <FiCreditCard />
-                    Срок рассрочки
-                  </Label>
-                  <Select
-                    name="period"
-                    value={formData.period}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="6">6 месяцев</option>
-                    <option value="12">12 месяцев</option>
-                    <option value="18">18 месяцев</option>
-                    <option value="24">24 месяца</option>
-                  </Select>
-                </FormGroup>
-
-                <FormGroup>
-                  <Label>
-                    <FiDollarSign />
-                    Ежемесячный доход (необязательно)
-                  </Label>
-                  <Input
-                    type="number"
-                    name="income"
-                    value={formData.income}
-                    onChange={handleInputChange}
-                    placeholder="Введите ваш доход"
-                  />
-                </FormGroup>
+                <FormRow>
+                  <FormGroup>
+                    <Label>Сумма покупки</Label>
+                    <Input
+                      type="number"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleInputChange}
+                      placeholder="Сумма в рублях"
+                      required
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Срок рассрочки</Label>
+                    <Select
+                      name="period"
+                      value={formData.period}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="6">6 месяцев</option>
+                      <option value="12">12 месяцев</option>
+                      <option value="18">18 месяцев</option>
+                      <option value="24">24 месяца</option>
+                    </Select>
+                  </FormGroup>
+                </FormRow>
 
                 <SubmitButton
                   type="submit"
                   disabled={isSubmitting}
-                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  {isSubmitting ? 'Отправляем заявку...' : 'Подать заявку на рассрочку'}
+                  {isSubmitting ? 'Отправляем...' : 'Подать заявку'}
                 </SubmitButton>
               </Form>
             )}

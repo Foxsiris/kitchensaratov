@@ -57,41 +57,78 @@ const MainImage = styled.img`
 
 const ImageNavigation = styled.div`
   position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
+  left: ${props => props.theme.spacing.md};
+  right: ${props => props.theme.spacing.md};
+  bottom: ${props => props.theme.spacing.md};
   display: flex;
-  justify-content: space-between;
-  padding: 0 ${props => props.theme.spacing.md};
-  transform: translateY(-50%);
+  align-items: center;
+  gap: ${props => props.theme.spacing.md};
+  z-index: 4;
 `;
 
 const NavButton = styled.button`
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.32);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
-  color: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.white};
 
   &:hover {
-    background: white;
-    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.65);
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 44px;
+    height: 44px;
+  }
+`;
+
+const ImageCounter = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: ${props => props.theme.spacing.sm};
+  color: ${props => props.theme.colors.white};
+  font-size: ${props => props.theme.fontSizes.md};
+  font-weight: 600;
+`;
+
+const ImageCounterLine = styled.div`
+  position: relative;
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+`;
+
+const ImageCounterFill = styled.span`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: ${props => props.$progress}%;
+  background: rgba(255, 255, 255, 0.95);
+  transition: width 0.3s ease;
 `;
 
 const ThumbnailContainer = styled.div`
   position: absolute;
-  bottom: ${props => props.theme.spacing.md};
+  bottom: calc(${props => props.theme.spacing.md} + 72px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: ${props => props.theme.spacing.sm};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    bottom: calc(${props => props.theme.spacing.md} + 60px);
+  }
 `;
 
 const Thumbnail = styled.img`
@@ -286,6 +323,13 @@ const KitchenDetailModal = ({ isOpen, onClose, kitchen }) => {
                 <NavButton onClick={prevImage}>
                   <FiArrowLeft />
                 </NavButton>
+                <ImageCounter>
+                  <span>{currentImageIndex + 1}</span>
+                  <ImageCounterLine>
+                    <ImageCounterFill $progress={((currentImageIndex + 1) / images.length) * 100} />
+                  </ImageCounterLine>
+                  <span>{images.length}</span>
+                </ImageCounter>
                 <NavButton onClick={nextImage}>
                   <FiArrowRight />
                 </NavButton>
