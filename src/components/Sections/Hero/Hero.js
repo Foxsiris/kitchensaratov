@@ -10,7 +10,7 @@ const HeroOuter = styled.div`
   background: ${props => props.theme.colors.white};
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    padding: 0 ${props => props.theme.spacing.md};
+    padding: 0 8px;
   }
 `;
 
@@ -22,6 +22,11 @@ const HeroContainer = styled.section`
   position: relative;
   overflow: hidden;
   border-radius: 24px;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    border-radius: 16px;
+    min-height: auto;
+  }
 `;
 
 const HeroContent = styled.div`
@@ -50,7 +55,8 @@ const HeroText = styled.div`
   }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    padding: ${props => props.theme.spacing['4xl']} ${props => props.theme.spacing.md};
+    padding: ${props => props.theme.spacing['3xl']} ${props => props.theme.spacing.lg};
+    min-height: auto;
   }
 `;
 
@@ -61,6 +67,12 @@ const Overline = styled(motion.div)`
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: ${props => props.theme.spacing.xl};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    margin-bottom: ${props => props.theme.spacing.md};
+    letter-spacing: 0.16em;
+  }
 `;
 
 const Title = styled(motion.h1)`
@@ -76,7 +88,9 @@ const Title = styled(motion.h1)`
   }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: ${props => props.theme.fontSizes['4xl']};
+    font-size: clamp(32px, 8.5vw, 40px);
+    line-height: 1.1;
+    margin-bottom: ${props => props.theme.spacing.lg};
   }
 `;
 
@@ -92,6 +106,13 @@ const Subtitle = styled(motion.p)`
   color: rgba(255, 255, 255, 0.6);
   max-width: 460px;
   font-weight: 300;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.sm};
+    line-height: 1.65;
+    margin-bottom: ${props => props.theme.spacing.xl};
+    max-width: 100%;
+  }
 `;
 
 const ButtonGroup = styled(motion.div)`
@@ -99,6 +120,12 @@ const ButtonGroup = styled(motion.div)`
   gap: ${props => props.theme.spacing.md};
   flex-wrap: wrap;
   align-items: center;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    flex-direction: column;
+    width: 100%;
+    gap: ${props => props.theme.spacing.sm};
+  }
 `;
 
 const PrimaryButton = styled(motion.button)`
@@ -119,6 +146,13 @@ const PrimaryButton = styled(motion.button)`
   &:hover {
     background: transparent;
     color: ${props => props.theme.colors.white};
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 100%;
+    justify-content: center;
+    padding: ${props => props.theme.spacing.lg};
+    font-size: 11px;
   }
 `;
 
@@ -142,6 +176,13 @@ const SecondaryButton = styled(motion.button)`
     background: ${props => props.theme.colors.white};
     color: ${props => props.theme.colors.primary};
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 100%;
+    justify-content: center;
+    padding: ${props => props.theme.spacing.lg};
+    font-size: 11px;
+  }
 `;
 
 const CarouselSection = styled.div`
@@ -150,6 +191,12 @@ const CarouselSection = styled.div`
 
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     height: 50vh;
+    min-height: 360px;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    height: 42vh;
+    min-height: 320px;
   }
 `;
 
@@ -171,6 +218,11 @@ const CarouselOverlay = styled.div`
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
   color: ${props => props.theme.colors.white};
   z-index: 2;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing.lg};
+    padding-bottom: 88px;
+  }
 `;
 
 const CarouselLabel = styled.div`
@@ -179,6 +231,10 @@ const CarouselLabel = styled.div`
   letter-spacing: 0.15em;
   color: rgba(255, 255, 255, 0.6);
   margin-bottom: ${props => props.theme.spacing.xs};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const CarouselTitle = styled.h3`
@@ -187,6 +243,10 @@ const CarouselTitle = styled.h3`
   font-weight: 400;
   color: ${props => props.theme.colors.white};
   margin-bottom: 0;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.lg};
+  }
 `;
 
 const CarouselControls = styled.div`
@@ -204,9 +264,10 @@ const CarouselControls = styled.div`
   padding: 8px 10px;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    right: ${props => props.theme.spacing.md};
+    bottom: 16px;
+    right: 16px;
     gap: ${props => props.theme.spacing.sm};
-    padding: 6px 8px;
+    padding: 5px 8px;
   }
 `;
 
@@ -231,8 +292,8 @@ const CarouselButton = styled.button`
   }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
   }
 `;
 
@@ -242,6 +303,11 @@ const CarouselProgress = styled.div`
   display: flex;
   align-items: center;
   gap: ${props => props.theme.spacing.sm};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: clamp(90px, 26vw, 130px);
+    gap: 6px;
+  }
 `;
 
 const CarouselCount = styled.span`
@@ -249,6 +315,11 @@ const CarouselCount = styled.span`
   font-weight: 600;
   font-size: ${props => props.theme.fontSizes.sm};
   color: rgba(255, 255, 255, 0.95);
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 12px;
+    min-width: 10px;
+  }
 `;
 
 const CarouselLine = styled.div`
@@ -277,7 +348,10 @@ const Stats = styled(motion.div)`
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    gap: ${props => props.theme.spacing.xl};
+    gap: ${props => props.theme.spacing.lg};
+    margin-top: ${props => props.theme.spacing['2xl']};
+    padding-top: ${props => props.theme.spacing.xl};
+    flex-wrap: wrap;
   }
 `;
 
@@ -291,6 +365,10 @@ const StatNumber = styled.div`
   font-weight: 400;
   margin-bottom: ${props => props.theme.spacing.xs};
   letter-spacing: -0.02em;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes['2xl']};
+  }
 `;
 
 const StatLabel = styled.div`
@@ -298,6 +376,10 @@ const StatLabel = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: rgba(255, 255, 255, 0.4);
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const Hero = () => {

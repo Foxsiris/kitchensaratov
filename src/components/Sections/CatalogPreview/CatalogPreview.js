@@ -7,6 +7,10 @@ import { FiArrowRight } from 'react-icons/fi';
 const Section = styled.section`
   padding: ${props => props.theme.spacing['5xl']} 0;
   background: ${props => props.theme.colors.white};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing['3xl']} 0;
+  }
 `;
 
 const Container = styled.div`
@@ -15,7 +19,7 @@ const Container = styled.div`
   padding: 0 ${props => props.theme.spacing.xl};
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    padding: 0 ${props => props.theme.spacing.md};
+    padding: 0 8px;
   }
 `;
 
@@ -29,8 +33,9 @@ const SectionTitle = styled(motion.h2)`
   margin-bottom: ${props => props.theme.spacing['2xl']};
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: ${props => props.theme.fontSizes.xs};
+    font-size: 10px;
     margin-bottom: ${props => props.theme.spacing.xl};
+    letter-spacing: 0.18em;
   }
 `;
 
@@ -88,7 +93,7 @@ const CardImage = styled.div`
   }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    height: ${props => props.$heightMobile || '280px'};
+    height: ${props => props.$heightMobile || '240px'};
   }
 `;
 
@@ -125,7 +130,7 @@ const CardLabel = styled.div`
   z-index: 2;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    padding: ${props => props.theme.spacing.md};
+    padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.lg};
   }
 `;
 
@@ -138,7 +143,7 @@ const LabelText = styled.span`
   display: block;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: ${props => props.theme.fontSizes.xl};
+    font-size: ${props => props.theme.fontSizes.lg};
   }
 `;
 
@@ -151,6 +156,10 @@ const LabelSubtext = styled.span`
   display: block;
   margin-top: 4px;
   text-transform: uppercase;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const HoverArrow = styled.div`
@@ -179,6 +188,8 @@ const HoverArrow = styled.div`
     right: ${props => props.theme.spacing.md};
     width: 36px;
     height: 36px;
+    opacity: 1;
+    transform: translateX(0);
   }
 `;
 
@@ -207,6 +218,13 @@ const ViewAllLink = styled(Link)`
     background: ${props => props.theme.colors.primary};
     color: ${props => props.theme.colors.white};
     opacity: 1;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 100%;
+    justify-content: center;
+    font-size: 11px;
+    padding: ${props => props.theme.spacing.lg};
   }
 `;
 

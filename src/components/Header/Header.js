@@ -31,8 +31,9 @@ const HeaderContent = styled.div`
   padding-right: ${p => p.theme.spacing.xl};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding-left: ${p => p.theme.spacing.md};
-    padding-right: ${p => p.theme.spacing.md};
+    padding: 14px 0;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 `;
 
@@ -49,6 +50,10 @@ const Logo = styled(Link)`
   white-space: nowrap;
 
   &:hover { opacity: 1; }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+  }
 `;
 
 const LogoAccent = styled.span`
@@ -347,11 +352,18 @@ const MobileMenuButton = styled.button`
   color: ${p => (p.$onDark ? p.theme.colors.white : p.theme.colors.primary)};
   cursor: pointer;
   padding: ${p => p.theme.spacing.xs};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   @media (max-width: ${p => p.theme.breakpoints.tablet}) {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 4px;
+    font-size: 24px;
   }
 `;
 
@@ -368,6 +380,12 @@ const MobileMenu = styled(motion.div)`
   align-items: center;
   justify-content: center;
   gap: ${p => p.theme.spacing.xl};
+  padding: ${p => p.theme.spacing.xl};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    gap: ${p => p.theme.spacing.lg};
+    padding: ${p => p.theme.spacing.lg};
+  }
 `;
 
 const CloseButton = styled.button`
@@ -379,6 +397,16 @@ const CloseButton = styled.button`
   font-size: 1.5rem;
   color: ${p => p.theme.colors.primary};
   cursor: pointer;
+  padding: ${p => p.theme.spacing.sm};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    top: 16px;
+    right: 16px;
+    font-size: 28px;
+    padding: 4px;
+  }
 `;
 
 const MobileNavLink = styled(Link)`
@@ -388,8 +416,13 @@ const MobileNavLink = styled(Link)`
   color: ${p => p.theme.colors.primary};
   text-decoration: none;
   transition: ${p => p.theme.transitions.fast};
+  letter-spacing: -0.01em;
 
   &:hover { opacity: 0.5; }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes['2xl']};
+  }
 `;
 
 const MobileButton = styled.button`
@@ -404,10 +437,18 @@ const MobileButton = styled.button`
   cursor: pointer;
   margin-top: ${p => p.theme.spacing.xl};
   transition: ${p => p.theme.transitions.fast};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: transparent;
     color: ${p => p.theme.colors.primary};
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.lg} ${p => p.theme.spacing.xl};
+    font-size: 11px;
+    margin-top: ${p => p.theme.spacing.lg};
   }
 `;
 
@@ -416,6 +457,12 @@ const MobilePhone = styled.a`
   color: ${p => p.theme.colors.gray};
   text-decoration: none;
   letter-spacing: 0.05em;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.sm};
+  }
 `;
 
 /* ============================

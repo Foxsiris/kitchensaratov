@@ -4,6 +4,7 @@ import { ThemeProvider } from 'styled-components';
 import { theme } from './styles/theme';
 import GlobalStyles from './styles/GlobalStyles';
 import { ModalProvider } from './hooks/useModal';
+import ScrollToTop from './components/ScrollToTop';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
@@ -20,6 +21,7 @@ function App() {
       <GlobalStyles />
       <ModalProvider>
         <Router>
+          <ScrollToTop />
           <div className="App">
             <Header />
             <Routes>

@@ -111,8 +111,9 @@ const HeroSection = styled.section`
   overflow: hidden;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    height: 60vh;
-    min-height: 400px;
+    height: 54vh;
+    min-height: 420px;
+    max-height: 520px;
   }
 `;
 
@@ -143,7 +144,7 @@ const HeroContent = styled.div`
   z-index: 2;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 90px 20px 30px;
+    padding: 80px 16px 24px;
   }
 `;
 
@@ -163,6 +164,10 @@ const Breadcrumb = styled.nav`
       color: rgba(255, 255, 255, 1);
     }
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 11px;
+  }
 `;
 
 const BreadcrumbSep = styled.span`
@@ -179,7 +184,7 @@ const HeroBottom = styled.div`
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     flex-direction: column;
     align-items: flex-start;
-    gap: ${p => p.theme.spacing.lg};
+    gap: ${p => p.theme.spacing.md};
   }
 `;
 
@@ -196,6 +201,12 @@ const HeroTag = styled.span`
   backdrop-filter: blur(8px);
   padding: 6px 14px;
   margin-bottom: 16px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 9px;
+    padding: 5px 12px;
+    margin-bottom: 12px;
+  }
 `;
 
 const HeroTitle = styled.h1`
@@ -206,6 +217,11 @@ const HeroTitle = styled.h1`
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin-bottom: 8px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: clamp(26px, 7vw, 32px);
+    margin-bottom: 6px;
+  }
 `;
 
 const HeroSubtitle = styled.div`
@@ -214,6 +230,10 @@ const HeroSubtitle = styled.div`
   font-weight: 400;
   font-style: italic;
   color: rgba(255, 255, 255, 0.7);
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.md};
+  }
 `;
 
 const HeroActions = styled.div`
@@ -226,6 +246,7 @@ const HeroActions = styled.div`
     flex-direction: row;
     align-items: center;
     width: 100%;
+    gap: ${p => p.theme.spacing.sm};
   }
 `;
 
@@ -250,6 +271,7 @@ const PriceButton = styled.button`
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     flex: 1;
     padding: 14px 20px;
+    font-size: 10px;
   }
 `;
 
@@ -269,6 +291,12 @@ const ScrollHint = styled(motion.button)`
   &:hover {
     color: rgba(255, 255, 255, 0.9);
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    flex: 1;
+    font-size: 10px;
+    justify-content: center;
+  }
 `;
 
 /* ================= GALLERY ================= */
@@ -276,6 +304,10 @@ const GallerySection = styled.section`
   position: relative;
   background: ${p => p.theme.colors.light};
   padding: ${p => p.theme.spacing['3xl']} 0;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.xl} 0;
+  }
 `;
 
 const GalleryHeader = styled.div`
@@ -289,8 +321,9 @@ const GalleryHeader = styled.div`
   margin-bottom: ${p => p.theme.spacing.xl};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md};
-    gap: ${p => p.theme.spacing.md};
+    padding: 0 8px;
+    gap: ${p => p.theme.spacing.sm};
+    margin-bottom: ${p => p.theme.spacing.md};
   }
 `;
 
@@ -302,6 +335,11 @@ const GalleryCounter = styled.div`
   color: ${p => p.theme.colors.primary};
   letter-spacing: 0.03em;
   text-align: center;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+    min-width: 12px;
+  }
 `;
 
 const GalleryProgress = styled.div`
@@ -310,6 +348,11 @@ const GalleryProgress = styled.div`
   display: flex;
   align-items: center;
   gap: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    max-width: 220px;
+    gap: ${p => p.theme.spacing.sm};
+  }
 `;
 
 const GalleryLine = styled.div`
@@ -332,6 +375,10 @@ const GalleryLineFill = styled.span`
 const GalleryNavButtons = styled.div`
   display: flex;
   gap: 10px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    gap: 6px;
+  }
 `;
 
 const GalleryNavBtn = styled.button`
@@ -360,8 +407,8 @@ const GalleryNavBtn = styled.button`
   }
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
   }
 `;
 
@@ -378,7 +425,7 @@ const GalleryTrack = styled.div`
   }
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md};
+    padding: 0 8px;
     gap: 4px;
   }
 `;
@@ -402,8 +449,10 @@ const GalleryImage = styled.div`
   }
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    width: 300px;
-    height: 220px;
+    width: 280px;
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
   }
 `;
 
@@ -424,6 +473,13 @@ const OpenGalleryBtn = styled.button`
 
   &:hover {
     background: rgba(0, 0, 0, 0.85);
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 9px;
+    padding: 6px 12px;
+    bottom: 10px;
+    right: 10px;
   }
 `;
 
@@ -515,6 +571,11 @@ const LightboxCounter = styled.div`
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.02em;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 14px;
+    gap: ${p => p.theme.spacing.sm};
+  }
 `;
 
 const LightboxLine = styled.div`
@@ -541,7 +602,7 @@ const SpecsSection = styled.section`
   padding: ${p => p.theme.spacing['4xl']} ${p => p.theme.spacing.xl};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: ${p => p.theme.spacing['2xl']} ${p => p.theme.spacing.md};
+    padding: ${p => p.theme.spacing.xl} 16px;
   }
 `;
 
@@ -565,6 +626,10 @@ const SpecsToggle = styled.button`
   svg {
     transition: transform 0.3s;
     transform: rotate(${p => p.$open ? '180deg' : '0deg'});
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
   }
 `;
 
@@ -805,6 +870,13 @@ const OtherCardTag = styled.span`
   backdrop-filter: blur(6px);
   padding: 5px 12px;
   z-index: 2;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 9px;
+    padding: 4px 10px;
+    top: 12px;
+    left: 12px;
+  }
 `;
 
 const OtherCardInfo = styled.div`
@@ -814,6 +886,10 @@ const OtherCardInfo = styled.div`
   right: 0;
   padding: 24px;
   z-index: 2;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.md};
+  }
 `;
 
 const OtherCardTitle = styled.h3`
@@ -823,6 +899,10 @@ const OtherCardTitle = styled.h3`
   color: ${p => p.theme.colors.white};
   margin-bottom: 4px;
   line-height: 1.25;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.md};
+  }
 `;
 
 const OtherCardComposition = styled.div`
@@ -831,6 +911,10 @@ const OtherCardComposition = styled.div`
   font-style: italic;
   color: rgba(255, 255, 255, 0.6);
   margin-bottom: 8px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 12px;
+  }
 `;
 
 const OtherCardPrice = styled.div`
@@ -839,6 +923,10 @@ const OtherCardPrice = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.8);
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 /* ================= DESCRIPTION ================= */
@@ -848,7 +936,7 @@ const DescSection = styled.section`
   padding: ${p => p.theme.spacing['4xl']} ${p => p.theme.spacing.xl};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: ${p => p.theme.spacing['2xl']} ${p => p.theme.spacing.md};
+    padding: ${p => p.theme.spacing.xl} 16px;
   }
 `;
 
@@ -872,7 +960,7 @@ const DescTitle = styled.h2`
   line-height: 1.2;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    font-size: ${p => p.theme.fontSizes['2xl']};
+    font-size: ${p => p.theme.fontSizes.xl};
   }
 `;
 
@@ -881,6 +969,11 @@ const DescText = styled.div`
   color: ${p => p.theme.colors.grayDark};
   line-height: 1.85;
   white-space: pre-line;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.sm};
+    line-height: 1.7;
+  }
 `;
 
 const ShowMoreBtn = styled.button`
@@ -902,6 +995,10 @@ const ShowMoreBtn = styled.button`
   &:hover {
     opacity: 0.6;
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 /* ================= REASONS ================= */
@@ -909,7 +1006,7 @@ const ReasonsOuter = styled.div`
   padding: 0 ${p => p.theme.spacing.xl};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md};
+    padding: 0 8px;
   }
 `;
 
@@ -918,6 +1015,11 @@ const ReasonsSection = styled.section`
   padding: ${p => p.theme.spacing['4xl']} 0;
   border-radius: 24px;
   overflow: hidden;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.xl} 0;
+    border-radius: 16px;
+  }
 `;
 
 const ReasonsContainer = styled.div`
@@ -926,7 +1028,7 @@ const ReasonsContainer = styled.div`
   padding: 0 ${p => p.theme.spacing.xl};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md};
+    padding: 0 ${p => p.theme.spacing.lg};
   }
 `;
 
@@ -939,7 +1041,8 @@ const ReasonsTitle = styled.h2`
   letter-spacing: -0.02em;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    font-size: ${p => p.theme.fontSizes['2xl']};
+    font-size: ${p => p.theme.fontSizes.xl};
+    margin-bottom: ${p => p.theme.spacing.lg};
   }
 `;
 
@@ -963,7 +1066,7 @@ const ReasonCard = styled(motion.div)`
   padding: ${p => p.theme.spacing['2xl']};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: ${p => p.theme.spacing.xl};
+    padding: ${p => p.theme.spacing.lg};
   }
 `;
 
@@ -974,6 +1077,10 @@ const ReasonNumber = styled.div`
   color: rgba(255, 255, 255, 0.12);
   margin-bottom: ${p => p.theme.spacing.md};
   line-height: 1;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes['2xl']};
+  }
 `;
 
 const ReasonText = styled.p`
@@ -981,6 +1088,10 @@ const ReasonText = styled.p`
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.65;
   margin: 0;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 /* ================= BOTTOM CTA ================= */
@@ -991,7 +1102,7 @@ const BottomCTA = styled.section`
   text-align: center;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: ${p => p.theme.spacing['2xl']} ${p => p.theme.spacing.md};
+    padding: ${p => p.theme.spacing.xl} 16px;
   }
 `;
 
@@ -1001,6 +1112,10 @@ const CTAHeading = styled.h2`
   font-weight: 400;
   color: ${p => p.theme.colors.primary};
   margin-bottom: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+  }
 `;
 
 const CTASubtext = styled.p`
@@ -1011,6 +1126,10 @@ const CTASubtext = styled.p`
   margin-left: auto;
   margin-right: auto;
   line-height: 1.6;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.sm};
+  }
 `;
 
 const CTAButtons = styled.div`
@@ -1020,6 +1139,7 @@ const CTAButtons = styled.div`
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     flex-direction: column;
+    gap: ${p => p.theme.spacing.sm};
   }
 `;
 
@@ -1039,6 +1159,11 @@ const CTAPrimary = styled.button`
     background: transparent;
     color: ${p => p.theme.colors.primary};
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 14px 24px;
+    font-size: 10px;
+  }
 `;
 
 const CTASecondary = styled.button`
@@ -1056,6 +1181,11 @@ const CTASecondary = styled.button`
   &:hover {
     background: ${p => p.theme.colors.primary};
     color: ${p => p.theme.colors.white};
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 14px 24px;
+    font-size: 10px;
   }
 `;
 
@@ -1087,9 +1217,10 @@ const StickyInner = styled.div`
   justify-content: space-between;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md};
+    padding: 0 16px;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    align-items: stretch;
   }
 `;
 
@@ -1097,6 +1228,12 @@ const StickyLeft = styled.div`
   display: flex;
   align-items: baseline;
   gap: 16px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
 `;
 
 const StickyName = styled.span`
@@ -1104,11 +1241,19 @@ const StickyName = styled.span`
   font-size: ${p => p.theme.fontSizes.lg};
   font-weight: 400;
   color: ${p => p.theme.colors.primary};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.md};
+  }
 `;
 
 const StickyPrice = styled.span`
   font-size: ${p => p.theme.fontSizes.sm};
   color: ${p => p.theme.colors.gray};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 12px;
+  }
 `;
 
 const StickyButton = styled.button`
@@ -1130,6 +1275,8 @@ const StickyButton = styled.button`
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     width: 100%;
     text-align: center;
+    padding: 14px 20px;
+    font-size: 10px;
   }
 `;
 
@@ -1193,7 +1340,7 @@ const KitchenDetail = () => {
 
   const scrollToGallery = () => {
     const el = document.getElementById('gallery');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (el) el.scrollIntoView({ behavior: 'auto' });
   };
 
   const reasons = [

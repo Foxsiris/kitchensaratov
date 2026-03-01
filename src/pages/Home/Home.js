@@ -51,6 +51,20 @@ const HomeContainer = styled.div`
     position: relative;
     z-index: 1;
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    &::before {
+      width: clamp(180px, 50vw, 280px);
+      height: clamp(180px, 50vw, 280px);
+      filter: blur(50px);
+    }
+
+    &::after {
+      width: clamp(200px, 60vw, 320px);
+      height: clamp(200px, 60vw, 320px);
+      filter: blur(50px);
+    }
+  }
 `;
 
 const Home = () => {

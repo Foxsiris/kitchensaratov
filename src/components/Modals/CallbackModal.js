@@ -17,6 +17,11 @@ const ModalOverlay = styled(motion.div)`
   align-items: center;
   justify-content: center;
   padding: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 8px;
+    align-items: flex-end;
+  }
 `;
 
 /* ============================
@@ -34,7 +39,9 @@ const ModalBox = styled(motion.div)`
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     grid-template-columns: 1fr;
-    max-width: 480px;
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 16px 16px 0 0;
   }
 `;
 
@@ -53,10 +60,19 @@ const CloseBtn = styled.button`
   cursor: pointer;
   z-index: 5;
   transition: all 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.5);
     color: ${p => p.theme.colors.white};
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
   }
 `;
 
@@ -69,7 +85,7 @@ const FormSide = styled.div`
   flex-direction: column;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 36px 24px 24px;
+    padding: 40px 20px 24px;
   }
 `;
 
@@ -81,6 +97,11 @@ const ModalTitle = styled.h2`
   line-height: 1.2;
   letter-spacing: -0.01em;
   margin-bottom: 10px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+    line-height: 1.3;
+  }
 `;
 
 const ModalSubtitle = styled.p`
@@ -88,12 +109,21 @@ const ModalSubtitle = styled.p`
   color: rgba(255, 255, 255, 0.45);
   line-height: 1.6;
   margin-bottom: 32px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    gap: 14px;
+  }
 `;
 
 const InputRow = styled.div`
@@ -101,8 +131,9 @@ const InputRow = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 
-  @media (max-width: 500px) {
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 `;
 
@@ -133,6 +164,8 @@ const Input = styled.input`
   font-size: ${p => p.theme.fontSizes.sm};
   font-family: inherit;
   transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
 
   &:focus {
     border-color: rgba(255, 255, 255, 0.4);
@@ -141,6 +174,11 @@ const Input = styled.input`
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.2);
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 13px 14px;
+    font-size: 14px;
   }
 `;
 
@@ -155,6 +193,8 @@ const TextArea = styled.textarea`
   min-height: 80px;
   resize: vertical;
   transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
 
   &:focus {
     border-color: rgba(255, 255, 255, 0.4);
@@ -163,6 +203,12 @@ const TextArea = styled.textarea`
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.2);
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 13px 14px;
+    font-size: 14px;
+    min-height: 72px;
   }
 `;
 
@@ -187,6 +233,8 @@ const SubmitBtn = styled(motion.button)`
   cursor: pointer;
   transition: all 0.25s;
   margin-top: 8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: rgba(255, 255, 255, 0.9);
@@ -195,6 +243,12 @@ const SubmitBtn = styled(motion.button)`
   &:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 15px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
   }
 `;
 
@@ -213,9 +267,10 @@ const ConsultantSide = styled.div`
   border-left: 1px solid rgba(255, 255, 255, 0.06);
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 32px 24px;
+    padding: 24px 20px;
     border-left: none;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
+    gap: 16px;
   }
 `;
 
@@ -225,6 +280,11 @@ const Avatar = styled.div`
   border-radius: 50%;
   background: url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80') center/cover no-repeat;
   border: 2px solid rgba(255, 255, 255, 0.1);
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    width: 72px;
+    height: 72px;
+  }
 `;
 
 const ConsultantName = styled.div`
@@ -234,12 +294,21 @@ const ConsultantName = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: ${p => p.theme.colors.white};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const ConsultantRole = styled.div`
   font-size: ${p => p.theme.fontSizes.xs};
   color: rgba(255, 255, 255, 0.4);
   margin-top: -12px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 11px;
+    margin-top: -10px;
+  }
 `;
 
 const MessengerLinks = styled.div`
@@ -274,10 +343,17 @@ const MessengerBtn = styled.a`
   letter-spacing: 0.06em;
   transition: all 0.2s;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.35);
     background: rgba(255, 255, 255, 0.05);
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 12px;
+    font-size: 11px;
   }
 `;
 
@@ -290,9 +366,15 @@ const PhoneNumber = styled.a`
   text-decoration: none;
   letter-spacing: 0.03em;
   transition: color 0.2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     color: ${p => p.theme.colors.white};
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
   }
 `;
 
@@ -307,6 +389,11 @@ const SuccessView = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 48px 24px;
+    gap: 12px;
+  }
 `;
 
 const SuccessIcon = styled.div`
@@ -320,6 +407,13 @@ const SuccessIcon = styled.div`
   color: ${p => p.theme.colors.white};
   font-size: 28px;
   margin-bottom: 8px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+    margin-bottom: 4px;
+  }
 `;
 
 const SuccessTitle = styled.h3`
@@ -327,6 +421,10 @@ const SuccessTitle = styled.h3`
   font-size: ${p => p.theme.fontSizes['2xl']};
   font-weight: 400;
   color: ${p => p.theme.colors.white};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+  }
 `;
 
 const SuccessText = styled.p`
@@ -334,6 +432,11 @@ const SuccessText = styled.p`
   color: rgba(255, 255, 255, 0.5);
   line-height: 1.6;
   max-width: 340px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+    max-width: 100%;
+  }
 `;
 
 /* ============================

@@ -14,7 +14,7 @@ const Container = styled.div`
   padding: 0 ${p => p.theme.spacing.xl};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md};
+    padding: 0 16px;
   }
 `;
 
@@ -29,8 +29,9 @@ const HeroOuter = styled.div`
   padding-bottom: 0;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding-left: ${p => p.theme.spacing.md};
-    padding-right: ${p => p.theme.spacing.md};
+    padding-top: 64px;
+    padding-left: 8px;
+    padding-right: 8px;
   }
 `;
 
@@ -40,6 +41,11 @@ const HeroSection = styled.section`
   padding-bottom: ${p => p.theme.spacing['3xl']};
   border-radius: 24px;
   overflow: hidden;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    border-radius: 16px;
+    padding-bottom: ${p => p.theme.spacing.xl};
+  }
 `;
 
 const Breadcrumb = styled.nav`
@@ -53,6 +59,12 @@ const Breadcrumb = styled.nav`
     text-decoration: none;
     transition: color 0.2s;
     &:hover { color: rgba(255, 255, 255, 0.8); }
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    padding-top: ${p => p.theme.spacing.lg};
+    margin-bottom: ${p => p.theme.spacing.xl};
   }
 `;
 
@@ -69,6 +81,11 @@ const HeroTitle = styled(motion.h1)`
   margin-bottom: ${p => p.theme.spacing['2xl']};
   letter-spacing: -0.02em;
   line-height: 1.05;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: clamp(26px, 7vw, 32px);
+    margin-bottom: ${p => p.theme.spacing.lg};
+  }
 `;
 
 const HeroTabs = styled(motion.div)`
@@ -88,6 +105,12 @@ const HeroTab = styled.span`
   font-size: ${p => p.theme.fontSizes.xs};
   text-transform: uppercase;
   letter-spacing: 0.12em;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    min-width: auto;
+    padding: 8px 14px;
+    font-size: 10px;
+  }
 `;
 
 /* ======================================================
@@ -96,6 +119,10 @@ const HeroTab = styled.span`
 const IntroSection = styled.section`
   padding: ${p => p.theme.spacing['5xl']} 0;
   background: ${p => p.theme.colors.white};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing['3xl']} 0;
+  }
 `;
 
 const IntroGrid = styled.div`
@@ -122,7 +149,7 @@ const IntroHeading = styled(motion.h2)`
   line-height: 1.2;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    font-size: ${p => p.theme.fontSizes['2xl']};
+    font-size: ${p => p.theme.fontSizes.xl};
   }
 `;
 
@@ -131,6 +158,11 @@ const IntroParagraph = styled(motion.p)`
   color: ${p => p.theme.colors.grayDark};
   line-height: 1.85;
   margin-bottom: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.sm};
+    line-height: 1.6;
+  }
 `;
 
 const IntroImage = styled(motion.div)`
@@ -144,7 +176,7 @@ const IntroImage = styled(motion.div)`
   }
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    height: 320px;
+    height: 280px;
   }
 `;
 
@@ -154,6 +186,10 @@ const IntroImage = styled(motion.div)`
 const ApproachSection = styled.section`
   padding: ${p => p.theme.spacing['4xl']} 0;
   background: ${p => p.theme.colors.light};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.xl} 0;
+  }
 `;
 
 const ApproachTitle = styled(motion.h2)`
@@ -167,7 +203,8 @@ const ApproachTitle = styled(motion.h2)`
   line-height: 1.2;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    font-size: ${p => p.theme.fontSizes['2xl']};
+    font-size: ${p => p.theme.fontSizes.xl};
+    margin-bottom: ${p => p.theme.spacing.lg};
   }
 `;
 
@@ -180,6 +217,7 @@ const ApproachGrid = styled.div`
   @media (max-width: ${p => p.theme.breakpoints.tablet}) {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
+    gap: ${p => p.theme.spacing.sm};
   }
 `;
 
@@ -197,6 +235,10 @@ const ApproachCard = styled(motion.div)`
   @media (max-width: ${p => p.theme.breakpoints.tablet}) {
     grid-row: auto;
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    border-radius: 12px;
+  }
 `;
 
 const ApproachImage = styled.div`
@@ -209,12 +251,16 @@ const ApproachImage = styled.div`
   }
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    height: 190px;
+    height: 180px;
   }
 `;
 
 const ApproachBody = styled.div`
   padding: ${p => p.theme.spacing.lg};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.md};
+  }
 `;
 
 const ApproachText = styled.p`
@@ -222,6 +268,10 @@ const ApproachText = styled.p`
   color: ${p => p.theme.colors.grayDark};
   line-height: 1.6;
   margin: 0;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 /* ======================================================
@@ -274,11 +324,16 @@ const ShowcaseGrid = styled.div`
 
   @media (max-width: ${p => p.theme.breakpoints.tablet}) {
     grid-template-columns: 1fr;
+    gap: ${p => p.theme.spacing.md};
   }
 `;
 
 const LeftShowcase = styled.div`
   padding-right: ${p => p.theme.spacing.sm};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding-right: 0;
+  }
 `;
 
 const RightShowcase = styled.div`
@@ -293,6 +348,12 @@ const RightShowcase = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    min-height: 240px;
+    border-radius: 12px;
+    padding: ${p => p.theme.spacing.lg};
+  }
 `;
 
 const ExclusiveTitle = styled.h3`
@@ -302,6 +363,10 @@ const ExclusiveTitle = styled.h3`
   letter-spacing: -0.01em;
   margin-bottom: 8px;
   text-transform: uppercase;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+  }
 `;
 
 const OutlineButton = styled.button`
@@ -316,6 +381,11 @@ const OutlineButton = styled.button`
   align-items: center;
   gap: 8px;
   cursor: pointer;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    padding: 12px 18px;
+  }
 `;
 
 const ExclusiveBadge = styled.div`
@@ -326,6 +396,10 @@ const ExclusiveBadge = styled.div`
   font-size: 12px;
   color: rgba(255,255,255,0.85);
   line-height: 1.4;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 11px;
+  }
 `;
 
 const StatCard = styled(motion.div)`
@@ -340,6 +414,11 @@ const StatCard = styled(motion.div)`
   background:
     linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.62) 100%),
     url(${p => p.$src}) center/cover no-repeat;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    min-height: 100px;
+    padding: ${p => p.theme.spacing.md};
+  }
 `;
 
 const StatNumber = styled.div`
@@ -349,6 +428,10 @@ const StatNumber = styled.div`
   color: ${p => p.theme.colors.white};
   margin-bottom: 4px;
   line-height: 1;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+  }
 `;
 
 const StatUnit = styled.div`
@@ -357,6 +440,10 @@ const StatUnit = styled.div`
   text-transform: none;
   letter-spacing: 0.03em;
   line-height: 1.4;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 /* ======================================================
@@ -365,10 +452,18 @@ const StatUnit = styled.div`
 const WhySection = styled.section`
   padding: ${p => p.theme.spacing['5xl']} 0;
   background: ${p => p.theme.colors.white};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing['3xl']} 0;
+  }
 `;
 
 const MidCTAWrap = styled.div`
   padding: ${p => p.theme.spacing['2xl']} 0 ${p => p.theme.spacing['4xl']};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.xl} 0 ${p => p.theme.spacing.xl};
+  }
 `;
 
 const MidCTA = styled.section`
@@ -381,18 +476,33 @@ const MidCTA = styled.section`
   align-items: center;
   gap: ${p => p.theme.spacing.lg};
   flex-wrap: wrap;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    border-radius: 14px;
+    padding: ${p => p.theme.spacing.xl};
+    flex-direction: column;
+    text-align: center;
+  }
 `;
 
 const MidCTATitle = styled.h3`
   font-family: ${p => p.theme.fonts.secondary};
   font-size: ${p => p.theme.fontSizes['2xl']};
   font-weight: 400;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.lg};
+  }
 `;
 
 const MidCTASubtext = styled.p`
   color: rgba(255, 255, 255, 0.55);
   font-size: ${p => p.theme.fontSizes.sm};
   margin-top: 6px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 const WhyTitle = styled(motion.h2)`
@@ -404,7 +514,8 @@ const WhyTitle = styled(motion.h2)`
   letter-spacing: -0.02em;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    font-size: ${p => p.theme.fontSizes['2xl']};
+    font-size: ${p => p.theme.fontSizes.xl};
+    margin-bottom: ${p => p.theme.spacing.lg};
   }
 `;
 
@@ -432,6 +543,10 @@ const WhyCard = styled(motion.div)`
   &:hover {
     background: ${p => p.theme.colors.light};
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.xl};
+  }
 `;
 
 const WhyNumber = styled.div`
@@ -441,6 +556,11 @@ const WhyNumber = styled.div`
   color: ${p => p.theme.colors.border};
   margin-bottom: ${p => p.theme.spacing.lg};
   line-height: 1;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+    margin-bottom: ${p => p.theme.spacing.md};
+  }
 `;
 
 const WhyCardTitle = styled.h3`
@@ -450,6 +570,10 @@ const WhyCardTitle = styled.h3`
   color: ${p => p.theme.colors.primary};
   margin-bottom: ${p => p.theme.spacing.sm};
   line-height: 1.3;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.md};
+  }
 `;
 
 const WhyCardText = styled.p`
@@ -457,6 +581,10 @@ const WhyCardText = styled.p`
   color: ${p => p.theme.colors.gray};
   line-height: 1.65;
   margin: 0;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 /* ======================================================
@@ -465,6 +593,10 @@ const WhyCardText = styled.p`
 const MaterialsSection = styled.section`
   padding: ${p => p.theme.spacing['5xl']} 0;
   background: ${p => p.theme.colors.light};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing['3xl']} 0;
+  }
 `;
 
 const MaterialsGrid = styled.div`
@@ -491,7 +623,8 @@ const MaterialsTitle = styled(motion.h2)`
   line-height: 1.2;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    font-size: ${p => p.theme.fontSizes['2xl']};
+    font-size: ${p => p.theme.fontSizes.xl};
+    margin-bottom: ${p => p.theme.spacing.md};
   }
 `;
 
@@ -502,6 +635,10 @@ const BulletList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    gap: 12px;
+  }
 `;
 
 const BulletItem = styled(motion.li)`
@@ -511,6 +648,11 @@ const BulletItem = styled(motion.li)`
   font-size: ${p => p.theme.fontSizes.md};
   color: ${p => p.theme.colors.grayDark};
   line-height: 1.65;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.sm};
+    gap: 12px;
+  }
 `;
 
 const BulletIcon = styled.span`
@@ -525,6 +667,11 @@ const BulletIcon = styled.span`
   background: ${p => p.$negative ? 'transparent' : p.theme.colors.primary};
   color: ${p => p.$negative ? p.theme.colors.gray : p.theme.colors.white};
   border: 1px solid ${p => p.$negative ? p.theme.colors.grayLight : p.theme.colors.primary};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 const MaterialsImage = styled(motion.div)`
@@ -538,7 +685,7 @@ const MaterialsImage = styled(motion.div)`
   }
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    height: 300px;
+    height: 260px;
   }
 `;
 
@@ -548,6 +695,10 @@ const MaterialsImage = styled(motion.div)`
 const StepsSection = styled.section`
   padding: ${p => p.theme.spacing['5xl']} 0;
   background: ${p => p.theme.colors.white};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing['3xl']} 0;
+  }
 `;
 
 const StepsTitle = styled(motion.h2)`
@@ -559,7 +710,8 @@ const StepsTitle = styled(motion.h2)`
   letter-spacing: -0.02em;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    font-size: ${p => p.theme.fontSizes['2xl']};
+    font-size: ${p => p.theme.fontSizes.xl};
+    margin-bottom: ${p => p.theme.spacing.lg};
   }
 `;
 
@@ -583,6 +735,10 @@ const StepCard = styled(motion.div)`
   background: ${p => p.theme.colors.white};
   padding: ${p => p.theme.spacing['2xl']};
   text-align: center;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.xl};
+  }
 `;
 
 const StepNumber = styled.div`
@@ -597,6 +753,13 @@ const StepNumber = styled.div`
   font-size: ${p => p.theme.fontSizes.xl};
   color: ${p => p.theme.colors.primary};
   font-weight: 400;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    width: 40px;
+    height: 40px;
+    font-size: ${p => p.theme.fontSizes.lg};
+    margin-bottom: ${p => p.theme.spacing.md};
+  }
 `;
 
 const StepTitle = styled.h3`
@@ -606,6 +769,10 @@ const StepTitle = styled.h3`
   color: ${p => p.theme.colors.primary};
   margin-bottom: ${p => p.theme.spacing.sm};
   line-height: 1.35;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.sm};
+  }
 `;
 
 const StepText = styled.p`
@@ -613,6 +780,10 @@ const StepText = styled.p`
   color: ${p => p.theme.colors.gray};
   line-height: 1.6;
   margin: 0;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 /* ======================================================
@@ -622,7 +793,7 @@ const CTAOuter = styled.div`
   padding: 0 ${p => p.theme.spacing.xl} ${p => p.theme.spacing['3xl']};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md} ${p => p.theme.spacing['2xl']};
+    padding: 0 8px ${p => p.theme.spacing.xl};
   }
 `;
 
@@ -631,6 +802,11 @@ const CTASection = styled.section`
   padding: ${p => p.theme.spacing['4xl']} 0;
   border-radius: 24px;
   overflow: hidden;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    border-radius: 16px;
+    padding: ${p => p.theme.spacing.xl} 0;
+  }
 `;
 
 const CTAInner = styled.div`
@@ -656,7 +832,7 @@ const CTAHeading = styled(motion.h2)`
   letter-spacing: -0.02em;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    font-size: ${p => p.theme.fontSizes['2xl']};
+    font-size: ${p => p.theme.fontSizes.xl};
   }
 `;
 
@@ -665,6 +841,10 @@ const CTASubtext = styled.p`
   color: rgba(255, 255, 255, 0.4);
   line-height: 1.6;
   margin: 0;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.sm};
+  }
 `;
 
 const CTARight = styled(motion.div)`

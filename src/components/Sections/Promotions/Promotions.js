@@ -7,17 +7,29 @@ import { useModal } from '../../../hooks/useModal';
 const PromotionsContainer = styled.section`
   padding: ${props => props.theme.spacing['5xl']} 0;
   background: ${props => props.theme.colors.white};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing['3xl']} 0;
+  }
 `;
 
 const Container = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 ${props => props.theme.spacing.xl};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 0 16px;
+  }
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
   margin-bottom: ${props => props.theme.spacing['4xl']};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    margin-bottom: ${props => props.theme.spacing['2xl']};
+  }
 `;
 
 const Overline = styled(motion.div)`
@@ -27,6 +39,10 @@ const Overline = styled(motion.div)`
   letter-spacing: 0.2em;
   color: ${props => props.theme.colors.gray};
   margin-bottom: ${props => props.theme.spacing.md};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const SectionTitle = styled(motion.h2)`
@@ -34,6 +50,10 @@ const SectionTitle = styled(motion.h2)`
   color: ${props => props.theme.colors.primary};
   font-weight: 400;
   letter-spacing: -0.02em;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes['2xl']};
+  }
 `;
 
 const PromotionsGrid = styled.div`
@@ -44,6 +64,10 @@ const PromotionsGrid = styled.div`
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     grid-template-columns: 1fr;
     gap: ${props => props.theme.spacing.lg};
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    gap: ${props => props.theme.spacing.sm};
   }
 `;
 
@@ -62,6 +86,12 @@ const PromotionCard = styled(motion.div)`
   &:hover {
     transform: translateY(-4px);
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing.xl};
+    min-height: auto;
+    border-radius: 12px;
+  }
 `;
 
 const PromotionBadge = styled.div`
@@ -74,6 +104,12 @@ const PromotionBadge = styled.div`
   border: 1px solid ${props => props.$dark ? 'rgba(255,255,255,0.2)' : props.theme.colors.border};
   margin-bottom: ${props => props.theme.spacing.xl};
   align-self: flex-start;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    padding: 6px 10px;
+    margin-bottom: ${props => props.theme.spacing.lg};
+  }
 `;
 
 const PromotionTitle = styled.h3`
@@ -83,6 +119,10 @@ const PromotionTitle = styled.h3`
   margin-bottom: ${props => props.theme.spacing.md};
   color: inherit;
   line-height: 1.3;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.xl};
+  }
 `;
 
 const PromotionDescription = styled.p`
@@ -92,6 +132,11 @@ const PromotionDescription = styled.p`
   opacity: 0.7;
   color: inherit;
   flex: 1;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 13px;
+    margin-bottom: ${props => props.theme.spacing.lg};
+  }
 `;
 
 const PromotionPrice = styled.div`
@@ -100,6 +145,11 @@ const PromotionPrice = styled.div`
   font-weight: 400;
   margin-bottom: ${props => props.theme.spacing.lg};
   letter-spacing: -0.02em;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes['2xl']};
+    margin-bottom: ${props => props.theme.spacing.md};
+  }
 `;
 
 const PromotionButton = styled(motion.button)`
@@ -117,11 +167,18 @@ const PromotionButton = styled(motion.button)`
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
   align-self: flex-start;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: ${props => props.$dark ? props.theme.colors.white : props.theme.colors.primary};
     color: ${props => props.$dark ? props.theme.colors.primary : props.theme.colors.white};
     border-color: ${props => props.$dark ? props.theme.colors.white : props.theme.colors.primary};
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 11px ${props => props.theme.spacing.md};
+    font-size: 10px;
   }
 `;
 
@@ -143,6 +200,13 @@ const CTABanner = styled(motion.div)`
     gap: ${props => props.theme.spacing.lg};
     border-radius: 24px;
     padding: ${props => props.theme.spacing.xl};
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    margin-top: ${props => props.theme.spacing.xl};
+    border-radius: 16px;
+    padding: ${props => props.theme.spacing.lg};
+    text-align: center;
   }
 `;
 
@@ -169,6 +233,10 @@ const CTAText = styled.div`
     font-size: ${props => props.theme.fontSizes.sm};
     line-height: 1.5;
     margin-bottom: 0;
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      font-size: 13px;
+    }
   }
 `;
 
@@ -186,6 +254,13 @@ const CTAConsultantPill = styled.div`
     border-radius: 16px;
     justify-content: space-between;
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    flex-direction: column;
+    border-radius: 12px;
+    padding: ${props => props.theme.spacing.lg};
+    gap: ${props => props.theme.spacing.md};
+  }
 `;
 
 const CTAAvatar = styled.img`
@@ -194,6 +269,11 @@ const CTAAvatar = styled.img`
   border-radius: 999px;
   object-fit: cover;
   flex-shrink: 0;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 64px;
+    height: 64px;
+  }
 `;
 
 const CTAConsultantText = styled.div`
@@ -215,6 +295,18 @@ const CTAConsultantText = styled.div`
     color: rgba(255, 255, 255, 0.58);
     line-height: 1.25;
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    text-align: center;
+
+    h4 {
+      font-size: 11px;
+    }
+
+    p {
+      font-size: 11px;
+    }
+  }
 `;
 
 const CTAActionButton = styled(motion.button)`
@@ -234,9 +326,19 @@ const CTAActionButton = styled(motion.button)`
   transition: ${props => props.theme.transitions.fast};
   white-space: nowrap;
   flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: #0b5b49;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 10px;
+    border-radius: 999px;
   }
 `;
 

@@ -17,6 +17,11 @@ const ModalOverlay = styled(motion.div)`
   align-items: center;
   justify-content: center;
   padding: ${props => props.theme.spacing.md};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 0;
+    align-items: flex-end;
+  }
 `;
 
 const ModalContent = styled(motion.div)`
@@ -27,6 +32,13 @@ const ModalContent = styled(motion.div)`
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+    padding: ${props => props.theme.spacing.xl} ${props => props.theme.spacing.lg} ${props => props.theme.spacing.lg};
+  }
 `;
 
 const CloseButton = styled.button`
@@ -39,14 +51,25 @@ const CloseButton = styled.button`
   color: ${props => props.theme.colors.gray};
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     color: ${props => props.theme.colors.primary};
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    top: 16px;
+    right: 16px;
   }
 `;
 
 const ModalHeader = styled.div`
   margin-bottom: ${props => props.theme.spacing['2xl']};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    margin-bottom: ${props => props.theme.spacing.xl};
+  }
 `;
 
 const ModalTitle = styled.h2`
@@ -55,18 +78,31 @@ const ModalTitle = styled.h2`
   color: ${props => props.theme.colors.primary};
   font-weight: 400;
   margin-bottom: ${props => props.theme.spacing.sm};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.xl};
+  }
 `;
 
 const ModalSubtitle = styled.p`
   color: ${props => props.theme.colors.gray};
   font-size: ${props => props.theme.fontSizes.sm};
   line-height: 1.6;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 const BenefitsList = styled.div`
   border: 1px solid ${props => props.theme.colors.border};
   padding: ${props => props.theme.spacing.lg};
   margin-bottom: ${props => props.theme.spacing.xl};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing.md};
+    margin-bottom: ${props => props.theme.spacing.lg};
+  }
 `;
 
 const BenefitItem = styled.div`
@@ -85,12 +121,21 @@ const BenefitItem = styled.div`
     color: ${props => props.theme.colors.primary};
     flex-shrink: 0;
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 13px;
+    gap: 8px;
+  }
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: ${props => props.theme.spacing.lg};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    gap: ${props => props.theme.spacing.md};
+  }
 `;
 
 const FormRow = styled.div`
@@ -100,6 +145,7 @@ const FormRow = styled.div`
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     grid-template-columns: 1fr;
+    gap: ${props => props.theme.spacing.md};
   }
 `;
 
@@ -118,6 +164,10 @@ const Label = styled.label`
   display: flex;
   align-items: center;
   gap: ${props => props.theme.spacing.xs};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const Input = styled.input`
@@ -125,6 +175,7 @@ const Input = styled.input`
   border: 1px solid ${props => props.theme.colors.border};
   font-size: ${props => props.theme.fontSizes.sm};
   transition: ${props => props.theme.transitions.fast};
+  -webkit-tap-highlight-color: transparent;
 
   &:focus {
     border-color: ${props => props.theme.colors.primary};
@@ -133,6 +184,11 @@ const Input = styled.input`
 
   &::placeholder {
     color: ${props => props.theme.colors.grayLight};
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 12px;
+    font-size: 14px;
   }
 `;
 
@@ -144,10 +200,16 @@ const Select = styled.select`
   transition: ${props => props.theme.transitions.fast};
   border-radius: 0;
   appearance: auto;
+  -webkit-tap-highlight-color: transparent;
 
   &:focus {
     border-color: ${props => props.theme.colors.primary};
     outline: none;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 12px;
+    font-size: 14px;
   }
 `;
 
@@ -163,6 +225,8 @@ const SubmitButton = styled(motion.button)`
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
   width: 100%;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: transparent;
@@ -173,6 +237,11 @@ const SubmitButton = styled(motion.button)`
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 14px ${props => props.theme.spacing.lg};
+    font-size: 11px;
+  }
 `;
 
 const SuccessMessage = styled(motion.div)`
@@ -181,6 +250,11 @@ const SuccessMessage = styled(motion.div)`
   padding: ${props => props.theme.spacing.lg};
   text-align: center;
   font-size: ${props => props.theme.fontSizes.sm};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing.md};
+    font-size: 13px;
+  }
 `;
 
 const InstallmentModal = () => {

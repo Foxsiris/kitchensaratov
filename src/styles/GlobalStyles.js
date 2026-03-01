@@ -10,8 +10,11 @@ const GlobalStyles = createGlobalStyle`
   }
 
   html {
-    scroll-behavior: smooth;
     font-size: 16px;
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      font-size: 15px;
+    }
   }
 
   body {
@@ -25,6 +28,10 @@ const GlobalStyles = createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: 0.01em;
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      line-height: 1.6;
+    }
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -54,18 +61,34 @@ const GlobalStyles = createGlobalStyle`
 
   h3 {
     font-size: ${props => props.theme.fontSizes['3xl']};
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      font-size: ${props => props.theme.fontSizes['2xl']};
+    }
   }
 
   h4 {
     font-size: ${props => props.theme.fontSizes['2xl']};
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      font-size: ${props => props.theme.fontSizes.xl};
+    }
   }
 
   h5 {
     font-size: ${props => props.theme.fontSizes.xl};
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      font-size: ${props => props.theme.fontSizes.lg};
+    }
   }
 
   h6 {
     font-size: ${props => props.theme.fontSizes.lg};
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      font-size: ${props => props.theme.fontSizes.md};
+    }
   }
 
   p {
@@ -91,6 +114,12 @@ const GlobalStyles = createGlobalStyle`
     transition: ${props => props.theme.transitions.fast};
     letter-spacing: 0.05em;
     border-radius: 12px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      min-height: 44px;
+    }
   }
 
   input, textarea, select {
@@ -102,6 +131,11 @@ const GlobalStyles = createGlobalStyle`
     font-size: ${props => props.theme.fontSizes.sm};
     background: ${props => props.theme.colors.white};
     border-radius: 0;
+
+    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+      padding: 12px;
+      font-size: 16px;
+    }
   }
 
   input:focus, textarea:focus, select:focus {

@@ -6,17 +6,29 @@ import { FiStar } from 'react-icons/fi';
 const TestimonialsContainer = styled.section`
   padding: ${props => props.theme.spacing['5xl']} 0;
   background: ${props => props.theme.colors.light};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing['3xl']} 0;
+  }
 `;
 
 const Container = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 ${props => props.theme.spacing.xl};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 0 16px;
+  }
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
   margin-bottom: ${props => props.theme.spacing['4xl']};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    margin-bottom: ${props => props.theme.spacing['2xl']};
+  }
 `;
 
 const Overline = styled(motion.div)`
@@ -26,6 +38,10 @@ const Overline = styled(motion.div)`
   letter-spacing: 0.2em;
   color: ${props => props.theme.colors.gray};
   margin-bottom: ${props => props.theme.spacing.md};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const SectionTitle = styled(motion.h2)`
@@ -33,6 +49,10 @@ const SectionTitle = styled(motion.h2)`
   color: ${props => props.theme.colors.primary};
   font-weight: 400;
   letter-spacing: -0.02em;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes['2xl']};
+  }
 `;
 
 const TestimonialsGrid = styled.div`
@@ -42,6 +62,10 @@ const TestimonialsGrid = styled.div`
 
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     grid-template-columns: 1fr;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    gap: ${props => props.theme.spacing.sm};
   }
 `;
 
@@ -54,12 +78,21 @@ const TestimonialCard = styled(motion.div)`
   &:hover {
     border-color: ${props => props.theme.colors.primary};
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing.xl};
+    border-radius: 8px;
+  }
 `;
 
 const Rating = styled.div`
   display: flex;
   gap: 2px;
   margin-bottom: ${props => props.theme.spacing.lg};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    margin-bottom: ${props => props.theme.spacing.md};
+  }
 `;
 
 const Star = styled.div`
@@ -75,6 +108,11 @@ const TestimonialText = styled.p`
   margin-bottom: ${props => props.theme.spacing.xl};
   font-weight: 400;
   font-style: italic;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.lg};
+    margin-bottom: ${props => props.theme.spacing.lg};
+  }
 `;
 
 const Divider = styled.div`
@@ -94,6 +132,7 @@ const AuthorAvatar = styled.div`
   width: 48px;
   height: 48px;
   background: ${props => props.theme.colors.primary};
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,6 +140,12 @@ const AuthorAvatar = styled.div`
   font-family: ${props => props.theme.fonts.secondary};
   font-size: ${props => props.theme.fontSizes.lg};
   font-weight: 400;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 40px;
+    height: 40px;
+    font-size: ${props => props.theme.fontSizes.md};
+  }
 `;
 
 const AuthorInfo = styled.div``;
@@ -110,12 +155,20 @@ const AuthorName = styled.div`
   color: ${props => props.theme.colors.primary};
   font-size: ${props => props.theme.fontSizes.sm};
   letter-spacing: 0.02em;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.xs};
+  }
 `;
 
 const AuthorTitle = styled.div`
   font-size: ${props => props.theme.fontSizes.xs};
   color: ${props => props.theme.colors.gray};
   letter-spacing: 0.02em;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const Testimonials = () => {

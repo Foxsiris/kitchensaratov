@@ -19,6 +19,11 @@ const CTAContainer = styled.section`
   position: relative;
   overflow: hidden;
   border-radius: 24px;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing['3xl']} 0;
+    border-radius: 16px;
+  }
 `;
 
 const Container = styled.div`
@@ -27,6 +32,10 @@ const Container = styled.div`
   padding: 0 ${props => props.theme.spacing.xl};
   position: relative;
   z-index: 2;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 0 16px;
+  }
 `;
 
 const CTAContent = styled.div`
@@ -51,6 +60,11 @@ const Overline = styled(motion.div)`
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.4);
   margin-bottom: ${props => props.theme.spacing.lg};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    margin-bottom: ${props => props.theme.spacing.md};
+  }
 `;
 
 const CTATitle = styled(motion.h2)`
@@ -61,6 +75,11 @@ const CTATitle = styled(motion.h2)`
   margin-bottom: ${props => props.theme.spacing.lg};
   line-height: 1.2;
   letter-spacing: -0.02em;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes['2xl']};
+    margin-bottom: ${props => props.theme.spacing.md};
+  }
 `;
 
 const CTADescription = styled(motion.p)`
@@ -73,6 +92,13 @@ const CTADescription = styled(motion.p)`
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     margin: 0 auto ${props => props.theme.spacing['2xl']};
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.sm};
+    line-height: 1.6;
+    margin-bottom: ${props => props.theme.spacing.xl};
+    max-width: 100%;
+  }
 `;
 
 const ButtonGroup = styled(motion.div)`
@@ -82,6 +108,12 @@ const ButtonGroup = styled(motion.div)`
 
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     justify-content: center;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    flex-direction: column;
+    gap: ${props => props.theme.spacing.sm};
+    width: 100%;
   }
 `;
 
@@ -99,10 +131,19 @@ const PrimaryButton = styled(motion.button)`
   letter-spacing: 0.15em;
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: transparent;
     color: ${props => props.theme.colors.white};
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 10px;
   }
 `;
 
@@ -120,15 +161,29 @@ const SecondaryButton = styled(motion.button)`
   letter-spacing: 0.15em;
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     border-color: ${props => props.theme.colors.white};
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 10px;
   }
 `;
 
 const ContactInfo = styled(motion.div)`
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: ${props => props.theme.spacing['2xl']};
+  border-radius: 8px;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing.xl};
+  }
 `;
 
 const ContactTitle = styled.h3`
@@ -137,12 +192,21 @@ const ContactTitle = styled.h3`
   font-weight: 400;
   color: ${props => props.theme.colors.white};
   margin-bottom: ${props => props.theme.spacing.xl};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.xl};
+    margin-bottom: ${props => props.theme.spacing.lg};
+  }
 `;
 
 const ContactList = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${props => props.theme.spacing.lg};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    gap: ${props => props.theme.spacing.md};
+  }
 `;
 
 const ContactItem = styled.div`
@@ -160,18 +224,30 @@ const ContactItem = styled.div`
   &:hover {
     padding-left: ${props => props.theme.spacing.lg};
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing.sm} 0;
+    gap: ${props => props.theme.spacing.sm};
+  }
 `;
 
 const ContactIcon = styled.div`
   width: 40px;
   height: 40px;
   border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: ${props => props.theme.colors.white};
   font-size: ${props => props.theme.fontSizes.md};
   flex-shrink: 0;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 36px;
+    height: 36px;
+    font-size: ${props => props.theme.fontSizes.sm};
+  }
 `;
 
 const ContactDetails = styled.div`
@@ -184,12 +260,20 @@ const ContactLabel = styled.div`
   letter-spacing: 0.1em;
   color: rgba(255, 255, 255, 0.4);
   margin-bottom: 2px;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const ContactValue = styled.div`
   font-weight: 400;
   font-size: ${props => props.theme.fontSizes.md};
   color: ${props => props.theme.colors.white};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.sm};
+  }
 `;
 
 const CTA = () => {

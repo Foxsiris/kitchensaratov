@@ -12,12 +12,16 @@ const Page = styled.div`
   padding-top: 80px;
   min-height: 100vh;
   background: ${p => p.theme.colors.white};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding-top: 64px;
+  }
 `;
 
 const HeroOuter = styled.div`
   padding: 0 ${p => p.theme.spacing.xl};
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md};
+    padding: 0 8px;
   }
 `;
 
@@ -30,6 +34,12 @@ const HeroSection = styled.div`
   display: flex;
   align-items: flex-end;
   background: ${p => p.theme.colors.primary};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    height: 50vh;
+    min-height: 340px;
+    border-radius: 16px;
+  }
 `;
 
 const HeroBg = styled.div`
@@ -55,7 +65,7 @@ const HeroContent = styled.div`
   margin: 0 auto;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: ${p => p.theme.spacing.xl};
+    padding: ${p => p.theme.spacing.lg};
   }
 `;
 
@@ -75,6 +85,11 @@ const Breadcrumb = styled.div`
     transition: color 0.2s;
     &:hover { color: #fff; }
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    margin-bottom: ${p => p.theme.spacing.md};
+  }
 `;
 
 const HeroTitle = styled(motion.h1)`
@@ -88,6 +103,10 @@ const HeroTitle = styled(motion.h1)`
   @media (max-width: ${p => p.theme.breakpoints.tablet}) {
     font-size: ${p => p.theme.fontSizes['4xl']};
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes['2xl']};
+  }
 `;
 
 const HeroTag = styled(motion.div)`
@@ -100,12 +119,21 @@ const HeroTag = styled(motion.div)`
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    padding: 5px 12px;
+  }
 `;
 
 const HeroPrice = styled(motion.div)`
   font-size: ${p => p.theme.fontSizes['2xl']};
   color: #fff;
   font-weight: 300;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+  }
 `;
 
 /* --- Content --- */
@@ -114,6 +142,10 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 ${p => p.theme.spacing.xl};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 0 16px;
+  }
 `;
 
 const ContentGrid = styled.div`
@@ -124,6 +156,11 @@ const ContentGrid = styled.div`
 
   @media (max-width: ${p => p.theme.breakpoints.tablet}) {
     grid-template-columns: 1fr;
+    gap: ${p => p.theme.spacing.xl};
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.xl} 0;
   }
 `;
 
@@ -137,6 +174,10 @@ const SectionLabel = styled.div`
   letter-spacing: 0.15em;
   color: ${p => p.theme.colors.gray};
   margin-bottom: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const Description = styled.p`
@@ -144,6 +185,11 @@ const Description = styled.p`
   line-height: 1.8;
   color: ${p => p.theme.colors.grayDark};
   margin-bottom: ${p => p.theme.spacing['2xl']};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.sm};
+    line-height: 1.6;
+  }
 `;
 
 const SpecsTable = styled.div`
@@ -156,6 +202,11 @@ const SpecRow = styled.div`
   padding: ${p => p.theme.spacing.md} 0;
   border-bottom: 1px solid ${p => p.theme.colors.border};
   font-size: ${p => p.theme.fontSizes.sm};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+    padding: ${p => p.theme.spacing.sm} 0;
+  }
 `;
 
 const SpecLabel = styled.span`
@@ -165,6 +216,8 @@ const SpecLabel = styled.span`
 const SpecValue = styled.span`
   color: ${p => p.theme.colors.primary};
   font-weight: 500;
+  text-align: right;
+  max-width: 55%;
 `;
 
 /* --- Sidebar --- */
@@ -177,6 +230,7 @@ const StickyBox = styled.div`
 
   @media (max-width: ${p => p.theme.breakpoints.tablet}) {
     position: static;
+    padding: ${p => p.theme.spacing.xl};
   }
 `;
 
@@ -186,6 +240,10 @@ const SidePrice = styled.div`
   color: ${p => p.theme.colors.primary};
   font-weight: 400;
   margin-bottom: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+  }
 `;
 
 const SideSource = styled.div`
@@ -194,6 +252,10 @@ const SideSource = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: ${p => p.theme.spacing.xl};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const CTAButton = styled(motion.button)`
@@ -214,6 +276,11 @@ const CTAButton = styled(motion.button)`
   transition: background 0.25s;
   margin-bottom: ${p => p.theme.spacing.md};
   &:hover { background: #222; }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.lg};
+    font-size: 11px;
+  }
 `;
 
 const PhoneButton = styled(CTAButton)`
@@ -238,6 +305,14 @@ const BackLink = styled.div`
     transition: color 0.2s;
     &:hover { color: ${p => p.theme.colors.primary}; }
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.md} 0;
+
+    a {
+      font-size: 11px;
+    }
+  }
 `;
 
 /* --- Other Products --- */
@@ -245,7 +320,7 @@ const BackLink = styled.div`
 const OtherOuter = styled.div`
   padding: 0 ${p => p.theme.spacing.xl};
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md};
+    padding: 0 8px;
   }
 `;
 
@@ -255,6 +330,12 @@ const OtherSection = styled.section`
   padding: ${p => p.theme.spacing['4xl']} 0;
   margin-bottom: ${p => p.theme.spacing['3xl']};
   overflow: hidden;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    border-radius: 16px;
+    padding: ${p => p.theme.spacing.xl} 0;
+    margin-bottom: ${p => p.theme.spacing.xl};
+  }
 `;
 
 const OtherTitle = styled.h2`
@@ -264,6 +345,11 @@ const OtherTitle = styled.h2`
   font-weight: 400;
   text-align: center;
   margin-bottom: ${p => p.theme.spacing['2xl']};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+    margin-bottom: ${p => p.theme.spacing.lg};
+  }
 `;
 
 const OtherGrid = styled.div`
@@ -279,6 +365,8 @@ const OtherGrid = styled.div`
   }
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     grid-template-columns: 1fr;
+    padding: 0 ${p => p.theme.spacing.lg};
+    gap: ${p => p.theme.spacing.sm};
   }
 `;
 
@@ -289,6 +377,10 @@ const OtherCard = styled(motion.div)`
   background: rgba(255,255,255,0.05);
   transition: background 0.3s;
   &:hover { background: rgba(255,255,255,0.1); }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    border-radius: 10px;
+  }
 `;
 
 const OtherImg = styled.div`
@@ -305,6 +397,10 @@ const OtherImg = styled.div`
 
 const OtherBody = styled.div`
   padding: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.sm};
+  }
 `;
 
 const OtherName = styled.div`
@@ -312,11 +408,19 @@ const OtherName = styled.div`
   font-size: ${p => p.theme.fontSizes.lg};
   color: #fff;
   margin-bottom: 4px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.md};
+  }
 `;
 
 const OtherPrice = styled.div`
   font-size: ${p => p.theme.fontSizes.sm};
   color: rgba(255,255,255,0.5);
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 12px;
+  }
 `;
 
 /* --- Not Found --- */

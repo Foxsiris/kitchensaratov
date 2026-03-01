@@ -10,12 +10,16 @@ const Page = styled.div`
   padding-top: 80px;
   min-height: 100vh;
   background: ${p => p.theme.colors.white};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding-top: 64px;
+  }
 `;
 
 const HeroOuter = styled.div`
   padding: 0 ${p => p.theme.spacing.xl};
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: 0 ${p => p.theme.spacing.md};
+    padding: 0 8px;
   }
 `;
 
@@ -25,6 +29,11 @@ const HeroBanner = styled.section`
   border-radius: 24px;
   overflow: hidden;
   padding: ${p => p.theme.spacing['4xl']} ${p => p.theme.spacing.xl};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    border-radius: 16px;
+    padding: ${p => p.theme.spacing['2xl']} ${p => p.theme.spacing.lg};
+  }
 `;
 
 const HeroOverline = styled(motion.div)`
@@ -33,6 +42,11 @@ const HeroOverline = styled(motion.div)`
   letter-spacing: 0.2em;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
 `;
 
 const HeroTitle = styled(motion.h1)`
@@ -42,6 +56,11 @@ const HeroTitle = styled(motion.h1)`
   letter-spacing: -0.03em;
   margin-bottom: ${p => p.theme.spacing.md};
   max-width: 880px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes['2xl']};
+    margin-bottom: ${p => p.theme.spacing.sm};
+  }
 `;
 
 const HeroText = styled(motion.p)`
@@ -49,6 +68,11 @@ const HeroText = styled(motion.p)`
   color: rgba(255, 255, 255, 0.7);
   max-width: 760px;
   line-height: 1.6;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.sm};
+    line-height: 1.5;
+  }
 `;
 
 const AwardsRow = styled.div`
@@ -67,6 +91,11 @@ const AwardChip = styled.span`
   font-size: ${p => p.theme.fontSizes.xs};
   text-transform: uppercase;
   letter-spacing: 0.08em;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 8px 12px;
+    font-size: 10px;
+  }
 `;
 
 const ContentWrap = styled.div`
@@ -75,7 +104,7 @@ const ContentWrap = styled.div`
   padding: ${p => p.theme.spacing['2xl']} ${p => p.theme.spacing.xl} ${p => p.theme.spacing['4xl']};
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    padding: ${p => p.theme.spacing.xl} ${p => p.theme.spacing.md} ${p => p.theme.spacing['3xl']};
+    padding: ${p => p.theme.spacing.xl} 8px ${p => p.theme.spacing['2xl']};
   }
 `;
 
@@ -87,6 +116,11 @@ const TabsRow = styled.div`
   margin-bottom: ${p => p.theme.spacing.xl};
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    gap: 6px;
+    margin-bottom: ${p => p.theme.spacing.lg};
   }
 `;
 
@@ -101,6 +135,11 @@ const Tab = styled.button`
   white-space: nowrap;
   cursor: pointer;
   transition: ${p => p.theme.transitions.fast};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.sm} ${p => p.theme.spacing.md};
+    font-size: 10px;
+  }
 `;
 
 const ToolBar = styled.div`
@@ -111,6 +150,12 @@ const ToolBar = styled.div`
   padding-bottom: ${p => p.theme.spacing.lg};
   margin-bottom: ${p => p.theme.spacing['2xl']};
   flex-wrap: wrap;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    gap: ${p => p.theme.spacing.sm};
+    padding-bottom: ${p => p.theme.spacing.md};
+    margin-bottom: ${p => p.theme.spacing.xl};
+  }
 `;
 
 const SearchBox = styled.label`
@@ -118,6 +163,11 @@ const SearchBox = styled.label`
   flex: 1;
   min-width: 260px;
   max-width: 420px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    min-width: 100%;
+    max-width: 100%;
+  }
 `;
 
 const SearchIcon = styled.span`
@@ -140,12 +190,23 @@ const SearchInput = styled.input`
     outline: none;
     border-color: ${p => p.theme.colors.primary};
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+    padding: ${p => p.theme.spacing.sm} ${p => p.theme.spacing.sm} ${p => p.theme.spacing.sm} 38px;
+  }
 `;
 
 const Count = styled.div`
   margin-left: auto;
   font-size: ${p => p.theme.fontSizes.sm};
   color: ${p => p.theme.colors.gray};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 12px;
+    width: 100%;
+    margin-left: 0;
+  }
 `;
 
 const MosaicGrid = styled.div`
@@ -160,6 +221,7 @@ const MosaicGrid = styled.div`
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     grid-template-columns: 1fr;
+    gap: ${p => p.theme.spacing.sm};
   }
 `;
 
@@ -175,6 +237,7 @@ const MosaicCard = styled(motion.button)`
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     min-height: 240px;
+    border-radius: 14px;
   }
 `;
 
@@ -198,12 +261,20 @@ const MosaicOverlay = styled.div`
   justify-content: space-between;
   padding: ${p => p.theme.spacing.lg};
   color: #fff;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.md};
+  }
 `;
 
 const MosaicTitle = styled.span`
   font-family: ${p => p.theme.fonts.secondary};
   font-size: ${p => p.theme.fontSizes['2xl']};
   line-height: 1.1;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.lg};
+  }
 `;
 
 const BrandSection = styled.section`
@@ -211,6 +282,12 @@ const BrandSection = styled.section`
   border: 1px solid ${p => p.theme.colors.border};
   border-radius: 18px;
   padding: ${p => p.theme.spacing.xl};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    border-radius: 14px;
+    padding: ${p => p.theme.spacing.lg};
+    margin-bottom: ${p => p.theme.spacing.xl};
+  }
 `;
 
 const CategoryHeading = styled.h2`
@@ -218,6 +295,11 @@ const CategoryHeading = styled.h2`
   font-size: ${p => p.theme.fontSizes['3xl']};
   font-weight: 400;
   margin: 0 0 ${p => p.theme.spacing.lg};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.xl};
+    margin-bottom: ${p => p.theme.spacing.md};
+  }
 `;
 
 const BrandHeader = styled.button`
@@ -230,12 +312,20 @@ const BrandHeader = styled.button`
   cursor: pointer;
   padding: 0 0 ${p => p.theme.spacing.lg};
   color: ${p => p.theme.colors.primary};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 0 0 ${p => p.theme.spacing.md};
+  }
 `;
 
 const BrandName = styled.h3`
   font-family: ${p => p.theme.fonts.secondary};
   font-size: ${p => p.theme.fontSizes['2xl']};
   font-weight: 400;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.lg};
+  }
 `;
 
 const ChevronIcon = styled(motion.span)`
@@ -249,6 +339,11 @@ const SubName = styled.div`
   letter-spacing: 0.15em;
   color: ${p => p.theme.colors.gray};
   margin-bottom: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    margin-bottom: ${p => p.theme.spacing.sm};
+  }
 `;
 
 // Use multiple mosaic combinations:
@@ -332,6 +427,10 @@ const CardOverlay = styled.div`
   ${Card}:hover & {
     opacity: 1;
   }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    opacity: 1;
+  }
 `;
 
 const CircleArrow = styled.span`
@@ -343,10 +442,19 @@ const CircleArrow = styled.span`
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    width: 32px;
+    height: 32px;
+  }
 `;
 
 const CardBody = styled.div`
   padding: ${p => p.theme.spacing.md};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: ${p => p.theme.spacing.sm};
+  }
 `;
 
 const CardLabel = styled.div`
@@ -355,6 +463,11 @@ const CardLabel = styled.div`
   letter-spacing: 0.1em;
   color: ${p => p.theme.colors.gray};
   margin-bottom: 6px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
 `;
 
 const CardTitle = styled.h4`
@@ -363,6 +476,11 @@ const CardTitle = styled.h4`
   font-weight: 400;
   margin-bottom: 6px;
   color: ${p => p.theme.colors.primary};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.md};
+    margin-bottom: 4px;
+  }
 `;
 
 const CardMeta = styled.div`
@@ -375,11 +493,19 @@ const CardPrice = styled.div`
   font-size: ${p => p.theme.fontSizes.sm};
   font-weight: 500;
   color: ${p => p.theme.colors.grayDark};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 const CardSource = styled.div`
   font-size: ${p => p.theme.fontSizes.xs};
   color: ${p => p.theme.colors.gray};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const DarkCta = styled.section`
@@ -393,6 +519,14 @@ const DarkCta = styled.section`
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    border-radius: 16px;
+    padding: ${p => p.theme.spacing.xl};
+    margin-top: ${p => p.theme.spacing.xl};
+    text-align: center;
+    flex-direction: column;
+  }
 `;
 
 const CtaTextWrap = styled.div``;
@@ -401,10 +535,19 @@ const CtaTitle = styled.h3`
   font-size: ${p => p.theme.fontSizes['2xl']};
   font-weight: 400;
   margin-bottom: 8px;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: ${p => p.theme.fontSizes.lg};
+    margin-bottom: 6px;
+  }
 `;
 const CtaText = styled.p`
   color: rgba(255, 255, 255, 0.7);
   font-size: ${p => p.theme.fontSizes.sm};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 const CtaButton = styled.button`
@@ -419,6 +562,13 @@ const CtaButton = styled.button`
   text-transform: uppercase;
   letter-spacing: 0.12em;
   cursor: pointer;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    width: 100%;
+    justify-content: center;
+    font-size: 11px;
+    padding: ${p => p.theme.spacing.lg};
+  }
 `;
 
 const Empty = styled.div`

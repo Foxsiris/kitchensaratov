@@ -16,6 +16,11 @@ const ModalOverlay = styled(motion.div)`
   align-items: center;
   justify-content: center;
   padding: ${props => props.theme.spacing.md};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 0;
+    align-items: flex-end;
+  }
 `;
 
 const ModalContent = styled(motion.div)`
@@ -35,6 +40,12 @@ const ModalContent = styled(motion.div)`
     grid-template-columns: 1fr;
     max-width: 500px;
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+  }
 `;
 
 const ImageSection = styled.div`
@@ -46,6 +57,11 @@ const ImageSection = styled.div`
 
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     border-radius: ${props => props.theme.borderRadius.xl} ${props => props.theme.borderRadius.xl} 0 0;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    min-height: 360px;
+    border-radius: 20px 20px 0 0;
   }
 `;
 
@@ -64,6 +80,13 @@ const ImageNavigation = styled.div`
   align-items: center;
   gap: ${props => props.theme.spacing.md};
   z-index: 4;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    gap: 10px;
+  }
 `;
 
 const NavButton = styled.button`
@@ -78,6 +101,8 @@ const NavButton = styled.button`
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
   color: ${props => props.theme.colors.white};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: rgba(255, 255, 255, 0.28);
@@ -85,8 +110,8 @@ const NavButton = styled.button`
   }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
   }
 `;
 
@@ -99,6 +124,11 @@ const ImageCounter = styled.div`
   color: ${props => props.theme.colors.white};
   font-size: ${props => props.theme.fontSizes.md};
   font-weight: 600;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.sm};
+    gap: 6px;
+  }
 `;
 
 const ImageCounterLine = styled.div`
@@ -127,7 +157,8 @@ const ThumbnailContainer = styled.div`
   gap: ${props => props.theme.spacing.sm};
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    bottom: calc(${props => props.theme.spacing.md} + 60px);
+    bottom: calc(12px + 56px);
+    gap: 6px;
   }
 `;
 
@@ -143,6 +174,11 @@ const Thumbnail = styled.img`
   &:hover {
     border-color: ${props => props.theme.colors.primary};
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 48px;
+    height: 32px;
+  }
 `;
 
 const ContentSection = styled.div`
@@ -150,6 +186,10 @@ const ContentSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${props => props.theme.spacing.lg};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: ${props => props.theme.spacing.xl} ${props => props.theme.spacing.lg} ${props => props.theme.spacing.lg};
+  }
 `;
 
 const CloseButton = styled.button`
@@ -168,10 +208,19 @@ const CloseButton = styled.button`
   transition: ${props => props.theme.transitions.fast};
   color: ${props => props.theme.colors.dark};
   z-index: 10;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: white;
     transform: scale(1.1);
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
   }
 `;
 
@@ -179,6 +228,10 @@ const KitchenTitle = styled.h2`
   font-size: ${props => props.theme.fontSizes['2xl']};
   color: ${props => props.theme.colors.primary};
   margin-bottom: ${props => props.theme.spacing.sm};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.xl};
+  }
 `;
 
 const KitchenPrice = styled.div`
@@ -186,12 +239,20 @@ const KitchenPrice = styled.div`
   font-weight: 700;
   color: ${props => props.theme.colors.secondary};
   margin-bottom: ${props => props.theme.spacing.md};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes['2xl']};
+  }
 `;
 
 const KitchenDescription = styled.p`
   color: ${props => props.theme.colors.gray};
   line-height: 1.6;
   margin-bottom: ${props => props.theme.spacing.lg};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.sm};
+  }
 `;
 
 const SpecsGrid = styled.div`
@@ -199,6 +260,11 @@ const SpecsGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: ${props => props.theme.spacing.md};
   margin-bottom: ${props => props.theme.spacing.lg};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    grid-template-columns: 1fr;
+    gap: ${props => props.theme.spacing.sm};
+  }
 `;
 
 const SpecItem = styled.div`
@@ -208,6 +274,10 @@ const SpecItem = styled.div`
   padding: ${props => props.theme.spacing.sm};
   background: ${props => props.theme.colors.light};
   border-radius: ${props => props.theme.borderRadius.md};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 10px;
+  }
 `;
 
 const SpecIcon = styled.div`
@@ -218,12 +288,21 @@ const SpecIcon = styled.div`
 const SpecText = styled.div`
   font-size: ${props => props.theme.fontSizes.sm};
   color: ${props => props.theme.colors.dark};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 const ActionButtons = styled.div`
   display: flex;
   gap: ${props => props.theme.spacing.md};
   margin-top: auto;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    flex-wrap: wrap;
+    gap: ${props => props.theme.spacing.sm};
+  }
 `;
 
 const Button = styled.button`
@@ -238,6 +317,8 @@ const Button = styled.button`
   align-items: center;
   justify-content: center;
   gap: ${props => props.theme.spacing.sm};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &.primary {
     background: ${props => props.theme.colors.gradient};
@@ -269,6 +350,19 @@ const Button = styled.button`
     &:hover {
       background: ${props => props.theme.colors.primary};
       color: white;
+    }
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 12px;
+    font-size: ${props => props.theme.fontSizes.xs};
+
+    &.primary, &.secondary {
+      flex: 1 1 100%;
+    }
+
+    &.icon {
+      width: 44px;
     }
   }
 `;

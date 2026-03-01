@@ -14,7 +14,7 @@ const FooterOuter = styled.div`
   background: ${props => props.theme.colors.white};
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    padding: 0 ${props => props.theme.spacing.md};
+    padding: 0 8px;
   }
 `;
 
@@ -24,12 +24,21 @@ const FooterContainer = styled.footer`
   padding: ${props => props.theme.spacing['4xl']} 0 ${props => props.theme.spacing.xl};
   border-radius: 24px;
   overflow: hidden;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    border-radius: 16px;
+    padding: ${props => props.theme.spacing['2xl']} 0 ${props => props.theme.spacing.lg};
+  }
 `;
 
 const FooterContent = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 ${props => props.theme.spacing.xl};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    padding: 0 ${props => props.theme.spacing.lg};
+  }
 `;
 
 const FooterTop = styled.div`
@@ -47,6 +56,9 @@ const FooterTop = styled.div`
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     grid-template-columns: 1fr;
+    gap: ${props => props.theme.spacing['2xl']};
+    margin-bottom: ${props => props.theme.spacing.xl};
+    padding-bottom: ${props => props.theme.spacing.xl};
   }
 `;
 
@@ -60,6 +72,11 @@ const SectionTitle = styled.h4`
   letter-spacing: 0.15em;
   color: rgba(255, 255, 255, 0.4);
   margin-bottom: ${props => props.theme.spacing.lg};
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    margin-bottom: ${props => props.theme.spacing.md};
+    font-size: 10px;
+  }
 `;
 
 const Logo = styled.div`
@@ -68,6 +85,10 @@ const Logo = styled.div`
   font-weight: 400;
   margin-bottom: ${props => props.theme.spacing.lg};
   letter-spacing: -0.02em;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: ${props => props.theme.fontSizes.xl};
+  }
 `;
 
 const LogoAccent = styled.span`
@@ -80,6 +101,12 @@ const Description = styled.p`
   font-size: ${props => props.theme.fontSizes.sm};
   margin-bottom: ${props => props.theme.spacing.lg};
   max-width: 360px;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 13px;
+    margin-bottom: ${props => props.theme.spacing.md};
+    max-width: 100%;
+  }
 `;
 
 const SocialLinks = styled.div`
@@ -97,12 +124,19 @@ const SocialLink = styled.a`
   color: ${props => props.theme.colors.white};
   text-decoration: none;
   transition: ${props => props.theme.transitions.fast};
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
     background: ${props => props.theme.colors.white};
     color: ${props => props.theme.colors.primary};
     border-color: ${props => props.theme.colors.white};
     opacity: 1;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 44px;
+    height: 44px;
   }
 `;
 
@@ -118,6 +152,10 @@ const FooterLink = styled(Link)`
     color: ${props => props.theme.colors.white};
     opacity: 1;
   }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 13px;
+  }
 `;
 
 const ContactItem = styled.div`
@@ -132,6 +170,10 @@ const ContactItem = styled.div`
     margin-top: 3px;
     flex-shrink: 0;
     color: rgba(255, 255, 255, 0.3);
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 13px;
   }
 `;
 
@@ -156,6 +198,7 @@ const FooterBottom = styled.div`
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     flex-direction: column;
     text-align: center;
+    gap: ${props => props.theme.spacing.sm};
   }
 `;
 
@@ -164,6 +207,10 @@ const Copyright = styled.p`
   font-size: ${props => props.theme.fontSizes.xs};
   letter-spacing: 0.02em;
   margin-bottom: 0;
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
+  }
 `;
 
 const FooterLinks = styled.div`
@@ -172,7 +219,7 @@ const FooterLinks = styled.div`
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     flex-direction: column;
-    gap: ${props => props.theme.spacing.sm};
+    gap: ${props => props.theme.spacing.xs};
   }
 `;
 
@@ -185,6 +232,10 @@ const BottomLink = styled(Link)`
   &:hover {
     color: ${props => props.theme.colors.white};
     opacity: 1;
+  }
+
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    font-size: 10px;
   }
 `;
 
