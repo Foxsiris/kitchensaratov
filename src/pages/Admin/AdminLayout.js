@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
+import styled, { keyframes } from 'styled-components';
+import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
 import ScrollToTop from '../../components/ScrollToTop';
-import { ToastContainer, ToastItem } from './AdminUI';
+import { useAuth } from '../../context/AuthContext';
+import { ToastContainer, ToastItemWrap, ToastItem, ToastClose } from './AdminUI';
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -74,11 +75,22 @@ const Burger = styled.button`
   }
 `;
 
+const overlayFadeIn = keyframes`
+  from { opacity: 0; }
+  to   { opacity: 1; }
+`;
+
+const drawerSlideIn = keyframes`
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+`;
+
 const MobileOverlay = styled.div`
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 299;
+  animation: ${overlayFadeIn} 0.2s ease forwards;
 `;
 
 const MobileDrawer = styled.div`
@@ -93,6 +105,8 @@ const MobileDrawer = styled.div`
   flex-direction: column;
   padding: ${(p) => p.theme.spacing.xl};
   gap: ${(p) => p.theme.spacing.lg};
+  animation: ${drawerSlideIn} 0.25s ease-out forwards;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
 `;
 
 const DrawerClose = styled.button`
@@ -128,16 +142,58 @@ const Main = styled.main`
 
 let toastIdCounter = 0;
 
+const LogoutBtn = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: ${(p) => p.theme.colors.white};
+  font-size: ${(p) => p.theme.fontSizes.sm};
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const DrawerLogout = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #c00;
+  font-size: ${(p) => p.theme.fontSizes.lg};
+  cursor: pointer;
+  padding: 0;
+  margin-top: auto;
+`;
+
 const AdminLayout = () => {
   const location = useLocation();
+  const { authenticated, logout } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
 
-  const showToast = useCallback((message) => {
-    const id = ++toastIdCounter;
-    setToasts((prev) => [...prev, { id, message }]);
-    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 3000);
+  const removeToast = useCallback((toastId) => {
+    setToasts((prev) => prev.filter((t) => t.id !== toastId));
   }, []);
+
+  const showToast = useCallback((message, { type = 'success', duration = 3000 } = {}) => {
+    const id = ++toastIdCounter;
+    setToasts((prev) => [...prev, { id, message, type }]);
+    if (duration > 0) {
+      setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), duration);
+    }
+  }, []);
+
+  if (!authenticated) {
+    return <Navigate to="/admin/login" replace />;
+  }
 
   const links = [
     { to: '/admin', label: 'Обзор', exact: true },
@@ -152,13 +208,16 @@ const AdminLayout = () => {
     <Wrapper>
       <ScrollToTop />
       <TopBar>
-        <Logo to="/admin">Админ-панель</Logo>
+        <Logo to="/admin">Панель администрирования</Logo>
         <Nav>
           {links.map((l) => (
             <NavLink key={l.to} to={l.to} $active={isActive(l)}>
               {l.label}
             </NavLink>
           ))}
+          <LogoutBtn onClick={logout}>
+            <FiLogOut size={14} /> Выход
+          </LogoutBtn>
         </Nav>
         <Burger onClick={() => setDrawerOpen(true)}>
           <FiMenu />
@@ -182,6 +241,9 @@ const AdminLayout = () => {
                 {l.label}
               </DrawerLink>
             ))}
+            <DrawerLogout onClick={logout}>
+              <FiLogOut size={16} /> Выйти
+            </DrawerLogout>
           </MobileDrawer>
         </>
       )}
@@ -192,7 +254,12 @@ const AdminLayout = () => {
 
       <ToastContainer>
         {toasts.map((t) => (
-          <ToastItem key={t.id}>{t.message}</ToastItem>
+          <ToastItemWrap key={t.id} $type={t.type}>
+            <ToastItem>{t.message}</ToastItem>
+            <ToastClose type="button" onClick={() => removeToast(t.id)} aria-label="Закрыть">
+              ×
+            </ToastClose>
+          </ToastItemWrap>
         ))}
       </ToastContainer>
     </Wrapper>

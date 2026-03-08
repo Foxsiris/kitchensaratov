@@ -3,7 +3,8 @@ import { categories as initialCategoriesData } from '../data/catalogData';
 
 const STORAGE_KEY = 'kitchensaratov_catalog';
 
-const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
+const deepClone = (obj) =>
+  typeof structuredClone === 'function' ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
 
 const loadCategories = () => {
   try {
@@ -34,6 +35,9 @@ const uniqueId = (base, existingIds) => {
   return id;
 };
 
+const DEFAULT_IMAGE =
+  'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80';
+
 const CatalogContext = createContext(null);
 
 export function CatalogProvider({ children }) {
@@ -46,6 +50,8 @@ export function CatalogProvider({ children }) {
       /* quota exceeded — silently fail */
     }
   }, [categories]);
+
+  /* ---- Read helpers ---- */
 
   const findProductById = useCallback(
     (productId) => {
@@ -111,59 +117,103 @@ export function CatalogProvider({ children }) {
     return products;
   }, [categories]);
 
+  /* ---- Category CRUD ---- */
+
   const addCategory = useCallback(({ name, image }) => {
     const trimmedName = (name || '').trim();
     if (!trimmedName) return null;
-
     const baseSlug = toSlug(trimmedName) || 'category';
-
-    let newId;
-    setCategories((prev) => {
-      const existingIds = new Set(prev.map((c) => c.id));
-      newId = uniqueId(baseSlug, existingIds);
-      return [
-        ...prev,
-        {
-          id: newId,
-          name: trimmedName,
-          image:
-            (image || '').trim() ||
-            'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80',
-          brands: [
-            {
-              id: 'default',
-              name: 'Все бренды',
-              subcategories: [{ id: 'all', name: 'Все модели', products: [] }],
-            },
-          ],
-        },
-      ];
-    });
-
+    const existingIds = new Set(categories.map((c) => c.id));
+    const newId = uniqueId(baseSlug, existingIds);
+    setCategories((prev) => [
+      ...prev,
+      {
+        id: newId,
+        name: trimmedName,
+        image: (image || '').trim() || DEFAULT_IMAGE,
+        brands: [
+          {
+            id: 'default',
+            name: 'Все бренды',
+            subcategories: [{ id: 'all', name: 'Все модели', products: [] }],
+          },
+        ],
+      },
+    ]);
     return newId;
+  }, [categories]);
+
+  const updateCategory = useCallback((categoryId, data) => {
+    setCategories((prev) => {
+      const next = deepClone(prev);
+      const cat = next.find((c) => c.id === categoryId);
+      if (!cat) return prev;
+      if (data.name !== undefined) cat.name = (data.name || '').trim() || cat.name;
+      if (data.image !== undefined) cat.image = (data.image || '').trim() || cat.image;
+      return next;
+    });
   }, []);
 
   const deleteCategory = useCallback((categoryId) => {
     setCategories((prev) => prev.filter((c) => c.id !== categoryId));
   }, []);
 
+  /* ---- Brand / Subcategory ---- */
+
+  const addBrand = useCallback((categoryId, brandName) => {
+    const trimmed = (brandName || '').trim();
+    if (!trimmed) return null;
+    const baseSlug = toSlug(trimmed) || 'brand';
+    let newId;
+    setCategories((prev) => {
+      const next = deepClone(prev);
+      const cat = next.find((c) => c.id === categoryId);
+      if (!cat) return prev;
+      const existingIds = new Set(cat.brands.map((b) => b.id));
+      newId = uniqueId(baseSlug, existingIds);
+      cat.brands.push({
+        id: newId,
+        name: trimmed,
+        subcategories: [{ id: 'all', name: 'Все модели', products: [] }],
+      });
+      return next;
+    });
+    return newId;
+  }, []);
+
+  const addSubcategory = useCallback((categoryId, brandId, subName) => {
+    const trimmed = (subName || '').trim();
+    if (!trimmed) return null;
+    const baseSlug = toSlug(trimmed) || 'sub';
+    let newId;
+    setCategories((prev) => {
+      const next = deepClone(prev);
+      const cat = next.find((c) => c.id === categoryId);
+      if (!cat) return prev;
+      const brand = cat.brands.find((b) => b.id === brandId);
+      if (!brand) return prev;
+      const existingIds = new Set(brand.subcategories.map((s) => s.id));
+      newId = uniqueId(baseSlug, existingIds);
+      brand.subcategories.push({ id: newId, name: trimmed, products: [] });
+      return next;
+    });
+    return newId;
+  }, []);
+
+  /* ---- Product CRUD ---- */
+
   const addProduct = useCallback((categoryId, brandId, subcategoryId, data) => {
     const trimmedName = (data.name || '').trim();
     if (!trimmedName) return null;
-
     const productId = `${toSlug(trimmedName)}-${Date.now().toString(36)}`;
-
     const newProduct = {
       id: productId,
       name: trimmedName,
       price: (data.price || '').trim() || 'По запросу',
       description: (data.description || '').trim(),
-      image:
-        (data.image || '').trim() ||
-        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80',
+      image: (data.image || '').trim() || DEFAULT_IMAGE,
       source: (data.source || '').trim() || 'Сайт',
     };
-
     setCategories((prev) => {
       const next = deepClone(prev);
       const cat = next.find((c) => c.id === categoryId);
@@ -175,8 +225,29 @@ export function CatalogProvider({ children }) {
       sub.products.push(newProduct);
       return next;
     });
-
     return productId;
+  }, []);
+
+  const updateProduct = useCallback((productId, data) => {
+    setCategories((prev) => {
+      const next = deepClone(prev);
+      for (const cat of next) {
+        for (const brand of cat.brands) {
+          for (const sub of brand.subcategories) {
+            const product = sub.products.find((p) => p.id === productId);
+            if (product) {
+              if (data.name !== undefined) product.name = (data.name || '').trim() || product.name;
+              if (data.price !== undefined) product.price = (data.price || '').trim() || product.price;
+              if (data.description !== undefined) product.description = (data.description || '').trim();
+              if (data.image !== undefined) product.image = (data.image || '').trim() || product.image;
+              if (data.source !== undefined) product.source = (data.source || '').trim() || product.source;
+              return next;
+            }
+          }
+        }
+      }
+      return prev;
+    });
   }, []);
 
   const deleteProduct = useCallback((productId) => {
@@ -203,8 +274,12 @@ export function CatalogProvider({ children }) {
     getProductsByCategory,
     getAllProducts,
     addCategory,
+    updateCategory,
     deleteCategory,
+    addBrand,
+    addSubcategory,
     addProduct,
+    updateProduct,
     deleteProduct,
   };
 

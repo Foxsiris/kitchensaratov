@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCatalog } from '../../context/CatalogContext';
 import { FiPlus, FiChevronRight } from 'react-icons/fi';
+import { productCount as productCountWord } from '../../utils/pluralize';
 import { PageTitle, PageHeader, ButtonLink, Thumb, Empty } from './AdminUI';
 
 const List = styled.ul`
@@ -61,12 +62,6 @@ const AdminCategories = () => {
       0
     );
 
-  const countWord = (n) => {
-    if (n % 10 === 1 && n % 100 !== 11) return 'товар';
-    if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14)) return 'товара';
-    return 'товаров';
-  };
-
   return (
     <>
       <PageHeader>
@@ -88,7 +83,7 @@ const AdminCategories = () => {
                 <Thumb $src={cat.image} $size="56px" />
                 <Name>{cat.name}</Name>
                 <Meta>
-                  {count} {countWord(count)}
+                  {count} {productCountWord(count)}
                 </Meta>
                 <Arrow>
                   <FiChevronRight size={18} />

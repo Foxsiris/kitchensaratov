@@ -10,6 +10,7 @@ import {
   FormActions,
   Button,
   BackLink,
+  ErrorText,
 } from './AdminUI';
 
 const AdminCategoryNew = () => {
@@ -18,10 +19,19 @@ const AdminCategoryNew = () => {
   const { addCategory } = useCatalog();
   const [name, setName] = useState('');
   const [image, setImage] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const e = {};
+    if (!name.trim()) e.name = 'Обязательное поле';
+    if (image.trim() && !/^https?:\/\/.+/i.test(image.trim())) e.image = 'Некорректный URL';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!validate()) return;
     const id = addCategory({ name, image });
     if (id) {
       showToast(`Категория «${name.trim()}» создана`);
@@ -43,20 +53,26 @@ const AdminCategoryNew = () => {
         <Input
           id="cat-name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            setName(e.target.value);
+            if (errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+          }}
           placeholder="Например: Кухни"
-          required
           autoFocus
         />
+        {errors.name && <ErrorText>{errors.name}</ErrorText>}
 
         <Label htmlFor="cat-image">URL изображения</Label>
         <Input
           id="cat-image"
-          type="url"
           value={image}
-          onChange={(e) => setImage(e.target.value)}
+          onChange={(e) => {
+            setImage(e.target.value);
+            if (errors.image) setErrors((prev) => ({ ...prev, image: '' }));
+          }}
           placeholder="https://images.unsplash.com/..."
         />
+        {errors.image && <ErrorText>{errors.image}</ErrorText>}
 
         <FormActions>
           <Button type="submit">Создать</Button>
