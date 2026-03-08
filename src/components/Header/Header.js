@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
 import { FiMenu, FiX, FiPhone, FiArrowUpRight } from 'react-icons/fi';
 import { useModal } from '../../hooks/useModal';
+import { useCatalog } from '../../context/CatalogContext';
 
 /* ============================
    HEADER
@@ -465,18 +466,6 @@ const MobilePhone = styled.a`
   }
 `;
 
-/* ============================
-   DATA
-   ============================ */
-const catalogCategories = [
-  { label: 'Кухни', image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80', link: '/catalog?category=kitchens' },
-  { label: 'Гардеробные', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80', link: '/catalog?category=wardrobes' },
-  { label: 'Шкафы', image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80', link: '/catalog?category=cabinets' },
-  { label: 'Комоды', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80', link: '/catalog?category=dressers' },
-  { label: 'Столы', image: 'https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80', link: '/catalog?category=tables' },
-  { label: 'Стулья', image: 'https://images.unsplash.com/photo-1503602642458-232111445657?ixlib=rb-4.0.3&auto=format&fit=crop&w=120&q=80', link: '/catalog?category=chairs' },
-];
-
 const featuredItem = {
   title: 'Кухня Луна от Рими',
   tag: 'Рекомендуем',
@@ -492,8 +481,15 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
+  const { categories } = useCatalog();
   const { openModal } = useModal();
   const dropdownTimeout = useRef(null);
+
+  const catalogCategories = categories.map((cat) => ({
+    label: cat.name,
+    image: cat.image,
+    link: `/catalog?category=${cat.id}`,
+  }));
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);

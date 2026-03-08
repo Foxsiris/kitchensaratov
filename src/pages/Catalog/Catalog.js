@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FiSearch, FiArrowRight, FiChevronDown, FiArrowUpRight } from 'react-icons/fi';
-import { categories } from '../../data/catalogData';
+import { useCatalog } from '../../context/CatalogContext';
 import { useModal } from '../../hooks/useModal';
 
 const Page = styled.div`
@@ -580,6 +580,7 @@ const Empty = styled.div`
 
 const Catalog = () => {
   const navigate = useNavigate();
+  const { categories } = useCatalog();
   const { openModal } = useModal();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'all');
@@ -601,7 +602,7 @@ const Catalog = () => {
   const visibleCategories = useMemo(() => {
     if (activeCategory === 'all') return categories;
     return categories.filter(cat => cat.id === activeCategory);
-  }, [activeCategory]);
+  }, [activeCategory, categories]);
 
   const filterProducts = (products) => {
     const query = search.trim().toLowerCase();

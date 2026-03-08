@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FiArrowLeft, FiArrowRight, FiPhone } from 'react-icons/fi';
-import { findProductById, categories } from '../../data/catalogData';
+import { useCatalog } from '../../context/CatalogContext';
 import { useModal } from '../../hooks/useModal';
 
 /* ============ Styled ============ */
@@ -440,9 +440,10 @@ const NotFound = styled.div`
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { findProductById, categories } = useCatalog();
   const { openModal } = useModal();
 
-  const product = useMemo(() => findProductById(id), [id]);
+  const product = useMemo(() => findProductById(id), [id, findProductById]);
 
   // Get other products from same category
   const otherProducts = useMemo(() => {
@@ -456,7 +457,7 @@ const ProductDetail = () => {
       }
     }
     return all.filter(p => p.id !== id).slice(0, 4);
-  }, [product, id]);
+  }, [product, id, categories]);
 
   if (!product) {
     return (

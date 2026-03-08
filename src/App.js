@@ -4,41 +4,46 @@ import { ThemeProvider } from 'styled-components';
 import { theme } from './styles/theme';
 import GlobalStyles from './styles/GlobalStyles';
 import { ModalProvider } from './hooks/useModal';
-import ScrollToTop from './components/ScrollToTop';
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
+import { CatalogProvider } from './context/CatalogContext';
+import MainLayout from './components/MainLayout';
 import Home from './pages/Home/Home';
 import Catalog from './pages/Catalog/Catalog';
 import About from './pages/About/About';
 import KitchenDetail from './pages/KitchenDetail/KitchenDetail';
 import ProductDetail from './pages/ProductDetail/ProductDetail';
-import CallbackModal from './components/Modals/CallbackModal';
-import InstallmentModal from './components/Modals/InstallmentModal';
+import AdminLayout from './pages/Admin/AdminLayout';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminCategories from './pages/Admin/AdminCategories';
+import AdminCategoryNew from './pages/Admin/AdminCategoryNew';
+import AdminCategoryDetail from './pages/Admin/AdminCategoryDetail';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
-      <ModalProvider>
-        <Router>
-          <ScrollToTop />
-          <div className="App">
-            <Header />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/catalog" element={<Catalog />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/kitchen/:id" element={<KitchenDetail />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-            </Routes>
-            <Footer />
-            
-            {/* Модальные окна */}
-            <CallbackModal />
-            <InstallmentModal />
-          </div>
-        </Router>
-      </ModalProvider>
+      <CatalogProvider>
+        <ModalProvider>
+          <Router>
+            <div className="App">
+              <Routes>
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="categories" element={<AdminCategories />} />
+                  <Route path="categories/new" element={<AdminCategoryNew />} />
+                  <Route path="categories/:id" element={<AdminCategoryDetail />} />
+                </Route>
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/catalog" element={<Catalog />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/kitchen/:id" element={<KitchenDetail />} />
+                  <Route path="/product/:id" element={<ProductDetail />} />
+                </Route>
+              </Routes>
+            </div>
+          </Router>
+        </ModalProvider>
+      </CatalogProvider>
     </ThemeProvider>
   );
 }

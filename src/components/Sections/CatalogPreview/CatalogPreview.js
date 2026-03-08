@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
+import { useCatalog } from '../../../context/CatalogContext';
 
 const Section = styled.section`
   padding: ${props => props.theme.spacing['5xl']} 0;
@@ -228,69 +229,27 @@ const ViewAllLink = styled(Link)`
   }
 `;
 
+const SUBTITLES = {
+  kitchens: 'Рими · Vivakitchen',
+  wardrobes: 'Системы хранения',
+  cabinets: 'Встроенные решения',
+  dressers: 'Элегантное хранение',
+  tables: 'Массив дерева',
+  chairs: 'Комфорт и стиль',
+};
+
 const CatalogPreview = () => {
-  const categories = [
-    {
-      id: 'kitchens',
-      label: 'Кухни',
-      subtitle: 'Рими · Vivakitchen',
-      link: '/catalog?category=kitchens',
-      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80',
-      height: '520px',
-      heightTablet: '400px',
-      heightMobile: '320px',
-    },
-    {
-      id: 'wardrobes',
-      label: 'Гардеробные',
-      subtitle: 'Системы хранения',
-      link: '/catalog?category=wardrobes',
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      height: '380px',
-      heightTablet: '300px',
-      heightMobile: '280px',
-    },
-    {
-      id: 'cabinets',
-      label: 'Шкафы',
-      subtitle: 'Встроенные решения',
-      link: '/catalog?category=cabinets',
-      image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      height: '380px',
-      heightTablet: '300px',
-      heightMobile: '280px',
-    },
-    {
-      id: 'dressers',
-      label: 'Комоды',
-      subtitle: 'Элегантное хранение',
-      link: '/catalog?category=dressers',
-      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      height: '380px',
-      heightTablet: '300px',
-      heightMobile: '280px',
-    },
-    {
-      id: 'tables',
-      label: 'Столы',
-      subtitle: 'Массив дерева',
-      link: '/catalog?category=tables',
-      image: 'https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      height: '380px',
-      heightTablet: '300px',
-      heightMobile: '280px',
-    },
-    {
-      id: 'chairs',
-      label: 'Стулья',
-      subtitle: 'Комфорт и стиль',
-      link: '/catalog?category=chairs',
-      image: 'https://images.unsplash.com/photo-1503602642458-232111445657?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      height: '380px',
-      heightTablet: '300px',
-      heightMobile: '280px',
-    },
-  ];
+  const { categories: catalogCategories } = useCatalog();
+  const categories = catalogCategories.map((cat, index) => ({
+    id: cat.id,
+    label: cat.name,
+    subtitle: SUBTITLES[cat.id] || 'Товары',
+    link: `/catalog?category=${cat.id}`,
+    image: cat.image,
+    height: index === 0 ? '520px' : '380px',
+    heightTablet: index === 0 ? '400px' : '300px',
+    heightMobile: index === 0 ? '320px' : '280px',
+  }));
 
   return (
     <Section>
