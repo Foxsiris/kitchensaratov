@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useCatalog } from '../../context/CatalogContext';
 import { FiPlus, FiChevronRight } from 'react-icons/fi';
 import { productCount as productCountWord } from '../../utils/pluralize';
+import { isValidCatalogImageUrl, resolveCatalogImageSrc } from '../../utils/imageUrl';
 import { PageTitle, PageHeader, Thumb, Empty, Button } from './AdminUI';
 import { ModalShell, ModalFormFooter, CategoryFormFields } from './components';
 
@@ -57,7 +58,7 @@ const Arrow = styled.span`
 const AdminCategories = () => {
   const navigate = useNavigate();
   const { showToast } = useOutletContext();
-  const { categories, loading, error, addCategory } = useCatalog();
+  const { categories, loading, error, addCategory, uploadStoredImage } = useCatalog();
 
   const [createOpen, setCreateOpen] = useState(false);
   const [form, setForm] = useState({ name: '', image: '' });
@@ -77,7 +78,9 @@ const AdminCategories = () => {
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = 'Обязательное поле';
-    if (form.image.trim() && !/^https?:\/\/.+/i.test(form.image.trim())) e.image = 'Некорректный URL';
+    if (form.image.trim() && !isValidCatalogImageUrl(form.image.trim())) {
+      e.image = 'Укажите URL (https://…) или загрузите файл';
+    }
     setFormErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -142,7 +145,7 @@ const AdminCategories = () => {
           return (
             <Item key={cat.id}>
               <ItemLink to={`/admin/categories/${cat.id}`}>
-                <Thumb $src={cat.image} $size="56px" />
+                <Thumb $src={resolveCatalogImageSrc(cat.image)} $size="56px" />
                 <Name>{cat.name}</Name>
                 <Meta>
                   {count} {productCountWord(count)}
@@ -159,7 +162,12 @@ const AdminCategories = () => {
       {createOpen && (
         <ModalShell title="Новая категория" width="480px">
           <form onSubmit={handleCreateSubmit}>
-            <CategoryFormFields values={form} onChange={patchForm} errors={formErrors} />
+            <CategoryFormFields
+              values={form}
+              onChange={patchForm}
+              errors={formErrors}
+              uploadImage={uploadStoredImage}
+            />
             <ModalFormFooter
               submitLabel="Создать"
               onCancel={() => setCreateOpen(false)}

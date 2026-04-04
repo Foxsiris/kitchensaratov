@@ -8,6 +8,7 @@ vi.mock('../db.js', () => ({
   prisma: {
     category: { findMany: vi.fn() },
     product: { findUnique: vi.fn() },
+    storedImage: { findUnique: vi.fn() },
   },
 }));
 
@@ -24,6 +25,28 @@ describe('public routes', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     app = await createApp();
+  });
+
+  it('GET /api/media/:id — 400 при невалидном id', async () => {
+    const res = await request(app).get('/api/media/not-a-uuid');
+    expect(res.status).toBe(400);
+  });
+
+  it('GET /api/media/:id — 404', async () => {
+    prisma.storedImage.findUnique.mockResolvedValue(null);
+    const res = await request(app).get('/api/media/11111111-2222-5222-8222-333333333333');
+    expect(res.status).toBe(404);
+  });
+
+  it('GET /api/media/:id — 200 и тело', async () => {
+    prisma.storedImage.findUnique.mockResolvedValue({
+      mimeType: 'image/png',
+      data: Buffer.from([1, 2, 3]),
+    });
+    const res = await request(app).get('/api/media/11111111-2222-5222-8222-333333333333');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toContain('image/png');
+    expect(res.body).toEqual(Buffer.from([1, 2, 3]));
   });
 
   it('GET /api/health', async () => {

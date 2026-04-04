@@ -3,6 +3,7 @@ import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCatalog } from '../../context/CatalogContext';
 import { productCount as productCountWord, brandCount as brandCountWord } from '../../utils/pluralize';
+import { isValidCatalogImageUrl, resolveCatalogImageSrc } from '../../utils/imageUrl';
 import { FiPlus, FiChevronLeft, FiTrash2, FiEdit2, FiSearch } from 'react-icons/fi';
 import {
   Card,
@@ -182,6 +183,7 @@ const AdminCategoryDetail = () => {
     updateDisplayGroup,
     deleteDisplayGroup,
     fetchBrandEntities,
+    uploadStoredImage,
   } = useCatalog();
 
   const [brandEntities, setBrandEntities] = useState([]);
@@ -199,6 +201,7 @@ const AdminCategoryDetail = () => {
     description: '',
     image: '',
     source: '',
+    extraImages: [],
   });
   const [productFormErrors, setProductFormErrors] = useState({});
 
@@ -209,6 +212,7 @@ const AdminCategoryDetail = () => {
     description: '',
     image: '',
     source: '',
+    extraImages: [],
   });
   const [editProductErrors, setEditProductErrors] = useState({});
 
@@ -305,7 +309,7 @@ const AdminCategoryDetail = () => {
   const activeSubId = subcategoryId || firstSub?.id;
 
   const resetProductForm = () => {
-    setProductForm({ name: '', price: '', description: '', image: '', source: '' });
+    setProductForm({ name: '', price: '', description: '', image: '', source: '', extraImages: [] });
     setProductFormErrors({});
   };
 
@@ -319,7 +323,17 @@ const AdminCategoryDetail = () => {
   const validateProduct = (form) => {
     const errors = {};
     if (!form.name.trim()) errors.name = 'Обязательное поле';
-    if (form.image.trim() && !/^https?:\/\/.+/i.test(form.image.trim())) errors.image = 'Некорректный URL';
+    if (form.image.trim() && !isValidCatalogImageUrl(form.image.trim())) {
+      errors.image = 'Укажите URL (https://…) или загрузите файл';
+    }
+    const extras = Array.isArray(form.extraImages) ? form.extraImages : [];
+    for (const u of extras) {
+      const t = String(u).trim();
+      if (t && !isValidCatalogImageUrl(t)) {
+        errors.extraImages = 'Проверьте ссылки или загрузку доп. фото';
+        break;
+      }
+    }
     return errors;
   };
 
@@ -342,12 +356,15 @@ const AdminCategoryDetail = () => {
 
   const openEditProduct = (product) => {
     setEditProduct(product);
+    const imgs = Array.isArray(product.images) ? product.images : [];
+    const extras = imgs.filter((u) => u && u !== product.image);
     setEditProductForm({
       name: product.name,
       price: product.price,
       description: product.description,
       image: product.image,
       source: product.source,
+      extraImages: extras.length ? [...extras] : [],
     });
     setEditProductErrors({});
   };
@@ -386,7 +403,9 @@ const AdminCategoryDetail = () => {
   const validateCategory = () => {
     const e = {};
     if (!catForm.name.trim()) e.name = 'Обязательное поле';
-    if (catForm.image.trim() && !/^https?:\/\/.+/i.test(catForm.image.trim())) e.image = 'Некорректный URL';
+    if (catForm.image.trim() && !isValidCatalogImageUrl(catForm.image.trim())) {
+      e.image = 'Укажите URL (https://…) или загрузите файл';
+    }
     setCatErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -585,7 +604,7 @@ const AdminCategoryDetail = () => {
                     <ProductGrid>
                       {sub.products.map((product) => (
                         <ProductCard key={product.id}>
-                          <ProductImage $src={product.image} />
+                          <ProductImage $src={resolveCatalogImageSrc(product.image)} />
                           <ProductBody>
                             <ProductName>{product.name}</ProductName>
                             <ProductMeta>{product.price}</ProductMeta>
@@ -620,7 +639,12 @@ const AdminCategoryDetail = () => {
       {categoryEditOpen && (
         <ModalShell title="Редактирование категории" width="480px">
           <form onSubmit={handleCategorySave}>
-            <CategoryFormFields values={catForm} onChange={patchCatForm} errors={catErrors} />
+            <CategoryFormFields
+              values={catForm}
+              onChange={patchCatForm}
+              errors={catErrors}
+              uploadImage={uploadStoredImage}
+            />
             <ModalFormFooter
               submitLabel="Сохранить"
               onCancel={() => setCategoryEditOpen(false)}
@@ -669,6 +693,7 @@ const AdminCategoryDetail = () => {
               onChange={patchProductForm}
               errors={productFormErrors}
               namePlaceholder={isKitchens ? 'Например: Луна' : 'Название модели'}
+              uploadImage={uploadStoredImage}
             />
             <ModalFormFooter
               submitLabel="Добавить"
@@ -758,6 +783,7 @@ const AdminCategoryDetail = () => {
               values={editProductForm}
               onChange={patchEditProductForm}
               errors={editProductErrors}
+              uploadImage={uploadStoredImage}
             />
             <ModalFormFooter submitLabel="Сохранить" onCancel={() => setEditProduct(null)} />
           </form>

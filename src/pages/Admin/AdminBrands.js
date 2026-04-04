@@ -57,7 +57,13 @@ const emptyCreate = () => ({
 
 const AdminBrands = () => {
   const { showToast } = useOutletContext();
-  const { fetchBrandEntities, createBrandEntity, updateBrandEntity, deleteBrandEntity } = useCatalog();
+  const {
+    fetchBrandEntities,
+    createBrandEntity,
+    updateBrandEntity,
+    deleteBrandEntity,
+    uploadStoredImage,
+  } = useCatalog();
 
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -233,7 +239,12 @@ const AdminBrands = () => {
       {createOpen && (
         <ModalShell title="Новый производитель" width="520px">
           <form onSubmit={handleCreateSubmit}>
-            <BrandEntityFormFields mode="create" values={createValues} onChange={patchCreate} />
+            <BrandEntityFormFields
+              mode="create"
+              values={createValues}
+              onChange={patchCreate}
+              uploadImage={uploadStoredImage}
+            />
             <ModalFormFooter submitLabel="Создать" onCancel={() => setCreateOpen(false)} />
           </form>
         </ModalShell>
@@ -254,6 +265,7 @@ const AdminBrands = () => {
                 sortOrder: editValues.sortOrder,
               }}
               onChange={patchEdit}
+              uploadImage={uploadStoredImage}
             />
             <ModalFormFooter submitLabel="Сохранить" onCancel={() => setEditSlug(null)} />
           </form>

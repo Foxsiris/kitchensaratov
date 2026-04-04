@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FiSearch, FiArrowRight, FiChevronDown, FiArrowUpRight } from 'react-icons/fi';
 import { useCatalog } from '../../context/CatalogContext';
 import { useModal } from '../../hooks/useModal';
+import { resolveCatalogImageSrc } from '../../utils/imageUrl';
 
 const Page = styled.div`
   padding-top: 80px;
@@ -707,7 +708,7 @@ const Catalog = () => {
                 transition={{ duration: 0.4, delay: idx * 0.05 }}
                 viewport={{ once: true }}
               >
-                <MosaicImage src={cat.image} alt={cat.name} />
+                <MosaicImage src={resolveCatalogImageSrc(cat.image)} alt={cat.name} />
                 <MosaicOverlay>
                   <MosaicTitle>{cat.name}</MosaicTitle>
                   <FiArrowUpRight size={24} />
@@ -771,7 +772,7 @@ const Catalog = () => {
                                         viewport={{ once: true }}
                                       >
                                         <CardMedia $isLarge={getMosaicSpan(idx) === 6}>
-                                          <CardImage src={product.image} alt={product.name} loading="lazy" />
+                                          <CardImage src={resolveCatalogImageSrc(product.image)} alt={product.name} loading="lazy" />
                                           <CardOverlay>
                                             <CircleArrow><FiArrowRight size={16} /></CircleArrow>
                                           </CardOverlay>

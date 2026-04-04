@@ -10,6 +10,9 @@ export function catalogInclude(publishedOnly) {
             products: {
               orderBy: { sortOrder: 'asc' },
               ...(publishedOnly ? { where: { published: true } } : {}),
+              include: {
+                images: { orderBy: { sortOrder: 'asc' } },
+              },
             },
           },
         },

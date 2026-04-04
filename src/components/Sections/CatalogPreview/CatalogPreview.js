@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
 import { useCatalog } from '../../../context/CatalogContext';
+import { resolveCatalogImageSrc } from '../../../utils/imageUrl';
 
 const Section = styled.section`
   padding: ${props => props.theme.spacing['5xl']} 0;
@@ -245,7 +246,7 @@ const CatalogPreview = () => {
     label: cat.name,
     subtitle: SUBTITLES[cat.id] || 'Товары',
     link: `/catalog?category=${cat.id}`,
-    image: cat.image,
+    image: resolveCatalogImageSrc(cat.image),
     height: index === 0 ? '520px' : '380px',
     heightTablet: index === 0 ? '400px' : '300px',
     heightMobile: index === 0 ? '320px' : '280px',

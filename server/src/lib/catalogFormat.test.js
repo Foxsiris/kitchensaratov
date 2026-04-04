@@ -61,6 +61,47 @@ describe('formatCatalogTree', () => {
     const out = formatCatalogTree([categoryRow], { publishedOnly: false });
     expect(out[0].brands[0].subcategories[0].products).toHaveLength(2);
   });
+
+  it('пробрасывает images при нескольких фото', () => {
+    const row = {
+      slug: 'kitchens',
+      name: 'Кухни',
+      imageUrl: 'https://img/cat.jpg',
+      displayGroups: [
+        {
+          slug: 'rimi',
+          name: 'Рими',
+          brandEntity: null,
+          sections: [
+            {
+              slug: 'modern',
+              name: 'Современные',
+              products: [
+                {
+                  publicId: 'luna',
+                  name: 'Луна',
+                  priceText: '100 000 ₽',
+                  priceAmount: null,
+                  priceCurrency: 'RUB',
+                  description: 'd',
+                  imageUrl: 'https://main.jpg',
+                  source: 's',
+                  published: true,
+                  images: [
+                    { url: 'https://main.jpg', sortOrder: 0 },
+                    { url: 'https://g2.jpg', sortOrder: 1 },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const out = formatCatalogTree([row], { publishedOnly: true });
+    const p = out[0].brands[0].subcategories[0].products[0];
+    expect(p.images).toEqual(['https://main.jpg', 'https://g2.jpg']);
+  });
 });
 
 describe('formatProductDetail', () => {

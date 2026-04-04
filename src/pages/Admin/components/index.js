@@ -7,3 +7,4 @@ export { BrandEntityFormFields } from './BrandEntityFormFields';
 export { CategoryFormFields } from './CategoryFormFields';
 export { EditIconAction, DeleteIconAction, AddSubIconAction } from './IconActionButtons';
 export { DisplayGroupsSection } from './DisplayGroupsSection';
+export { ImageUrlOrUploadField } from './ImageUrlOrUploadField';

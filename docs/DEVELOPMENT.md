@@ -98,6 +98,10 @@ docker compose up -d --build
 
 ---
 
+## Изображения в каталоге
+
+Загруженные из админки файлы хранятся в таблице **`stored_images`** (байты в PostgreSQL). В полях вроде `image_url` у категории/товара или `logo_url` у производителя сохраняется путь **`/api/media/<uuid>`**; публичная выдача — **`GET /api/media/:id`** без JWT. Внешние URL (`https://...`) по-прежнему допустимы. Загрузка: **`POST /api/admin/upload`** (поле `file`), только для авторизованного админа.
+
 ## База данных и Prisma
 
 - Схема: `server/prisma/schema.prisma`.

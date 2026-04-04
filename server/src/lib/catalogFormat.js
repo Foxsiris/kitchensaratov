@@ -9,6 +9,19 @@ function decimalToNumber(v) {
   return Number.isFinite(n) ? n : null;
 }
 
+/** Упорядоченные уникальные URL из product_images; если строк нет — [imageUrl]. */
+export function orderedProductImageUrls(product) {
+  const rows = Array.isArray(product.images)
+    ? [...product.images].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+    : [];
+  const urls = rows.map((r) => r.url).filter(Boolean);
+  const seen = new Set();
+  const unique = urls.filter((u) => (seen.has(u) ? false : (seen.add(u), true)));
+  const main = product.imageUrl != null ? String(product.imageUrl).trim() : '';
+  if (unique.length === 0 && main) return [main];
+  return unique;
+}
+
 function mapProduct(p) {
   const o = {
     id: p.publicId,
@@ -25,6 +38,10 @@ function mapProduct(p) {
   if (amt != null) {
     o.priceAmount = amt;
     o.priceCurrency = p.priceCurrency || 'RUB';
+  }
+  const gallery = orderedProductImageUrls(p);
+  if (gallery.length > 1) {
+    o.images = gallery;
   }
   return o;
 }
@@ -94,10 +111,7 @@ export function formatProductDetail(found) {
       .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
   }
 
-  const imgs = (product.images || []).slice().sort((a, b) => a.sortOrder - b.sortOrder);
-  const urls = imgs.map((i) => i.url).filter(Boolean);
-  const seen = new Set();
-  const uniqueUrls = urls.filter((u) => (seen.has(u) ? false : (seen.add(u), true)));
+  const uniqueUrls = orderedProductImageUrls(product);
   if (uniqueUrls.length > 1 || (uniqueUrls.length === 1 && uniqueUrls[0] !== product.imageUrl)) {
     out.images = uniqueUrls;
   }

@@ -48,6 +48,10 @@ vi.mock('../db.js', () => ({
       create: vi.fn(),
       findFirst: vi.fn(),
       update: vi.fn(),
+      deleteMany: vi.fn(),
+    },
+    storedImage: {
+      create: vi.fn(),
     },
     $transaction: vi.fn(),
   },
@@ -74,6 +78,26 @@ describe('admin routes', () => {
     vi.clearAllMocks();
     process.env.JWT_SECRET = SECRET;
     app = await createApp();
+  });
+
+  describe('POST /upload', () => {
+    it('400 без файла', async () => {
+      const res = await request(app).post('/api/admin/upload').set(auth()).send();
+      expect(res.status).toBe(400);
+    });
+
+    it('201 сохраняет файл', async () => {
+      prisma.storedImage.create.mockResolvedValue({
+        id: '11111111-2222-5222-8222-333333333333',
+      });
+      const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 0]);
+      const res = await request(app)
+        .post('/api/admin/upload')
+        .set(auth())
+        .attach('file', jpeg, { filename: 'x.jpg', contentType: 'image/jpeg' });
+      expect(res.status).toBe(201);
+      expect(res.body.url).toBe('/api/media/11111111-2222-5222-8222-333333333333');
+    });
   });
 
   describe('auth', () => {
@@ -280,14 +304,19 @@ describe('admin routes', () => {
         id: 'int-id',
         publicId: 'pub-1',
         priceText: '100',
-        imageUrl: 'img',
+        imageUrl: 'https://example.com/img.jpg',
         source: 's',
         priceCurrency: 'RUB',
       });
       prisma.$transaction.mockImplementation(async (fn) => {
         const tx = {
           product: { update: vi.fn().mockResolvedValue({}) },
-          productImage: { findFirst: vi.fn().mockResolvedValue(null), create: vi.fn(), update: vi.fn() },
+          productImage: {
+            findFirst: vi.fn().mockResolvedValue(null),
+            create: vi.fn(),
+            update: vi.fn(),
+            deleteMany: vi.fn(),
+          },
         };
         return fn(tx);
       });
@@ -297,6 +326,51 @@ describe('admin routes', () => {
         .send({ name: 'Новое имя', priceAmount: 99.5 });
       expect(res.status).toBe(200);
       expect(res.body.ok).toBe(true);
+    });
+
+    it('200 обновление extraImages', async () => {
+      prisma.product.findUnique.mockResolvedValue({
+        id: 'int-id',
+        publicId: 'pub-1',
+        priceText: '100',
+        imageUrl: 'https://example.com/main.jpg',
+        source: 's',
+        priceCurrency: 'RUB',
+      });
+      prisma.$transaction.mockImplementation(async (fn) => {
+        const tx = {
+          product: { update: vi.fn().mockResolvedValue({}) },
+          productImage: {
+            findFirst: vi.fn().mockResolvedValue(null),
+            create: vi.fn(),
+            update: vi.fn(),
+            deleteMany: vi.fn().mockResolvedValue({ count: 1 }),
+          },
+        };
+        return fn(tx);
+      });
+      const res = await request(app)
+        .patch('/api/admin/products/pub-1')
+        .set(auth())
+        .send({ extraImages: ['https://example.com/extra.jpg'] });
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+    });
+
+    it('400 невалидный extraImages', async () => {
+      prisma.product.findUnique.mockResolvedValue({
+        id: 'int-id',
+        publicId: 'pub-1',
+        priceText: '100',
+        imageUrl: 'https://example.com/main.jpg',
+        source: 's',
+        priceCurrency: 'RUB',
+      });
+      const res = await request(app)
+        .patch('/api/admin/products/pub-1')
+        .set(auth())
+        .send({ extraImages: ['/not-media/path.jpg'] });
+      expect(res.status).toBe(400);
     });
   });
 
@@ -345,7 +419,7 @@ describe('admin routes', () => {
         const tx = {
           product: { create: vi.fn().mockResolvedValue(prod) },
           productCategory: { create: vi.fn() },
-          productImage: { create: vi.fn() },
+          productImage: { create: vi.fn(), deleteMany: vi.fn() },
         };
         return fn(tx);
       });

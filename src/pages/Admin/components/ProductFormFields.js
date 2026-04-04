@@ -1,5 +1,19 @@
 import React from 'react';
-import { Label, Input, Textarea, ErrorText } from '../AdminUI';
+import styled from 'styled-components';
+import { Label, Input, Textarea, ErrorText, Button } from '../AdminUI';
+import { ImageUrlOrUploadField } from './ImageUrlOrUploadField';
+
+const ExtraBlock = styled.div`
+  margin-top: ${(p) => p.theme.spacing.md};
+`;
+
+const ExtraRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+`;
 
 /**
  * Поля формы товара (добавление и редактирование).
@@ -10,8 +24,9 @@ export function ProductFormFields({
   onChange,
   errors = {},
   namePlaceholder = 'Название модели',
+  uploadImage,
 }) {
-  const { name, price, description, image, source } = values;
+  const { name, price, description, image, source, extraImages = [] } = values;
   return (
     <>
       <Label>Название *</Label>
@@ -32,9 +47,51 @@ export function ProductFormFields({
         placeholder="Краткое описание модели..."
       />
 
-      <Label>URL изображения</Label>
-      <Input value={image} onChange={(e) => onChange('image', e.target.value)} placeholder="https://..." />
-      {errors.image && <ErrorText>{errors.image}</ErrorText>}
+      <ImageUrlOrUploadField
+        label="Изображение"
+        value={image}
+        onChange={(v) => onChange('image', v)}
+        error={errors.image}
+        uploadImage={uploadImage}
+      />
+
+      <ExtraBlock>
+        <Label>Дополнительные фото</Label>
+        {extraImages.map((url, i) => (
+          <ExtraRow key={i}>
+            <div style={{ flex: '1 1 220px', minWidth: 0 }}>
+              <ImageUrlOrUploadField
+                hideLabel
+                label=""
+                value={url}
+                onChange={(v) => {
+                  const next = [...extraImages];
+                  next[i] = v;
+                  onChange('extraImages', next);
+                }}
+                uploadImage={uploadImage}
+                placeholder={`URL или файл, фото ${i + 2}`}
+              />
+            </div>
+            <Button
+              type="button"
+              $variant="secondary"
+              style={{ marginTop: 6, flexShrink: 0 }}
+              onClick={() => onChange('extraImages', extraImages.filter((_, j) => j !== i))}
+            >
+              Удалить
+            </Button>
+          </ExtraRow>
+        ))}
+        <Button
+          type="button"
+          $variant="secondary"
+          onClick={() => onChange('extraImages', [...extraImages, ''])}
+        >
+          + Добавить фото
+        </Button>
+        {errors.extraImages && <ErrorText>{errors.extraImages}</ErrorText>}
+      </ExtraBlock>
 
       <Label>Источник (отображается в карточке)</Label>
       <Input value={source} onChange={(e) => onChange('source', e.target.value)} placeholder="rimi-mebel.ru" />

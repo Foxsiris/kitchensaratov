@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { FiMenu, FiX, FiPhone, FiArrowUpRight } from 'react-icons/fi';
 import { useModal } from '../../hooks/useModal';
 import { useCatalog } from '../../context/CatalogContext';
+import { resolveCatalogImageSrc } from '../../utils/imageUrl';
 
 /* ============================
    HEADER
@@ -574,7 +575,7 @@ const Header = () => {
                           to={featuredItem.link}
                           onClick={() => setDropdownOpen(false)}
                         >
-                          <FeaturedImage $src={featuredItem.image} />
+                          <FeaturedImage $src={resolveCatalogImageSrc(featuredItem.image)} />
                           <FeaturedOverlay />
                           <FeaturedContent>
                             <FeaturedTitle>{featuredItem.title}</FeaturedTitle>

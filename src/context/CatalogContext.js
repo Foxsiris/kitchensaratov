@@ -73,6 +73,28 @@ export function CatalogProvider({ children }) {
     [token, logout]
   );
 
+  const uploadStoredImage = useCallback(
+    async (file) => {
+      if (!token) throw new Error('Нет авторизации');
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(apiUrl('/api/admin/upload'), {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (res.status === 401) {
+        logout();
+        throw new Error('Сессия истекла');
+      }
+      if (!res.ok) throw new Error(await parseError(res));
+      const body = await res.json();
+      if (!body?.url) throw new Error('Пустой ответ сервера');
+      return body.url;
+    },
+    [token, logout]
+  );
+
   const findProductById = useCallback(
     (productId) => {
       for (const category of categories) {
@@ -288,6 +310,9 @@ export function CatalogProvider({ children }) {
             description: (data.description || '').trim(),
             image: (data.image || '').trim(),
             source: (data.source || '').trim(),
+            extraImages: Array.isArray(data.extraImages)
+              ? data.extraImages.map((u) => String(u).trim()).filter(Boolean)
+              : undefined,
           }),
         }
       );
@@ -305,6 +330,11 @@ export function CatalogProvider({ children }) {
       if (data.description !== undefined) payload.description = data.description;
       if (data.image !== undefined) payload.image = data.image;
       if (data.source !== undefined) payload.source = data.source;
+      if (data.extraImages !== undefined) {
+        payload.extraImages = Array.isArray(data.extraImages)
+          ? data.extraImages.map((u) => String(u).trim()).filter(Boolean)
+          : [];
+      }
       await adminFetch(`/api/admin/products/${encodeURIComponent(productId)}`, {
         method: 'PATCH',
         body: JSON.stringify(payload),
@@ -346,6 +376,7 @@ export function CatalogProvider({ children }) {
     addProduct,
     updateProduct,
     deleteProduct,
+    uploadStoredImage,
   };
 
   return <CatalogContext.Provider value={value}>{children}</CatalogContext.Provider>;

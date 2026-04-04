@@ -143,6 +143,17 @@ model ProductImage {
   @@map("product_images")
 }
 
+/// Загруженные изображения (BYTEA); в каталоге ссылка через URL `/api/media/:id`.
+model StoredImage {
+  id        String   @id @default(uuid()) @db.Uuid
+  mimeType  String   @map("mime_type") @db.VarChar(128)
+  data      Bytes
+  filename  String?  @db.VarChar(512)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("stored_images")
+}
+
 model AdminUser {
   id           String    @id @default(uuid()) @db.Uuid
   email        String    @unique @db.VarChar(256)

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import multer from 'multer';
 import { randomUUID } from 'crypto';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../db.js';
@@ -6,9 +7,52 @@ import { requireAuth } from '../middleware/auth.js';
 import { catalogInclude } from '../lib/catalogQueries.js';
 import { formatCatalogTree, DEFAULT_IMAGE } from '../lib/catalogFormat.js';
 import { toSlug, uniqueSlug } from '../lib/slug.js';
+import { isAllowedImageReference } from '../lib/imageRef.js';
 
 const router = Router();
 router.use(requireAuth);
+
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const ok = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.mimetype);
+    cb(null, ok);
+  },
+});
+
+function runImageUpload(req, res, next) {
+  imageUpload.single('file')(req, res, (err) => {
+    if (err) {
+      if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'Файл не больше 5 МБ' });
+      }
+      return res.status(400).json({ error: 'Не удалось принять файл' });
+    }
+    next();
+  });
+}
+
+router.post('/upload', runImageUpload, async (req, res) => {
+  if (!req.file?.buffer) {
+    return res.status(400).json({ error: 'Нужен файл изображения (JPEG, PNG, WebP или GIF)' });
+  }
+  const name = String(req.file.originalname || '').replace(/\0/g, '').slice(0, 512) || null;
+  try {
+    const row = await prisma.storedImage.create({
+      data: {
+        mimeType: req.file.mimetype,
+        data: req.file.buffer,
+        filename: name,
+      },
+    });
+    const url = `/api/media/${row.id}`;
+    res.status(201).json({ id: row.id, url });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Не удалось сохранить изображение' });
+  }
+});
 
 /** categoryId в пути — это slug (kitchens), не UUID */
 async function getCategoryBySlug(categorySlug) {
@@ -48,6 +92,9 @@ router.post('/categories', async (req, res) => {
   const existingSlugs = new Set(existing.map((c) => c.slug));
   const base = toSlug(name) || 'category';
   const slug = uniqueSlug(base, existingSlugs);
+  if (imageRaw && !isAllowedImageReference(imageRaw)) {
+    return res.status(400).json({ error: 'Изображение: укажите ссылку https://… или загрузите файл' });
+  }
   const imageUrl = imageRaw || DEFAULT_IMAGE;
 
   try {
@@ -96,11 +143,17 @@ router.patch('/categories/:categoryId', async (req, res) => {
     const cat = await getCategoryBySlug(categorySlug);
     if (!cat) return res.status(404).json({ error: 'Категория не найдена' });
 
+    if (image !== undefined) {
+      const v = String(image).trim();
+      if (v && !isAllowedImageReference(v)) {
+        return res.status(400).json({ error: 'Изображение: ссылка https://… или /api/media/…' });
+      }
+    }
     await prisma.category.update({
       where: { id: cat.id },
       data: {
         ...(name !== undefined && name ? { name } : {}),
-        ...(image !== undefined ? { imageUrl: image || cat.imageUrl } : {}),
+        ...(image !== undefined ? { imageUrl: String(image).trim() || cat.imageUrl } : {}),
       },
     });
     res.json({ ok: true });
@@ -361,8 +414,22 @@ router.post(
     const publicId = `${toSlug(trimmedName)}-${Date.now().toString(36)}`;
     const priceText = String(req.body?.price || '').trim() || 'По запросу';
     const description = String(req.body?.description || '').trim();
-    const imageUrl = String(req.body?.image || '').trim() || DEFAULT_IMAGE;
+    const imageRaw = String(req.body?.image || '').trim();
+    const imageUrl = imageRaw || DEFAULT_IMAGE;
+    if (imageRaw && !isAllowedImageReference(imageRaw)) {
+      return res.status(400).json({ error: 'Изображение: ссылка https://… или /api/media/…' });
+    }
     const source = String(req.body?.source || '').trim() || 'Сайт';
+
+    let extraImageUrls = [];
+    if (Array.isArray(req.body?.extraImages)) {
+      extraImageUrls = req.body.extraImages.map((x) => String(x).trim()).filter(Boolean);
+      for (const u of extraImageUrls) {
+        if (!isAllowedImageReference(u)) {
+          return res.status(400).json({ error: 'Доп. фото: только https://… или /api/media/…' });
+        }
+      }
+    }
 
     let priceAmount = undefined;
     if (req.body?.priceAmount != null && req.body.priceAmount !== '') {
@@ -408,6 +475,12 @@ router.post(
             sortOrder: 0,
           },
         });
+        let sort = 1;
+        for (const url of extraImageUrls) {
+          await tx.productImage.create({
+            data: { productId: prod.id, url, sortOrder: sort++ },
+          });
+        }
       });
       res.status(201).json({ id: publicId });
     } catch (e) {
@@ -429,10 +502,26 @@ router.patch('/products/:publicId', async (req, res) => {
   }
   if (req.body?.price !== undefined) data.priceText = String(req.body.price).trim() || existing.priceText;
   if (req.body?.description !== undefined) data.description = String(req.body.description).trim();
-  if (req.body?.image !== undefined) data.imageUrl = String(req.body.image).trim() || existing.imageUrl;
+  if (req.body?.image !== undefined) {
+    const v = String(req.body.image).trim();
+    if (v && !isAllowedImageReference(v)) {
+      return res.status(400).json({ error: 'Изображение: ссылка https://… или /api/media/…' });
+    }
+    data.imageUrl = v || existing.imageUrl;
+  }
   if (req.body?.source !== undefined) data.source = String(req.body.source).trim() || existing.source;
   if (req.body?.specs !== undefined) data.specs = req.body.specs;
   if (req.body?.published !== undefined) data.published = Boolean(req.body.published);
+
+  let patchExtraUrls = null;
+  if (Array.isArray(req.body?.extraImages)) {
+    patchExtraUrls = req.body.extraImages.map((x) => String(x).trim()).filter(Boolean);
+    for (const u of patchExtraUrls) {
+      if (!isAllowedImageReference(u)) {
+        return res.status(400).json({ error: 'Доп. фото: только https://… или /api/media/…' });
+      }
+    }
+  }
 
   if (req.body?.priceAmount !== undefined) {
     if (req.body.priceAmount === null || req.body.priceAmount === '') {
@@ -461,6 +550,17 @@ router.patch('/products/:publicId', async (req, res) => {
         } else {
           await tx.productImage.create({
             data: { productId: existing.id, url, sortOrder: 0 },
+          });
+        }
+      }
+      if (patchExtraUrls !== null) {
+        await tx.productImage.deleteMany({
+          where: { productId: existing.id, sortOrder: { gt: 0 } },
+        });
+        let sort = 1;
+        for (const url of patchExtraUrls) {
+          await tx.productImage.create({
+            data: { productId: existing.id, url, sortOrder: sort++ },
           });
         }
       }
@@ -500,6 +600,9 @@ router.post('/brand-entities', async (req, res) => {
 
   const logoUrl =
     req.body?.logoUrl !== undefined ? String(req.body.logoUrl || '').trim() || null : null;
+  if (logoUrl && !isAllowedImageReference(logoUrl)) {
+    return res.status(400).json({ error: 'Логотип: https://… или /api/media/…' });
+  }
   const website =
     req.body?.website !== undefined ? String(req.body.website || '').trim() || null : null;
   const description =
@@ -577,7 +680,11 @@ router.patch('/brand-entities/:slug', async (req, res) => {
       if (n) data.name = n;
     }
     if (req.body?.logoUrl !== undefined) {
-      data.logoUrl = String(req.body.logoUrl || '').trim() || null;
+      const lv = String(req.body.logoUrl || '').trim() || null;
+      if (lv && !isAllowedImageReference(lv)) {
+        return res.status(400).json({ error: 'Логотип: https://… или /api/media/…' });
+      }
+      data.logoUrl = lv;
     }
     if (req.body?.website !== undefined) {
       data.website = String(req.body.website || '').trim() || null;

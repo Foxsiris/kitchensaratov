@@ -1,10 +1,11 @@
 import React from 'react';
 import { Label, Input, ErrorText } from '../AdminUI';
+import { ImageUrlOrUploadField } from './ImageUrlOrUploadField';
 
 /**
- * Название и URL картинки категории.
+ * Название и URL картинки категории (или загрузка в БД).
  */
-export function CategoryFormFields({ values, onChange, errors = {} }) {
+export function CategoryFormFields({ values, onChange, errors = {}, uploadImage }) {
   const { name, image } = values;
   return (
     <>
@@ -12,9 +13,13 @@ export function CategoryFormFields({ values, onChange, errors = {} }) {
       <Input value={name} onChange={(e) => onChange('name', e.target.value)} />
       {errors.name && <ErrorText>{errors.name}</ErrorText>}
 
-      <Label>URL изображения</Label>
-      <Input value={image} onChange={(e) => onChange('image', e.target.value)} placeholder="https://..." />
-      {errors.image && <ErrorText>{errors.image}</ErrorText>}
+      <ImageUrlOrUploadField
+        label="Изображение"
+        value={image}
+        onChange={(v) => onChange('image', v)}
+        error={errors.image}
+        uploadImage={uploadImage}
+      />
     </>
   );
 }

@@ -2,8 +2,27 @@ import { Router } from 'express';
 import { prisma } from '../db.js';
 import { catalogInclude } from '../lib/catalogQueries.js';
 import { formatCatalogTree, formatProductDetail } from '../lib/catalogFormat.js';
+import { isStoredMediaId } from '../lib/storedMedia.js';
 
 const router = Router();
+
+router.get('/media/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!isStoredMediaId(id)) {
+    return res.status(400).type('text/plain').send('Invalid id');
+  }
+  try {
+    const row = await prisma.storedImage.findUnique({ where: { id } });
+    if (!row) return res.status(404).end();
+    res.setHeader('Content-Type', row.mimeType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    const buf = Buffer.isBuffer(row.data) ? row.data : Buffer.from(row.data);
+    res.send(buf);
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
 
 router.get('/health', (_req, res) => {
   res.json({ ok: true, service: 'kitchensaratov-api' });

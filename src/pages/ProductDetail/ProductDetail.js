@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FiArrowLeft, FiArrowRight, FiPhone } from 'react-icons/fi';
 import { useCatalog } from '../../context/CatalogContext';
 import { useModal } from '../../hooks/useModal';
+import { resolveCatalogImageSrc } from '../../utils/imageUrl';
 
 /* ============ Styled ============ */
 
@@ -133,6 +134,48 @@ const HeroPrice = styled(motion.div)`
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     font-size: ${p => p.theme.fontSizes.xl};
+  }
+`;
+
+const HeroThumbs = styled.div`
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: ${p => p.theme.spacing.lg};
+  padding: 0 ${p => p.theme.spacing['3xl']} ${p => p.theme.spacing.lg};
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding-left: ${p => p.theme.spacing.lg};
+    padding-right: ${p => p.theme.spacing.lg};
+  }
+`;
+
+const HeroThumbBtn = styled.button`
+  width: 72px;
+  height: 52px;
+  padding: 0;
+  border-radius: 8px;
+  border: 2px solid ${p => (p.$active ? '#fff' : 'transparent')};
+  cursor: pointer;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.25);
+  opacity: ${p => (p.$active ? 1 : 0.8)};
+  transition: opacity 0.2s, border-color 0.2s;
+  &:hover {
+    opacity: 1;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 `;
 
@@ -445,6 +488,24 @@ const ProductDetail = () => {
 
   const product = useMemo(() => findProductById(id), [id, findProductById]);
 
+  const galleryRaw = useMemo(() => {
+    if (!product) return [];
+    if (Array.isArray(product.images) && product.images.length > 1) return product.images;
+    return [product.image].filter(Boolean);
+  }, [product]);
+
+  const galleryDisplay = useMemo(
+    () => galleryRaw.map((u) => resolveCatalogImageSrc(u)),
+    [galleryRaw]
+  );
+
+  const [heroIdx, setHeroIdx] = useState(0);
+  useEffect(() => {
+    setHeroIdx(0);
+  }, [id]);
+
+  const heroSrc = galleryDisplay[heroIdx] || galleryDisplay[0] || '';
+
   // Get other products from same category
   const otherProducts = useMemo(() => {
     if (!product) return [];
@@ -479,7 +540,7 @@ const ProductDetail = () => {
       {/* Hero */}
       <HeroOuter>
         <HeroSection>
-          <HeroBg $src={product.image} />
+          <HeroBg $src={heroSrc} />
           <HeroContent>
             <Breadcrumb>
               <Link to="/">Главная</Link> / <Link to="/catalog">Каталог</Link> / <Link to={`/catalog?category=${product.categoryId}`}>{product.categoryName}</Link> / <span style={{ color: '#fff' }}>{product.name}</span>
@@ -506,6 +567,21 @@ const ProductDetail = () => {
               {product.price}
             </HeroPrice>
           </HeroContent>
+          {galleryDisplay.length > 1 && (
+            <HeroThumbs>
+              {galleryDisplay.map((src, i) => (
+                <HeroThumbBtn
+                  key={`${src}-${i}`}
+                  type="button"
+                  $active={i === heroIdx}
+                  onClick={() => setHeroIdx(i)}
+                  aria-label={`Фото ${i + 1}`}
+                >
+                  <img src={src} alt="" />
+                </HeroThumbBtn>
+              ))}
+            </HeroThumbs>
+          )}
         </HeroSection>
       </HeroOuter>
 
@@ -588,7 +664,7 @@ const ProductDetail = () => {
                   viewport={{ once: true }}
                 >
                   <OtherImg>
-                    <img src={p.image} alt={p.name} loading="lazy" />
+                    <img src={resolveCatalogImageSrc(p.image)} alt={p.name} loading="lazy" />
                   </OtherImg>
                   <OtherBody>
                     <OtherName>{p.name}</OtherName>

@@ -89,11 +89,16 @@
 - `GET /api/health`
 - `GET /api/catalog`
 - `GET /api/products/:publicId`
+- `GET /api/media/:id` — бинарное тело изображения из таблицы `stored_images` (UUID в пути); `Content-Type` как при загрузке. В каталоге в полях картинок может храниться URL вида `/api/media/<uuid>` (наряду с внешними `https://...`).
 
 Авторизация админа: `POST /api/auth/login` с телом `{ "password": "..." }` → `{ token }`. Пароль задаётся **`ADMIN_PASSWORD`** при **первом** создании записи в `admin_users` (seed). Переменная **`REACT_APP_ADMIN_PASSWORD`** не используется. Сменить пароль без пересоздания БД:  
 `docker compose exec api node scripts/set-admin-password.mjs <новый_пароль>`
 
 Админские маршруты: префикс **`/api/admin/`**, заголовок `Authorization: Bearer <token>`.
+
+Загрузка изображений в БД (multipart):
+
+- `POST /api/admin/upload` — поле формы **`file`**, типы JPEG / PNG / WebP / GIF, до **5 МБ**. Ответ: `{ id, url }`, где **`url`** — `/api/media/<uuid>` для сохранения в `image_url` / `logo_url` и т.д.
 
 Категории (корень списка — из админки «Категории», не с дашборда):
 
@@ -124,6 +129,7 @@
 - **BrandEntity:** канонический производитель, уникальный **`slug`**; лого, сайт, описание.
 - **CategoryDisplayGroup:** витринная группа внутри категории (в JSON каталога по-прежнему уровень «бренд»); FK на категорию; опционально **`brandEntityId`**; уникальность `(categoryId, slug)`. Служебная группа **`slug === 'default'`** без `BrandEntity`.
 - **DisplayGroupSection:** секция внутри группы (в JSON — «подкатегория»); уникальность `(displayGroupId, slug)`.
+- **StoredImage:** бинарные данные изображения (`BYTEA`), **`mime_type`**, опционально **`filename`**; выдача через **`GET /api/media/:id`**.
 - **Product:** центр модели; **`publicId`** глобально уникален; FK **`sectionId`** на секцию; опционально **`brandEntityId`** (денормализация); **`specs`** — JSON; галерея — **`ProductImage`**.
 - **ProductCategory:** M:N товар ↔ категория; ровно одна строка с **`isPrimary: true`** на товар (частичный уникальный индекс в БД).
 - Таблицы в Postgres: `category_display_groups`, `display_group_sections` (миграция переименовывает бывшие `brands` / `subcategories`).

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Label, Input, Textarea, Text } from '../AdminUI';
+import { ImageUrlOrUploadField } from './ImageUrlOrUploadField';
 
 const Grid2Styled = styled.div`
   display: grid;
@@ -44,8 +45,12 @@ export function BrandEntityFormFields({ mode, values, onChange, slugReadOnly }) 
           </div>
         )}
       </Grid2Styled>
-      <Label>URL логотипа</Label>
-      <Input value={logoUrl} onChange={(e) => onChange('logoUrl', e.target.value)} placeholder="https://..." />
+      <ImageUrlOrUploadField
+        label="Логотип"
+        value={logoUrl}
+        onChange={(v) => onChange('logoUrl', v)}
+        uploadImage={uploadImage}
+      />
       <Label>Сайт</Label>
       <Input value={website} onChange={(e) => onChange('website', e.target.value)} placeholder="https://..." />
       <Label>Описание</Label>
