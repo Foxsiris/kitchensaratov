@@ -1,5 +1,7 @@
 # Документация для агентов (ИИ / автоматизация)
 
+Для разработчиков см. **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** (установка, тесты, Docker, структура).
+
 Этот файл задаёт контекст репозитория **kitchensaratov**: архитектуру, соглашения и типичные задачи. Его имеет смысл читать перед правками кода.
 
 ## Назначение проекта
@@ -93,6 +95,10 @@
 
 Админские маршруты: префикс **`/api/admin/`**, заголовок `Authorization: Bearer <token>`.
 
+Категории (корень списка — из админки «Категории», не с дашборда):
+
+- `POST /api/admin/categories` — тело: `name`, опционально `image` (URL обложки); ответ `{ id }`, где **`id` — slug** новой категории.
+
 В путях вида `/api/admin/categories/:categoryId` параметр **`categoryId` — slug категории**, не UUID.
 
 Справочник глобальных брендов (производители):
@@ -144,6 +150,7 @@
 npm start
 npm run build
 npm test
+npm run test:ci
 
 # API (из server/)
 npm ci
@@ -151,6 +158,7 @@ npx prisma validate
 npx prisma generate
 npx prisma migrate deploy
 npx prisma db seed
+npm test
 node src/index.js
 ```
 

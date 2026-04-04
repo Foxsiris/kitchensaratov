@@ -1,70 +1,37 @@
-# Getting Started with Create React App
+# Kitchen Sarovatov
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Витрина каталога кухонь и смежных товаров: **React** (Create React App) + **Node.js** API (**Express**, **Prisma**, **PostgreSQL**). Админка для управления каталогом; публичный сайт ходит в API.
 
-## Available Scripts
+## Документация
 
-In the project directory, you can run:
+| Документ | Описание |
+|----------|----------|
+| **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** | Установка, локальная разработка, Docker, тесты, CI, структура проекта |
+| **[AGENTS.md](AGENTS.md)** | Контракт API, модель данных, Prisma, типичные команды (удобно и людям, и автоматизации) |
+| **[.env.example](.env.example)** | Переменные окружения для Compose и подсказки для локальной БД |
 
-### `npm start`
+## Быстрый старт (Docker)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+cp .env.example .env
+# задайте POSTGRES_PASSWORD и JWT_SECRET
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+docker compose up -d --build
+```
 
-### `npm test`
+Откройте в браузере: **http://localhost:8080** (или порт из `HTTP_PORT` в `.env`). Проверка API: `GET http://localhost:8080/api/health`.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Скрипты (корень репозитория)
 
-### `npm run build`
+| Команда | Назначение |
+|---------|------------|
+| `npm start` | Dev-сервер CRA (прокси `/api` → `localhost:4000`) |
+| `npm run build` | Продакшен-сборка в `build/` |
+| `npm test` | Jest в watch-режиме |
+| `npm run test:ci` | Jest один прогон (для CI и Docker build) |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Скрипты API — в каталоге **`server/`** (`npm test`, `npm run db:studio`, Prisma — см. [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Лицензия и CRA
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Проект изначально создан через [Create React App](https://github.com/facebook/create-react-app). Дополнительная документация CRA: [CRA — Getting Started](https://facebook.github.io/create-react-app/docs/getting-started).
