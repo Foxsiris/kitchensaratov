@@ -231,7 +231,7 @@ const AdminBrands = () => {
       </Card>
 
       {createOpen && (
-        <ModalShell title="Новый производитель" width="520px" onClose={() => setCreateOpen(false)}>
+        <ModalShell title="Новый производитель" width="520px">
           <form onSubmit={handleCreateSubmit}>
             <BrandEntityFormFields mode="create" values={createValues} onChange={patchCreate} />
             <ModalFormFooter submitLabel="Создать" onCancel={() => setCreateOpen(false)} />
@@ -240,7 +240,7 @@ const AdminBrands = () => {
       )}
 
       {editSlug && (
-        <ModalShell title="Редактировать производителя" width="520px" onClose={() => setEditSlug(null)}>
+        <ModalShell title="Редактировать производителя" width="520px">
           <form onSubmit={handleEditSubmit}>
             <BrandEntityFormFields
               mode="edit"

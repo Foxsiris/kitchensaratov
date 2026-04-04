@@ -19,13 +19,7 @@ export function ConfirmModal({
   if (!open) return null;
 
   return (
-    <ModalShell
-      title={title}
-      width="420px"
-      onClose={() => {
-        if (!busy) onClose();
-      }}
-    >
+    <ModalShell title={title} width="420px">
       <ModalMessage>{message}</ModalMessage>
       <ConfirmActions>
         <Button type="button" $variant="secondary" onClick={onClose} disabled={busy}>

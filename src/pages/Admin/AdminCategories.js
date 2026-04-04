@@ -165,11 +165,7 @@ const AdminCategories = () => {
       </List>
 
       {createOpen && (
-        <ModalShell
-          title="Новая категория"
-          width="480px"
-          onClose={() => setCreateOpen(false)}
-        >
+        <ModalShell title="Новая категория" width="480px">
           <form onSubmit={handleCreateSubmit}>
             <CategoryFormFields values={form} onChange={patchForm} errors={formErrors} />
             <ModalFormFooter

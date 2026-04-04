@@ -481,7 +481,6 @@ const CallbackModal = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={closeModal}
         >
           <ModalBox
             initial={{ opacity: 0, y: 24, scale: 0.97 }}

@@ -1435,7 +1435,6 @@ const KitchenDetail = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setLightboxOpen(false)}
           >
             <LightboxClose onClick={() => setLightboxOpen(false)}>
               <FiX size={20} />

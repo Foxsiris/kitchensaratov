@@ -631,11 +631,7 @@ const AdminCategoryDetail = () => {
       </DangerZone>
 
       {categoryEditOpen && (
-        <ModalShell
-          title="Редактирование категории"
-          width="480px"
-          onClose={() => setCategoryEditOpen(false)}
-        >
+        <ModalShell title="Редактирование категории" width="480px">
           <form onSubmit={handleCategorySave}>
             <CategoryFormFields values={catForm} onChange={patchCatForm} errors={catErrors} />
             <ModalFormFooter
@@ -647,14 +643,7 @@ const AdminCategoryDetail = () => {
       )}
 
       {productAddOpen && (
-        <ModalShell
-          title={isKitchens ? 'Новая кухня' : 'Новый товар'}
-          width="520px"
-          onClose={() => {
-            setProductAddOpen(false);
-            resetProductForm();
-          }}
-        >
+        <ModalShell title={isKitchens ? 'Новая кухня' : 'Новый товар'} width="520px">
           <form onSubmit={handleProductAddSubmit}>
             {category.brands.length > 1 && (
               <>
@@ -706,15 +695,7 @@ const AdminCategoryDetail = () => {
       )}
 
       {displayGroupAddOpen && (
-        <ModalShell
-          title="Новая витринная группа"
-          width="480px"
-          onClose={() => {
-            setDisplayGroupAddOpen(false);
-            setNewGroupName('');
-            setNewGroupEntityMode('__auto__');
-          }}
-        >
+        <ModalShell title="Новая витринная группа" width="480px">
           <form onSubmit={handleDisplayGroupAdd}>
             <Label>Название группы *</Label>
             <Input
@@ -741,14 +722,7 @@ const AdminCategoryDetail = () => {
       )}
 
       {subcategoryModalBrand && (
-        <ModalShell
-          title={`Подкатегория — ${subcategoryModalBrand.name}`}
-          width="420px"
-          onClose={() => {
-            setSubcategoryModalBrand(null);
-            setNewSubName('');
-          }}
-        >
+        <ModalShell title={`Подкатегория — ${subcategoryModalBrand.name}`} width="420px">
           <form onSubmit={handleSubcategoryAdd}>
             <Label>Название *</Label>
             <Input
@@ -769,11 +743,7 @@ const AdminCategoryDetail = () => {
       )}
 
       {editBrandGroup && (
-        <ModalShell
-          title="Витринная группа"
-          width="440px"
-          onClose={() => setEditBrandGroup(null)}
-        >
+        <ModalShell title="Витринная группа" width="440px">
           <form onSubmit={saveEditBrand}>
             <Label>Название *</Label>
             <Input value={editBrandName} onChange={(e) => setEditBrandName(e.target.value)} />
@@ -795,7 +765,7 @@ const AdminCategoryDetail = () => {
       )}
 
       {editProduct && (
-        <ModalShell title="Редактирование товара" width="520px" onClose={() => setEditProduct(null)}>
+        <ModalShell title="Редактирование товара" width="520px">
           <form onSubmit={handleEditProductSubmit}>
             <ProductFormFields
               values={editProductForm}

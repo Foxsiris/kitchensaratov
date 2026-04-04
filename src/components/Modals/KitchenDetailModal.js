@@ -398,7 +398,6 @@ const KitchenDetailModal = ({ isOpen, onClose, kitchen }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
         >
           <ModalContent
             initial={{ scale: 0.8, opacity: 0 }}
