@@ -54,13 +54,24 @@ const Arrow = styled.span`
 `;
 
 const AdminCategories = () => {
-  const { categories } = useCatalog();
+  const { categories, loading, error } = useCatalog();
 
   const productCount = (cat) =>
     cat.brands.reduce(
       (acc, b) => acc + b.subcategories.reduce((s, sub) => s + sub.products.length, 0),
       0
     );
+
+  if (loading) {
+    return (
+      <>
+        <PageHeader>
+          <PageTitle>Категории</PageTitle>
+        </PageHeader>
+        <Empty>Загрузка каталога…</Empty>
+      </>
+    );
+  }
 
   return (
     <>
@@ -72,7 +83,15 @@ const AdminCategories = () => {
         </ButtonLink>
       </PageHeader>
 
-      {categories.length === 0 && <Empty>Категорий пока нет. Создайте первую.</Empty>}
+      {error && (
+        <Empty style={{ color: '#a00', marginBottom: 16 }}>
+          {error}
+        </Empty>
+      )}
+
+      {!error && categories.length === 0 && (
+        <Empty>Категорий пока нет. Создайте первую.</Empty>
+      )}
 
       <List>
         {categories.map((cat) => {

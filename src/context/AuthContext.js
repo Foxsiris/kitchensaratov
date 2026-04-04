@@ -1,51 +1,54 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { apiUrl } from '../config/api';
 
-const AUTH_KEY = 'kitchensaratov_admin_auth';
-
-const getAdminPassword = () => {
-  try {
-    return process.env.REACT_APP_ADMIN_PASSWORD ?? null;
-  } catch {
-    return null;
-  }
-};
+const TOKEN_KEY = 'kitchensaratov_admin_jwt';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [authenticated, setAuthenticated] = useState(() => {
+  const [token, setToken] = useState(() => {
     try {
-      return sessionStorage.getItem(AUTH_KEY) === 'true';
+      return sessionStorage.getItem(TOKEN_KEY);
     } catch {
-      return false;
+      return null;
     }
   });
 
-  const login = useCallback((password) => {
-    const envPassword = getAdminPassword();
-    if (envPassword !== null && password === envPassword) {
-      setAuthenticated(true);
+  const authenticated = Boolean(token);
+
+  const login = useCallback(async (password) => {
+    try {
+      const res = await fetch(apiUrl('/api/auth/login'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      if (!data?.token) return false;
       try {
-        sessionStorage.setItem(AUTH_KEY, 'true');
+        sessionStorage.setItem(TOKEN_KEY, data.token);
       } catch {
         /* private mode */
       }
+      setToken(data.token);
       return true;
+    } catch {
+      return false;
     }
-    return false;
   }, []);
 
   const logout = useCallback(() => {
-    setAuthenticated(false);
+    setToken(null);
     try {
-      sessionStorage.removeItem(AUTH_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
     } catch {
       /* private mode */
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ authenticated, login, logout }}>
+    <AuthContext.Provider value={{ authenticated, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

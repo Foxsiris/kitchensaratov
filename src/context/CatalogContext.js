@@ -1,57 +1,77 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { categories as initialCategoriesData } from '../data/catalogData';
-
-const STORAGE_KEY = 'kitchensaratov_catalog';
-
-const deepClone = (obj) =>
-  typeof structuredClone === 'function' ? structuredClone(obj) : JSON.parse(JSON.stringify(obj));
-
-const loadCategories = () => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    /* corrupted localStorage — fall back to defaults */
-  }
-  return deepClone(initialCategoriesData);
-};
-
-const toSlug = (text) =>
-  text
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\u0400-\u04FF-]/g, '');
-
-const uniqueId = (base, existingIds) => {
-  let id = base;
-  let n = 1;
-  while (existingIds.has(id)) {
-    id = `${base}-${n++}`;
-  }
-  return id;
-};
-
-const DEFAULT_IMAGE =
-  'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80';
+import { apiUrl } from '../config/api';
+import { useAuth } from './AuthContext';
 
 const CatalogContext = createContext(null);
 
+async function parseError(res) {
+  try {
+    const j = await res.json();
+    if (j?.error) return j.error;
+  } catch {
+    /* ignore */
+  }
+  return res.statusText || `Ошибка ${res.status}`;
+}
+
 export function CatalogProvider({ children }) {
-  const [categories, setCategories] = useState(loadCategories);
+  const { token, logout } = useAuth();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const loadCatalog = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    const path = token ? '/api/admin/catalog' : '/api/catalog';
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      const res = await fetch(apiUrl(path), { headers });
+      if (res.status === 401 && token) {
+        logout();
+        const pub = await fetch(apiUrl('/api/catalog'));
+        if (!pub.ok) throw new Error(await parseError(pub));
+        const data = await pub.json();
+        setCategories(data.categories || []);
+        setError('Сессия истекла. Войдите снова.');
+        return;
+      }
+      if (!res.ok) throw new Error(await parseError(res));
+      const data = await res.json();
+      setCategories(Array.isArray(data.categories) ? data.categories : []);
+    } catch (e) {
+      setError(e.message || 'Не удалось загрузить каталог');
+      setCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [token, logout]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
-    } catch (e) {
-      /* quota exceeded — silently fail */
-    }
-  }, [categories]);
+    loadCatalog();
+  }, [loadCatalog]);
 
-  /* ---- Read helpers ---- */
+  const adminFetch = useCallback(
+    async (path, options = {}) => {
+      if (!token) throw new Error('Нет авторизации');
+      const res = await fetch(apiUrl(path), {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          ...options.headers,
+        },
+      });
+      if (res.status === 401) {
+        logout();
+        throw new Error('Сессия истекла');
+      }
+      if (!res.ok) throw new Error(await parseError(res));
+      const text = await res.text();
+      return text ? JSON.parse(text) : {};
+    },
+    [token, logout]
+  );
 
   const findProductById = useCallback(
     (productId) => {
@@ -117,159 +137,133 @@ export function CatalogProvider({ children }) {
     return products;
   }, [categories]);
 
-  /* ---- Category CRUD ---- */
-
-  const addCategory = useCallback(({ name, image }) => {
-    const trimmedName = (name || '').trim();
-    if (!trimmedName) return null;
-    const baseSlug = toSlug(trimmedName) || 'category';
-    const existingIds = new Set(categories.map((c) => c.id));
-    const newId = uniqueId(baseSlug, existingIds);
-    setCategories((prev) => [
-      ...prev,
-      {
-        id: newId,
-        name: trimmedName,
-        image: (image || '').trim() || DEFAULT_IMAGE,
-        brands: [
-          {
-            id: 'default',
-            name: 'Все бренды',
-            subcategories: [{ id: 'all', name: 'Все модели', products: [] }],
-          },
-        ],
-      },
-    ]);
-    return newId;
-  }, [categories]);
-
-  const updateCategory = useCallback((categoryId, data) => {
-    setCategories((prev) => {
-      const next = deepClone(prev);
-      const cat = next.find((c) => c.id === categoryId);
-      if (!cat) return prev;
-      if (data.name !== undefined) cat.name = (data.name || '').trim() || cat.name;
-      if (data.image !== undefined) cat.image = (data.image || '').trim() || cat.image;
-      return next;
-    });
-  }, []);
-
-  const deleteCategory = useCallback((categoryId) => {
-    setCategories((prev) => prev.filter((c) => c.id !== categoryId));
-  }, []);
-
-  /* ---- Brand / Subcategory ---- */
-
-  const addBrand = useCallback((categoryId, brandName) => {
-    const trimmed = (brandName || '').trim();
-    if (!trimmed) return null;
-    const baseSlug = toSlug(trimmed) || 'brand';
-    let newId;
-    setCategories((prev) => {
-      const next = deepClone(prev);
-      const cat = next.find((c) => c.id === categoryId);
-      if (!cat) return prev;
-      const existingIds = new Set(cat.brands.map((b) => b.id));
-      newId = uniqueId(baseSlug, existingIds);
-      cat.brands.push({
-        id: newId,
-        name: trimmed,
-        subcategories: [{ id: 'all', name: 'Все модели', products: [] }],
+  const addCategory = useCallback(
+    async ({ name, image }) => {
+      const trimmedName = (name || '').trim();
+      if (!trimmedName) return null;
+      const body = await adminFetch('/api/admin/categories', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: trimmedName,
+          image: (image || '').trim(),
+        }),
       });
-      return next;
-    });
-    return newId;
-  }, []);
+      await loadCatalog();
+      return body.id || null;
+    },
+    [adminFetch, loadCatalog]
+  );
 
-  const addSubcategory = useCallback((categoryId, brandId, subName) => {
-    const trimmed = (subName || '').trim();
-    if (!trimmed) return null;
-    const baseSlug = toSlug(trimmed) || 'sub';
-    let newId;
-    setCategories((prev) => {
-      const next = deepClone(prev);
-      const cat = next.find((c) => c.id === categoryId);
-      if (!cat) return prev;
-      const brand = cat.brands.find((b) => b.id === brandId);
-      if (!brand) return prev;
-      const existingIds = new Set(brand.subcategories.map((s) => s.id));
-      newId = uniqueId(baseSlug, existingIds);
-      brand.subcategories.push({ id: newId, name: trimmed, products: [] });
-      return next;
-    });
-    return newId;
-  }, []);
+  const updateCategory = useCallback(
+    async (categoryId, data) => {
+      const payload = {};
+      if (data.name !== undefined) payload.name = data.name;
+      if (data.image !== undefined) payload.image = data.image;
+      await adminFetch(`/api/admin/categories/${encodeURIComponent(categoryId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+      await loadCatalog();
+    },
+    [adminFetch, loadCatalog]
+  );
 
-  /* ---- Product CRUD ---- */
+  const deleteCategory = useCallback(
+    async (categoryId) => {
+      await adminFetch(`/api/admin/categories/${encodeURIComponent(categoryId)}`, {
+        method: 'DELETE',
+      });
+      await loadCatalog();
+    },
+    [adminFetch, loadCatalog]
+  );
 
-  const addProduct = useCallback((categoryId, brandId, subcategoryId, data) => {
-    const trimmedName = (data.name || '').trim();
-    if (!trimmedName) return null;
-    const productId = `${toSlug(trimmedName)}-${Date.now().toString(36)}`;
-    const newProduct = {
-      id: productId,
-      name: trimmedName,
-      price: (data.price || '').trim() || 'По запросу',
-      description: (data.description || '').trim(),
-      image: (data.image || '').trim() || DEFAULT_IMAGE,
-      source: (data.source || '').trim() || 'Сайт',
-    };
-    setCategories((prev) => {
-      const next = deepClone(prev);
-      const cat = next.find((c) => c.id === categoryId);
-      if (!cat) return prev;
-      const brand = cat.brands.find((b) => b.id === brandId);
-      if (!brand) return prev;
-      const sub = brand.subcategories.find((s) => s.id === subcategoryId);
-      if (!sub) return prev;
-      sub.products.push(newProduct);
-      return next;
-    });
-    return productId;
-  }, []);
+  const addBrand = useCallback(
+    async (categoryId, brandName) => {
+      const trimmed = (brandName || '').trim();
+      if (!trimmed) return null;
+      const body = await adminFetch(`/api/admin/categories/${encodeURIComponent(categoryId)}/brands`, {
+        method: 'POST',
+        body: JSON.stringify({ name: trimmed }),
+      });
+      await loadCatalog();
+      return body.id || null;
+    },
+    [adminFetch, loadCatalog]
+  );
 
-  const updateProduct = useCallback((productId, data) => {
-    setCategories((prev) => {
-      const next = deepClone(prev);
-      for (const cat of next) {
-        for (const brand of cat.brands) {
-          for (const sub of brand.subcategories) {
-            const product = sub.products.find((p) => p.id === productId);
-            if (product) {
-              if (data.name !== undefined) product.name = (data.name || '').trim() || product.name;
-              if (data.price !== undefined) product.price = (data.price || '').trim() || product.price;
-              if (data.description !== undefined) product.description = (data.description || '').trim();
-              if (data.image !== undefined) product.image = (data.image || '').trim() || product.image;
-              if (data.source !== undefined) product.source = (data.source || '').trim() || product.source;
-              return next;
-            }
-          }
+  const addSubcategory = useCallback(
+    async (categoryId, brandId, subName) => {
+      const trimmed = (subName || '').trim();
+      if (!trimmed) return null;
+      const body = await adminFetch(
+        `/api/admin/categories/${encodeURIComponent(categoryId)}/brands/${encodeURIComponent(brandId)}/subcategories`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ name: trimmed }),
         }
-      }
-      return prev;
-    });
-  }, []);
+      );
+      await loadCatalog();
+      return body.id || null;
+    },
+    [adminFetch, loadCatalog]
+  );
 
-  const deleteProduct = useCallback((productId) => {
-    setCategories((prev) => {
-      const next = deepClone(prev);
-      for (const cat of next) {
-        for (const brand of cat.brands) {
-          for (const sub of brand.subcategories) {
-            const idx = sub.products.findIndex((p) => p.id === productId);
-            if (idx !== -1) {
-              sub.products.splice(idx, 1);
-              return next;
-            }
-          }
+  const addProduct = useCallback(
+    async (categoryId, brandId, subcategoryId, data) => {
+      const trimmedName = (data.name || '').trim();
+      if (!trimmedName) return null;
+      const body = await adminFetch(
+        `/api/admin/categories/${encodeURIComponent(categoryId)}/brands/${encodeURIComponent(brandId)}/subcategories/${encodeURIComponent(subcategoryId)}/products`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            name: trimmedName,
+            price: (data.price || '').trim(),
+            description: (data.description || '').trim(),
+            image: (data.image || '').trim(),
+            source: (data.source || '').trim(),
+          }),
         }
-      }
-      return prev;
-    });
-  }, []);
+      );
+      await loadCatalog();
+      return body.id || null;
+    },
+    [adminFetch, loadCatalog]
+  );
+
+  const updateProduct = useCallback(
+    async (productId, data) => {
+      const payload = {};
+      if (data.name !== undefined) payload.name = data.name;
+      if (data.price !== undefined) payload.price = data.price;
+      if (data.description !== undefined) payload.description = data.description;
+      if (data.image !== undefined) payload.image = data.image;
+      if (data.source !== undefined) payload.source = data.source;
+      await adminFetch(`/api/admin/products/${encodeURIComponent(productId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+      await loadCatalog();
+    },
+    [adminFetch, loadCatalog]
+  );
+
+  const deleteProduct = useCallback(
+    async (productId) => {
+      await adminFetch(`/api/admin/products/${encodeURIComponent(productId)}`, {
+        method: 'DELETE',
+      });
+      await loadCatalog();
+    },
+    [adminFetch, loadCatalog]
+  );
 
   const value = {
     categories,
+    loading,
+    error,
+    refreshCatalog: loadCatalog,
     findProductById,
     getProductsByCategory,
     getAllProducts,

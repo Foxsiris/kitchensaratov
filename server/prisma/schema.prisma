@@ -1,0 +1,158 @@
+// PostgreSQL: товар — центр модели (UUID + public_id). Категории M:N через product_categories.
+// Навигация витрины: Category → CategoryDisplayGroup → DisplayGroupSection → Product.
+// Глобальный производитель: BrandEntity.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  slug      String   @unique @db.VarChar(128)
+  name      String   @db.VarChar(512)
+  imageUrl  String   @map("image_url")
+  parentId  String?  @map("parent_id") @db.Uuid
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  parent           Category?           @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children         Category[]          @relation("CategoryTree")
+  displayGroups    CategoryDisplayGroup[]
+  productCategories ProductCategory[]
+
+  @@index([sortOrder])
+  @@index([parentId])
+  @@map("categories")
+}
+
+model BrandEntity {
+  id          String   @id @default(uuid()) @db.Uuid
+  slug        String   @unique @db.VarChar(128)
+  name        String   @db.VarChar(512)
+  logoUrl     String?  @map("logo_url")
+  website     String?  @db.VarChar(512)
+  description String?  @db.Text
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  displayGroups CategoryDisplayGroup[]
+  products      Product[]
+
+  @@index([sortOrder])
+  @@map("brand_entities")
+}
+
+/// Витринная группа внутри категории (ранее «бренд» в дереве навигации).
+model CategoryDisplayGroup {
+  id            String       @id @default(uuid()) @db.Uuid
+  categoryId    String       @map("category_id") @db.Uuid
+  brandEntityId String?      @map("brand_entity_id") @db.Uuid
+  slug          String       @db.VarChar(128)
+  name          String       @db.VarChar(512)
+  sortOrder     Int          @default(0) @map("sort_order")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  category    Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  brandEntity BrandEntity?  @relation(fields: [brandEntityId], references: [id], onDelete: SetNull)
+  sections    DisplayGroupSection[]
+
+  @@unique([categoryId, slug])
+  @@index([categoryId])
+  @@index([brandEntityId])
+  @@map("category_display_groups")
+}
+
+/// Секция внутри витринной группы (ранее «подкатегория»).
+model DisplayGroupSection {
+  id             String   @id @default(uuid()) @db.Uuid
+  displayGroupId String   @map("display_group_id") @db.Uuid
+  slug           String   @db.VarChar(128)
+  name           String   @db.VarChar(512)
+  sortOrder      Int      @default(0) @map("sort_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  displayGroup CategoryDisplayGroup @relation(fields: [displayGroupId], references: [id], onDelete: Cascade)
+  products     Product[]
+
+  @@unique([displayGroupId, slug])
+  @@index([displayGroupId])
+  @@map("display_group_sections")
+}
+
+model Product {
+  id            String    @id @default(uuid()) @db.Uuid
+  publicId      String    @unique @map("public_id") @db.VarChar(256)
+  sectionId     String    @map("section_id") @db.Uuid
+  brandEntityId String?   @map("brand_entity_id") @db.Uuid
+  name          String    @db.VarChar(512)
+  priceText     String    @map("price_text") @db.VarChar(512)
+  priceAmount   Decimal?  @map("price_amount") @db.Decimal(14, 2)
+  priceCurrency String    @default("RUB") @map("price_currency") @db.VarChar(3)
+  description   String    @default("") @db.Text
+  imageUrl      String    @map("image_url")
+  source        String    @default("") @db.VarChar(256)
+  specs         Json?
+  sortOrder     Int       @default(0) @map("sort_order")
+  published     Boolean   @default(true)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  section     DisplayGroupSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  brandEntity BrandEntity?        @relation(fields: [brandEntityId], references: [id], onDelete: SetNull)
+  categories  ProductCategory[]
+  images      ProductImage[]
+
+  @@index([sectionId, published, sortOrder])
+  @@index([brandEntityId])
+  @@map("products")
+}
+
+model ProductCategory {
+  productId  String  @map("product_id") @db.Uuid
+  categoryId String  @map("category_id") @db.Uuid
+  isPrimary  Boolean @default(false) @map("is_primary")
+
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+  @@index([categoryId])
+  @@map("product_categories")
+}
+
+model ProductImage {
+  id        String   @id @default(uuid()) @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  url       String
+  sortOrder Int      @default(0) @map("sort_order")
+  alt       String?  @db.VarChar(512)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
+  @@map("product_images")
+}
+
+model AdminUser {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique @db.VarChar(256)
+  passwordHash String    @map("password_hash")
+  role         String    @default("admin") @db.VarChar(32)
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLoginAt  DateTime? @map("last_login_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("admin_users")
+}

@@ -23,8 +23,8 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles />
-      <CatalogProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <CatalogProvider>
           <ModalProvider>
             <Router>
               <div className="App">
@@ -47,8 +47,8 @@ function App() {
               </div>
             </Router>
           </ModalProvider>
-        </AuthProvider>
-      </CatalogProvider>
+        </CatalogProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

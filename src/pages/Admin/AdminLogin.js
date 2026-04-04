@@ -86,9 +86,14 @@ const Button = styled.button`
   cursor: pointer;
   transition: all 0.2s;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: transparent;
     color: ${(p) => p.theme.colors.primary};
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
@@ -97,18 +102,26 @@ const AdminLogin = () => {
   const { login } = useAuth();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [pending, setPending] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!password) {
       setError('Введите пароль');
       return;
     }
-    if (login(password)) {
-      navigate('/admin', { replace: true });
-    } else {
-      setError('Неверный пароль');
-      setPassword('');
+    setPending(true);
+    setError('');
+    try {
+      const ok = await login(password);
+      if (ok) {
+        navigate('/admin', { replace: true });
+      } else {
+        setError('Неверный пароль');
+        setPassword('');
+      }
+    } finally {
+      setPending(false);
     }
   };
 
@@ -130,9 +143,12 @@ const AdminLogin = () => {
           placeholder="Пароль"
           $error={!!error}
           autoFocus
+          disabled={pending}
         />
         <ErrorMsg>{error}</ErrorMsg>
-        <Button type="submit">Войти</Button>
+        <Button type="submit" disabled={pending}>
+          {pending ? 'Вход…' : 'Войти'}
+        </Button>
       </Card>
     </Page>
   );

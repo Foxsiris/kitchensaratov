@@ -29,13 +29,19 @@ const AdminCategoryNew = () => {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    const id = addCategory({ name, image });
-    if (id) {
-      showToast(`Категория «${name.trim()}» создана`);
-      navigate(`/admin/categories/${id}`);
+    try {
+      const id = await addCategory({ name, image });
+      if (id) {
+        showToast(`Категория «${name.trim()}» создана`);
+        navigate(`/admin/categories/${id}`);
+      } else {
+        showToast('Не удалось создать категорию', { type: 'error' });
+      }
+    } catch (err) {
+      showToast(err.message || 'Ошибка сохранения', { type: 'error' });
     }
   };
 

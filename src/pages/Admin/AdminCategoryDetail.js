@@ -228,6 +228,8 @@ const AdminCategoryDetail = () => {
   const { showToast } = useOutletContext();
   const {
     categories,
+    loading: catalogLoading,
+    error: catalogError,
     updateCategory,
     addProduct,
     updateProduct,
@@ -298,7 +300,9 @@ const AdminCategoryDetail = () => {
   if (!category) {
     return (
       <Card>
-        <Empty>Категория не найдена.</Empty>
+        <Empty>
+          {catalogLoading ? 'Загрузка категории…' : catalogError || 'Категория не найдена.'}
+        </Empty>
         <BackLink to="/admin/categories">
           <FiChevronLeft size={14} /> К списку
         </BackLink>
@@ -329,13 +333,25 @@ const AdminCategoryDetail = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
     if (!validateAdd() || !activeBrandId || !activeSubId) return;
-    addProduct(id, activeBrandId, activeSubId, { name, price, description, image, source });
-    showToast(`«${name.trim()}» добавлен в каталог`);
-    resetForm();
-    setShowForm(false);
+    try {
+      const pid = await addProduct(id, activeBrandId, activeSubId, {
+        name,
+        price,
+        description,
+        image,
+        source,
+      });
+      if (pid) {
+        showToast(`«${name.trim()}» добавлен в каталог`);
+        resetForm();
+        setShowForm(false);
+      }
+    } catch (err) {
+      showToast(err.message || 'Не удалось добавить товар', { type: 'error' });
+    }
   };
 
   // Edit product
@@ -357,28 +373,37 @@ const AdminCategoryDetail = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleEditSave = (e) => {
+  const handleEditSave = async (e) => {
     e.preventDefault();
     if (!validateEdit()) return;
-    updateProduct(editProduct.id, {
-      name: editName,
-      price: editPrice,
-      description: editDescription,
-      image: editImage,
-      source: editSource,
-    });
-    showToast(`«${editName.trim()}» обновлён`);
-    setEditProduct(null);
+    try {
+      await updateProduct(editProduct.id, {
+        name: editName,
+        price: editPrice,
+        description: editDescription,
+        image: editImage,
+        source: editSource,
+      });
+      showToast(`«${editName.trim()}» обновлён`);
+      setEditProduct(null);
+    } catch (err) {
+      showToast(err.message || 'Не удалось сохранить', { type: 'error' });
+    }
   };
 
   const handleDeleteProduct = (product) => {
     setConfirm({
       title: 'Удалить товар?',
       message: `Удалить «${product.name}»?`,
-      onConfirm: () => {
-        deleteProduct(product.id);
-        showToast(`«${product.name}» удалён`);
-        setConfirm(null);
+      onConfirm: async () => {
+        try {
+          await deleteProduct(product.id);
+          showToast(`«${product.name}» удалён`);
+          setConfirm(null);
+        } catch (err) {
+          showToast(err.message || 'Не удалось удалить', { type: 'error' });
+          setConfirm(null);
+        }
       },
     });
   };
@@ -387,11 +412,16 @@ const AdminCategoryDetail = () => {
     setConfirm({
       title: 'Удалить категорию?',
       message: `Категория «${category.name}» и все ${totalProducts} ${productCountWord(totalProducts)} будут удалены безвозвратно.`,
-      onConfirm: () => {
-        deleteCategory(id);
-        showToast(`Категория «${category.name}» удалена`);
-        setConfirm(null);
-        navigate('/admin/categories');
+      onConfirm: async () => {
+        try {
+          await deleteCategory(id);
+          showToast(`Категория «${category.name}» удалена`);
+          setConfirm(null);
+          navigate('/admin/categories');
+        } catch (err) {
+          showToast(err.message || 'Не удалось удалить категорию', { type: 'error' });
+          setConfirm(null);
+        }
       },
     });
   };
@@ -403,30 +433,42 @@ const AdminCategoryDetail = () => {
     setShowCatEdit(true);
   };
 
-  const saveCatEdit = () => {
+  const saveCatEdit = async () => {
     if (!catName.trim()) return;
-    updateCategory(id, { name: catName, image: catImage });
-    showToast('Категория обновлена');
-    setShowCatEdit(false);
+    try {
+      await updateCategory(id, { name: catName, image: catImage });
+      showToast('Категория обновлена');
+      setShowCatEdit(false);
+    } catch (err) {
+      showToast(err.message || 'Не удалось сохранить', { type: 'error' });
+    }
   };
 
   // Brand add
-  const handleAddBrand = (e) => {
+  const handleAddBrand = async (e) => {
     e.preventDefault();
     if (!newBrandName.trim()) return;
-    addBrand(id, newBrandName);
-    showToast(`Бренд «${newBrandName.trim()}» добавлен`);
-    setNewBrandName('');
+    try {
+      await addBrand(id, newBrandName);
+      showToast(`Бренд «${newBrandName.trim()}» добавлен`);
+      setNewBrandName('');
+    } catch (err) {
+      showToast(err.message || 'Не удалось добавить бренд', { type: 'error' });
+    }
   };
 
   // Subcategory add
-  const handleAddSub = (e, forBrandId) => {
+  const handleAddSub = async (e, forBrandId) => {
     e.preventDefault();
     if (!newSubName.trim()) return;
-    addSubcategory(id, forBrandId, newSubName);
-    showToast(`Подкатегория «${newSubName.trim()}» добавлена`);
-    setNewSubName('');
-    setAddSubForBrand(null);
+    try {
+      await addSubcategory(id, forBrandId, newSubName);
+      showToast(`Подкатегория «${newSubName.trim()}» добавлена`);
+      setNewSubName('');
+      setAddSubForBrand(null);
+    } catch (err) {
+      showToast(err.message || 'Не удалось добавить подкатегорию', { type: 'error' });
+    }
   };
 
   const totalProducts = category.brands.reduce(
