@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCatalog } from '../../context/CatalogContext';
-import { FiFolder, FiPlus, FiPackage, FiLayers, FiTag } from 'react-icons/fi';
+import { FiFolder, FiPackage, FiLayers, FiTag } from 'react-icons/fi';
 import { Card, PageTitle, Text, ButtonLink } from './AdminUI';
 import styled from 'styled-components';
 
@@ -91,16 +91,13 @@ const AdminDashboard = () => {
 
       <Card>
         <Text style={{ marginBottom: 16 }}>
-          Управляйте каталогом: добавляйте категории, кухни и другие товары.
+          Управляйте каталогом: категории и товары — в разделе «Категории», справочник производителей — в
+          «Справочник брендов».
         </Text>
         <Actions>
           <ButtonLink to="/admin/categories">
             <FiFolder size={16} />
             Категории
-          </ButtonLink>
-          <ButtonLink to="/admin/categories" state={{ openNewCategory: true }} $variant="secondary">
-            <FiPlus size={16} />
-            Новая категория
           </ButtonLink>
           <ButtonLink to="/admin/brands" $variant="secondary">
             <FiTag size={16} />

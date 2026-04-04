@@ -157,10 +157,6 @@ const SubTitle = styled.div`
   margin-bottom: ${(p) => p.theme.spacing.md};
 `;
 
-const DangerZone = styled(Card)`
-  border-color: #e8c0c0;
-`;
-
 const Toolbar = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -528,6 +524,9 @@ const AdminCategoryDetail = () => {
           <Button type="button" $variant="secondary" onClick={openCategoryEdit}>
             <FiEdit2 size={14} /> Редактировать категорию
           </Button>
+          <Button type="button" $variant="danger" onClick={requestDeleteCategory}>
+            <FiTrash2 size={14} /> Удалить категорию
+          </Button>
           <Button type="button" onClick={openProductAdd}>
             <FiPlus size={16} /> {addLabel}
           </Button>
@@ -617,18 +616,6 @@ const AdminCategoryDetail = () => {
           );
         })}
       </Card>
-
-      <DangerZone>
-        <SectionTitle>Удаление категории</SectionTitle>
-        <Text style={{ marginBottom: 16 }}>
-          Категория «{category.name}» и все {totalProducts} {productCountWord(totalProducts)} будут удалены
-          безвозвратно.
-        </Text>
-        <Button type="button" $variant="danger" onClick={requestDeleteCategory}>
-          <FiTrash2 size={14} />
-          Удалить категорию
-        </Button>
-      </DangerZone>
 
       {categoryEditOpen && (
         <ModalShell title="Редактирование категории" width="480px">

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+import React, { useState, useCallback } from 'react';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCatalog } from '../../context/CatalogContext';
 import { FiPlus, FiChevronRight } from 'react-icons/fi';
@@ -55,7 +55,6 @@ const Arrow = styled.span`
 `;
 
 const AdminCategories = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const { showToast } = useOutletContext();
   const { categories, loading, error, addCategory } = useCatalog();
@@ -69,13 +68,6 @@ const AdminCategories = () => {
     setFormErrors({});
     setCreateOpen(true);
   }, []);
-
-  useEffect(() => {
-    if (location.state?.openNewCategory) {
-      openCreateModal();
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location.state, location.pathname, navigate, openCreateModal]);
 
   const patchForm = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
