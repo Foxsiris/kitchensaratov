@@ -20,4 +20,8 @@ describe('imageRef', () => {
     expect(isAllowedOptionalLogoReference('')).toBe(true);
     expect(isAllowedOptionalLogoReference('  ')).toBe(true);
   });
+
+  it('isAllowedOptionalLogoReference: неверная непустая строка', () => {
+    expect(isAllowedOptionalLogoReference('/uploads/x.png')).toBe(false);
+  });
 });

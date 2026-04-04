@@ -17,11 +17,11 @@ vi.mock('../db.js', () => ({
 async function createApp() {
   const app = express();
   app.use(express.json());
-  app.use('/', authRoutes);
+  app.use('/api/auth', authRoutes);
   return app;
 }
 
-describe('POST /login', () => {
+describe('POST /api/auth/login', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.JWT_SECRET = 'test-secret-key-for-jwt-signing-32b';
@@ -29,8 +29,30 @@ describe('POST /login', () => {
 
   it('400 без пароля', async () => {
     const app = await createApp();
-    const res = await request(app).post('/login').send({});
+    const res = await request(app).post('/api/auth/login').send({});
     expect(res.status).toBe(400);
+  });
+
+  it('400 пароль не строка', async () => {
+    const app = await createApp();
+    const res = await request(app).post('/api/auth/login').send({ password: 123 });
+    expect(res.status).toBe(400);
+  });
+
+  it('500 без JWT_SECRET', async () => {
+    delete process.env.JWT_SECRET;
+    const app = await createApp();
+    const res = await request(app).post('/api/auth/login').send({ password: 'x' });
+    expect(res.status).toBe(500);
+    expect(res.body.error).toMatch(/JWT_SECRET/);
+    process.env.JWT_SECRET = 'test-secret-key-for-jwt-signing-32b';
+  });
+
+  it('401 нет пользователя в БД', async () => {
+    prisma.adminUser.findFirst.mockResolvedValue(null);
+    const app = await createApp();
+    const res = await request(app).post('/api/auth/login').send({ password: 'any' });
+    expect(res.status).toBe(401);
   });
 
   it('401 неверный пароль', async () => {
@@ -39,7 +61,7 @@ describe('POST /login', () => {
       passwordHash: await bcrypt.hash('right', 4),
     });
     const app = await createApp();
-    const res = await request(app).post('/login').send({ password: 'wrong' });
+    const res = await request(app).post('/api/auth/login').send({ password: 'wrong' });
     expect(res.status).toBe(401);
   });
 
@@ -48,7 +70,7 @@ describe('POST /login', () => {
     prisma.adminUser.findFirst.mockResolvedValue({ id: 'u1', passwordHash: hash });
     prisma.adminUser.update.mockResolvedValue({});
     const app = await createApp();
-    const res = await request(app).post('/login').send({ password: 'secret' });
+    const res = await request(app).post('/api/auth/login').send({ password: 'secret' });
     expect(res.status).toBe(200);
     expect(res.body.token).toBeTruthy();
     expect(prisma.adminUser.update).toHaveBeenCalled();

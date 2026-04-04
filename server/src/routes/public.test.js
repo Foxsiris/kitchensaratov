@@ -108,6 +108,34 @@ describe('public routes', () => {
     expect(res2.status).toBe(404);
   });
 
+  it('GET /api/media/:id — 500 при ошибке БД', async () => {
+    prisma.storedImage.findUnique.mockRejectedValue(new Error('db'));
+    const res = await request(app).get('/api/media/11111111-2222-5222-8222-333333333333');
+    expect(res.status).toBe(500);
+  });
+
+  it('GET /api/media/:id — 200 с data не Buffer (массив байт)', async () => {
+    prisma.storedImage.findUnique.mockResolvedValue({
+      mimeType: 'image/jpeg',
+      data: [4, 5, 6],
+    });
+    const res = await request(app).get('/api/media/11111111-2222-5222-8222-333333333333');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(Buffer.from([4, 5, 6]));
+  });
+
+  it('GET /api/catalog — 500', async () => {
+    prisma.category.findMany.mockRejectedValue(new Error('db'));
+    const res = await request(app).get('/api/catalog');
+    expect(res.status).toBe(500);
+  });
+
+  it('GET /api/products/:id — 500', async () => {
+    prisma.product.findUnique.mockRejectedValue(new Error('db'));
+    const res = await request(app).get('/api/products/x');
+    expect(res.status).toBe(500);
+  });
+
   it('GET /api/products/:id — 200 карточка', async () => {
     prisma.product.findUnique.mockResolvedValue({
       publicId: 'pub-1',

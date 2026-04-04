@@ -98,6 +98,20 @@ describe('admin routes', () => {
       expect(res.status).toBe(201);
       expect(res.body.url).toBe('/api/media/11111111-2222-5222-8222-333333333333');
     });
+
+    it(
+      '400 файл больше 5 МБ (LIMIT_FILE_SIZE)',
+      async () => {
+        const big = Buffer.alloc(5 * 1024 * 1024 + 1, 0xff);
+        const res = await request(app)
+          .post('/api/admin/upload')
+          .set(auth())
+          .attach('file', big, { filename: 'huge.jpg', contentType: 'image/jpeg' });
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Файл не больше 5 МБ');
+      },
+      60_000
+    );
   });
 
   describe('auth', () => {

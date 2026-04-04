@@ -16,5 +16,8 @@ describe('catalogInclude', () => {
     const inc = catalogInclude(true);
     expect(inc.displayGroups.include.brandEntity).toBe(true);
     expect(inc.displayGroups.include.sections.include.products.orderBy).toEqual({ sortOrder: 'asc' });
+    expect(inc.displayGroups.include.sections.include.products.include).toEqual({
+      images: { orderBy: { sortOrder: 'asc' } },
+    });
   });
 });
