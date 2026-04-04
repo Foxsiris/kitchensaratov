@@ -1,10 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCatalog } from '../../context/CatalogContext';
 import { FiPlus, FiChevronRight } from 'react-icons/fi';
 import { productCount as productCountWord } from '../../utils/pluralize';
-import { PageTitle, PageHeader, ButtonLink, Thumb, Empty } from './AdminUI';
+import { PageTitle, PageHeader, Thumb, Empty, Button } from './AdminUI';
+import { ModalShell, ModalFormFooter, CategoryFormFields } from './components';
 
 const List = styled.ul`
   list-style: none;
@@ -54,7 +55,57 @@ const Arrow = styled.span`
 `;
 
 const AdminCategories = () => {
-  const { categories, loading, error } = useCatalog();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { showToast } = useOutletContext();
+  const { categories, loading, error, addCategory } = useCatalog();
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [form, setForm] = useState({ name: '', image: '' });
+  const [formErrors, setFormErrors] = useState({});
+
+  const openCreateModal = useCallback(() => {
+    setForm({ name: '', image: '' });
+    setFormErrors({});
+    setCreateOpen(true);
+  }, []);
+
+  useEffect(() => {
+    if (location.state?.openNewCategory) {
+      openCreateModal();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, location.pathname, navigate, openCreateModal]);
+
+  const patchForm = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setFormErrors((prev) => ({ ...prev, [field]: '' }));
+  };
+
+  const validate = () => {
+    const e = {};
+    if (!form.name.trim()) e.name = 'Обязательное поле';
+    if (form.image.trim() && !/^https?:\/\/.+/i.test(form.image.trim())) e.image = 'Некорректный URL';
+    setFormErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleCreateSubmit = async (ev) => {
+    ev.preventDefault();
+    if (!validate()) return;
+    try {
+      const newId = await addCategory({ name: form.name, image: form.image });
+      if (newId) {
+        showToast(`Категория «${form.name.trim()}» создана`);
+        setCreateOpen(false);
+        navigate(`/admin/categories/${newId}`);
+      } else {
+        showToast('Не удалось создать категорию', { type: 'error' });
+      }
+    } catch (err) {
+      showToast(err.message || 'Ошибка сохранения', { type: 'error' });
+    }
+  };
 
   const productCount = (cat) =>
     cat.brands.reduce(
@@ -77,10 +128,10 @@ const AdminCategories = () => {
     <>
       <PageHeader>
         <PageTitle>Категории</PageTitle>
-        <ButtonLink to="/admin/categories/new">
+        <Button type="button" onClick={openCreateModal}>
           <FiPlus size={16} />
           Добавить
-        </ButtonLink>
+        </Button>
       </PageHeader>
 
       {error && (
@@ -112,6 +163,22 @@ const AdminCategories = () => {
           );
         })}
       </List>
+
+      {createOpen && (
+        <ModalShell
+          title="Новая категория"
+          width="480px"
+          onClose={() => setCreateOpen(false)}
+        >
+          <form onSubmit={handleCreateSubmit}>
+            <CategoryFormFields values={form} onChange={patchForm} errors={formErrors} />
+            <ModalFormFooter
+              submitLabel="Создать"
+              onCancel={() => setCreateOpen(false)}
+            />
+          </form>
+        </ModalShell>
+      )}
     </>
   );
 };

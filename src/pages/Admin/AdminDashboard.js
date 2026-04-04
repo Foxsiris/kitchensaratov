@@ -98,7 +98,7 @@ const AdminDashboard = () => {
             <FiFolder size={16} />
             Категории
           </ButtonLink>
-          <ButtonLink to="/admin/categories/new" $variant="secondary">
+          <ButtonLink to="/admin/categories" state={{ openNewCategory: true }} $variant="secondary">
             <FiPlus size={16} />
             Новая категория
           </ButtonLink>

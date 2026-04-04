@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCatalog } from '../../context/CatalogContext';
@@ -10,24 +10,24 @@ import {
   PageHeader,
   SectionTitle,
   Label,
-  Input,
-  Textarea,
   Select,
-  FormActions,
   Button,
-  IconButton,
   BackLink,
   Empty,
   Text,
-  ErrorText,
-  ModalOverlay,
-  ModalCard,
-  ModalTitle,
-  ModalMessage,
-  ConfirmActions,
+  Input,
 } from './AdminUI';
-
-/* ---- Page-specific styled ---- */
+import {
+  ModalShell,
+  ConfirmModal,
+  ModalFormFooter,
+  ProductFormFields,
+  BrandEntityLinkSelect,
+  CategoryFormFields,
+  EditIconAction,
+  DeleteIconAction,
+  DisplayGroupsSection,
+} from './components';
 
 const SearchWrap = styled.div`
   position: relative;
@@ -127,14 +127,6 @@ const ActionCorner = styled.div`
   }
 `;
 
-const EditIconButton = styled(IconButton)`
-  &:hover {
-    border-color: ${(p) => p.theme.colors.primary};
-    color: ${(p) => p.theme.colors.primary};
-    background: ${(p) => p.theme.colors.white};
-  }
-`;
-
 const BrandGroup = styled.div`
   margin-bottom: ${(p) => p.theme.spacing.xl};
   &:last-child {
@@ -147,6 +139,7 @@ const BrandHeader = styled.div`
   align-items: center;
   gap: ${(p) => p.theme.spacing.md};
   margin-bottom: 6px;
+  flex-wrap: wrap;
 `;
 
 const BrandTitle = styled.h3`
@@ -168,59 +161,12 @@ const DangerZone = styled(Card)`
   border-color: #e8c0c0;
 `;
 
-const InlineForm = styled.form`
+const Toolbar = styled.div`
   display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  margin-top: ${(p) => p.theme.spacing.md};
-`;
-
-const InlineInput = styled.input`
-  flex: 1;
-  padding: 8px 10px;
-  border: 1px solid ${(p) => p.theme.colors.border};
-  border-radius: 4px;
-  font-size: ${(p) => p.theme.fontSizes.sm};
-  font-family: inherit;
-
-  &:focus {
-    outline: none;
-    border-color: ${(p) => p.theme.colors.primary};
-  }
-`;
-
-const SmallButton = styled.button`
-  padding: 8px 14px;
-  font-size: ${(p) => p.theme.fontSizes.xs};
-  font-family: inherit;
-  border: 1px solid ${(p) => p.theme.colors.primary};
-  background: ${(p) => p.theme.colors.primary};
-  color: ${(p) => p.theme.colors.white};
-  border-radius: 4px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-
-  &:hover {
-    background: transparent;
-    color: ${(p) => p.theme.colors.primary};
-  }
-`;
-
-const CategoryEditRow = styled.div`
-  display: flex;
-  gap: ${(p) => p.theme.spacing.md};
-  align-items: flex-end;
   flex-wrap: wrap;
-  margin-bottom: ${(p) => p.theme.spacing.md};
+  gap: 8px;
+  align-items: center;
 `;
-
-const FieldWrap = styled.div`
-  flex: 1;
-  min-width: 200px;
-`;
-
-/* ---- Component ---- */
 
 const AdminCategoryDetail = () => {
   const { id } = useParams();
@@ -243,10 +189,47 @@ const AdminCategoryDetail = () => {
   } = useCatalog();
 
   const [brandEntities, setBrandEntities] = useState([]);
-  const [newBrandEntityMode, setNewBrandEntityMode] = useState('__auto__');
+
+  const [categoryEditOpen, setCategoryEditOpen] = useState(false);
+  const [catForm, setCatForm] = useState({ name: '', image: '' });
+  const [catErrors, setCatErrors] = useState({});
+
+  const [productAddOpen, setProductAddOpen] = useState(false);
+  const [brandId, setBrandId] = useState('');
+  const [subcategoryId, setSubcategoryId] = useState('');
+  const [productForm, setProductForm] = useState({
+    name: '',
+    price: '',
+    description: '',
+    image: '',
+    source: '',
+  });
+  const [productFormErrors, setProductFormErrors] = useState({});
+
+  const [editProduct, setEditProduct] = useState(null);
+  const [editProductForm, setEditProductForm] = useState({
+    name: '',
+    price: '',
+    description: '',
+    image: '',
+    source: '',
+  });
+  const [editProductErrors, setEditProductErrors] = useState({});
+
+  const [displayGroupAddOpen, setDisplayGroupAddOpen] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [newGroupEntityMode, setNewGroupEntityMode] = useState('__auto__');
+
+  const [subcategoryModalBrand, setSubcategoryModalBrand] = useState(null);
+  const [newSubName, setNewSubName] = useState('');
+
   const [editBrandGroup, setEditBrandGroup] = useState(null);
   const [editBrandName, setEditBrandName] = useState('');
   const [editBrandEntitySlug, setEditBrandEntitySlug] = useState('__none__');
+
+  const [confirm, setConfirm] = useState(null);
+
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -263,41 +246,26 @@ const AdminCategoryDetail = () => {
     };
   }, [fetchBrandEntities]);
 
-  // Add product form
-  const [showForm, setShowForm] = useState(false);
-  const [brandId, setBrandId] = useState('');
-  const [subcategoryId, setSubcategoryId] = useState('');
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
-  const [source, setSource] = useState('');
-  const [formErrors, setFormErrors] = useState({});
+  const openCategoryEdit = useCallback(() => {
+    const c = categories.find((x) => x.id === id);
+    if (!c) return;
+    setCatForm({ name: c.name, image: c.image });
+    setCatErrors({});
+    setCategoryEditOpen(true);
+  }, [categories, id]);
 
-  // Edit product modal
-  const [editProduct, setEditProduct] = useState(null);
-  const [editName, setEditName] = useState('');
-  const [editPrice, setEditPrice] = useState('');
-  const [editDescription, setEditDescription] = useState('');
-  const [editImage, setEditImage] = useState('');
-  const [editSource, setEditSource] = useState('');
-  const [editErrors, setEditErrors] = useState({});
+  const patchProductForm = useCallback((field, value) => {
+    setProductForm((prev) => ({ ...prev, [field]: value }));
+  }, []);
 
-  // Category edit
-  const [catName, setCatName] = useState('');
-  const [catImage, setCatImage] = useState('');
-  const [showCatEdit, setShowCatEdit] = useState(false);
+  const patchEditProductForm = useCallback((field, value) => {
+    setEditProductForm((prev) => ({ ...prev, [field]: value }));
+  }, []);
 
-  // Brand / subcategory inline add
-  const [newBrandName, setNewBrandName] = useState('');
-  const [newSubName, setNewSubName] = useState('');
-  const [addSubForBrand, setAddSubForBrand] = useState(null);
-
-  // Search
-  const [search, setSearch] = useState('');
-
-  // Confirm delete modal
-  const [confirm, setConfirm] = useState(null);
+  const patchCatForm = useCallback((field, value) => {
+    setCatForm((prev) => ({ ...prev, [field]: value }));
+    setCatErrors((prev) => ({ ...prev, [field]: '' }));
+  }, []);
 
   const category = categories.find((c) => c.id === id);
 
@@ -340,82 +308,69 @@ const AdminCategoryDetail = () => {
   const firstSub = activeBrand?.subcategories?.[0];
   const activeSubId = subcategoryId || firstSub?.id;
 
-  const resetForm = () => {
-    setName('');
-    setPrice('');
-    setDescription('');
-    setImage('');
-    setSource('');
-    setFormErrors({});
+  const resetProductForm = () => {
+    setProductForm({ name: '', price: '', description: '', image: '', source: '' });
+    setProductFormErrors({});
   };
 
-  const validateAdd = () => {
+  const openProductAdd = () => {
+    resetProductForm();
+    setBrandId('');
+    setSubcategoryId('');
+    setProductAddOpen(true);
+  };
+
+  const validateProduct = (form) => {
     const errors = {};
-    if (!name.trim()) errors.name = 'Обязательное поле';
-    if (image.trim() && !/^https?:\/\/.+/i.test(image.trim())) errors.image = 'Некорректный URL';
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    if (!form.name.trim()) errors.name = 'Обязательное поле';
+    if (form.image.trim() && !/^https?:\/\/.+/i.test(form.image.trim())) errors.image = 'Некорректный URL';
+    return errors;
   };
 
-  const handleAdd = async (e) => {
+  const handleProductAddSubmit = async (e) => {
     e.preventDefault();
-    if (!validateAdd() || !activeBrandId || !activeSubId) return;
+    const errors = validateProduct(productForm);
+    setProductFormErrors(errors);
+    if (Object.keys(errors).length > 0 || !activeBrandId || !activeSubId) return;
     try {
-      const pid = await addProduct(id, activeBrandId, activeSubId, {
-        name,
-        price,
-        description,
-        image,
-        source,
-      });
+      const pid = await addProduct(id, activeBrandId, activeSubId, productForm);
       if (pid) {
-        showToast(`«${name.trim()}» добавлен в каталог`);
-        resetForm();
-        setShowForm(false);
+        showToast(`«${productForm.name.trim()}» добавлен в каталог`);
+        resetProductForm();
+        setProductAddOpen(false);
       }
     } catch (err) {
       showToast(err.message || 'Не удалось добавить товар', { type: 'error' });
     }
   };
 
-  // Edit product
-  const openEdit = (product) => {
+  const openEditProduct = (product) => {
     setEditProduct(product);
-    setEditName(product.name);
-    setEditPrice(product.price);
-    setEditDescription(product.description);
-    setEditImage(product.image);
-    setEditSource(product.source);
-    setEditErrors({});
+    setEditProductForm({
+      name: product.name,
+      price: product.price,
+      description: product.description,
+      image: product.image,
+      source: product.source,
+    });
+    setEditProductErrors({});
   };
 
-  const validateEdit = () => {
-    const errors = {};
-    if (!editName.trim()) errors.name = 'Обязательное поле';
-    if (editImage.trim() && !/^https?:\/\/.+/i.test(editImage.trim())) errors.image = 'Некорректный URL';
-    setEditErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleEditSave = async (e) => {
+  const handleEditProductSubmit = async (e) => {
     e.preventDefault();
-    if (!validateEdit()) return;
+    const errors = validateProduct(editProductForm);
+    setEditProductErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     try {
-      await updateProduct(editProduct.id, {
-        name: editName,
-        price: editPrice,
-        description: editDescription,
-        image: editImage,
-        source: editSource,
-      });
-      showToast(`«${editName.trim()}» обновлён`);
+      await updateProduct(editProduct.id, editProductForm);
+      showToast(`«${editProductForm.name.trim()}» обновлён`);
       setEditProduct(null);
     } catch (err) {
       showToast(err.message || 'Не удалось сохранить', { type: 'error' });
     }
   };
 
-  const handleDeleteProduct = (product) => {
+  const requestDeleteProduct = (product) => {
     setConfirm({
       title: 'Удалить товар?',
       message: `Удалить «${product.name}»?`,
@@ -432,7 +387,31 @@ const AdminCategoryDetail = () => {
     });
   };
 
-  const handleDeleteCategory = () => {
+  const validateCategory = () => {
+    const e = {};
+    if (!catForm.name.trim()) e.name = 'Обязательное поле';
+    if (catForm.image.trim() && !/^https?:\/\/.+/i.test(catForm.image.trim())) e.image = 'Некорректный URL';
+    setCatErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleCategorySave = async (e) => {
+    e.preventDefault();
+    if (!validateCategory()) return;
+    try {
+      await updateCategory(id, { name: catForm.name, image: catForm.image });
+      showToast('Категория обновлена');
+      setCategoryEditOpen(false);
+    } catch (err) {
+      showToast(err.message || 'Не удалось сохранить', { type: 'error' });
+    }
+  };
+
+  const requestDeleteCategory = () => {
+    const totalProducts = category.brands.reduce(
+      (acc, b) => acc + b.subcategories.reduce((s, sub) => s + sub.products.length, 0),
+      0
+    );
     setConfirm({
       title: 'Удалить категорию?',
       message: `Категория «${category.name}» и все ${totalProducts} ${productCountWord(totalProducts)} будут удалены безвозвратно.`,
@@ -450,39 +429,18 @@ const AdminCategoryDetail = () => {
     });
   };
 
-  // Category edit
-  const startCatEdit = () => {
-    setCatName(category.name);
-    setCatImage(category.image);
-    setShowCatEdit(true);
-  };
-
-  const saveCatEdit = async () => {
-    if (!catName.trim()) return;
-    try {
-      await updateCategory(id, { name: catName, image: catImage });
-      showToast('Категория обновлена');
-      setShowCatEdit(false);
-    } catch (err) {
-      showToast(err.message || 'Не удалось сохранить', { type: 'error' });
-    }
-  };
-
-  // Brand add
-  const handleAddBrand = async (e) => {
+  const handleDisplayGroupAdd = async (e) => {
     e.preventDefault();
-    if (!newBrandName.trim()) return;
+    if (!newGroupName.trim()) return;
     try {
       const opts = {};
-      if (newBrandEntityMode === '__none__') {
-        opts.entitySlug = '';
-      } else if (newBrandEntityMode !== '__auto__') {
-        opts.entitySlug = newBrandEntityMode;
-      }
-      await addBrand(id, newBrandName, opts);
-      showToast(`Бренд «${newBrandName.trim()}» добавлен`);
-      setNewBrandName('');
-      setNewBrandEntityMode('__auto__');
+      if (newGroupEntityMode === '__none__') opts.entitySlug = '';
+      else if (newGroupEntityMode !== '__auto__') opts.entitySlug = newGroupEntityMode;
+      await addBrand(id, newGroupName, opts);
+      showToast(`Бренд «${newGroupName.trim()}» добавлен`);
+      setNewGroupName('');
+      setNewGroupEntityMode('__auto__');
+      setDisplayGroupAddOpen(false);
     } catch (err) {
       showToast(err.message || 'Не удалось добавить бренд', { type: 'error' });
     }
@@ -491,10 +449,10 @@ const AdminCategoryDetail = () => {
   const countProductsInBrand = (brand) =>
     brand.subcategories.reduce((acc, s) => acc + s.products.length, 0);
 
-  const openEditBrand = (brand) => {
-    setEditBrandGroup(brand);
-    setEditBrandName(brand.name);
-    setEditBrandEntitySlug(brand.entitySlug || '__none__');
+  const openEditBrand = (b) => {
+    setEditBrandGroup(b);
+    setEditBrandName(b.name);
+    setEditBrandEntitySlug(b.entitySlug || '__none__');
   };
 
   const saveEditBrand = async (e) => {
@@ -503,8 +461,7 @@ const AdminCategoryDetail = () => {
     try {
       const payload = { name: editBrandName.trim() };
       if (editBrandGroup.id !== 'default') {
-        payload.entitySlug =
-          editBrandEntitySlug === '__none__' ? '' : editBrandEntitySlug;
+        payload.entitySlug = editBrandEntitySlug === '__none__' ? '' : editBrandEntitySlug;
       }
       await updateDisplayGroup(id, editBrandGroup.id, payload);
       showToast('Сохранено');
@@ -514,15 +471,15 @@ const AdminCategoryDetail = () => {
     }
   };
 
-  const handleDeleteBrand = (brand) => {
-    const n = countProductsInBrand(brand);
+  const requestDeleteBrand = (b) => {
+    const n = countProductsInBrand(b);
     setConfirm({
       title: 'Удалить витринную группу?',
-      message: `«${brand.name}» и все товары внутри (${n} ${productCountWord(n)}) будут удалены безвозвратно.`,
+      message: `«${b.name}» и все товары внутри (${n} ${productCountWord(n)}) будут удалены безвозвратно.`,
       onConfirm: async () => {
         try {
-          await deleteDisplayGroup(id, brand.id);
-          showToast(`Группа «${brand.name}» удалена`);
+          await deleteDisplayGroup(id, b.id);
+          showToast(`Группа «${b.name}» удалена`);
           setConfirm(null);
         } catch (err) {
           showToast(err.message || 'Не удалось удалить', { type: 'error' });
@@ -532,15 +489,14 @@ const AdminCategoryDetail = () => {
     });
   };
 
-  // Subcategory add
-  const handleAddSub = async (e, forBrandId) => {
+  const handleSubcategoryAdd = async (e) => {
     e.preventDefault();
-    if (!newSubName.trim()) return;
+    if (!subcategoryModalBrand || !newSubName.trim()) return;
     try {
-      await addSubcategory(id, forBrandId, newSubName);
+      await addSubcategory(id, subcategoryModalBrand.id, newSubName);
       showToast(`Подкатегория «${newSubName.trim()}» добавлена`);
       setNewSubName('');
-      setAddSubForBrand(null);
+      setSubcategoryModalBrand(null);
     } catch (err) {
       showToast(err.message || 'Не удалось добавить подкатегорию', { type: 'error' });
     }
@@ -568,219 +524,26 @@ const AdminCategoryDetail = () => {
             {brandCountWord(category.brands.length)}
           </Text>
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <Button type="button" $variant="secondary" onClick={startCatEdit}>
-            <FiEdit2 size={14} /> Редактировать
+        <Toolbar>
+          <Button type="button" $variant="secondary" onClick={openCategoryEdit}>
+            <FiEdit2 size={14} /> Редактировать категорию
           </Button>
-          <Button type="button" onClick={() => setShowForm(!showForm)}>
+          <Button type="button" onClick={openProductAdd}>
             <FiPlus size={16} /> {addLabel}
           </Button>
-        </div>
+        </Toolbar>
       </PageHeader>
 
-      {/* ---- Category edit card ---- */}
-      {showCatEdit && (
-        <Card>
-          <SectionTitle>Редактирование категории</SectionTitle>
-          <CategoryEditRow>
-            <FieldWrap>
-              <Label>Название</Label>
-              <Input value={catName} onChange={(e) => setCatName(e.target.value)} />
-            </FieldWrap>
-            <FieldWrap>
-              <Label>URL изображения</Label>
-              <Input value={catImage} onChange={(e) => setCatImage(e.target.value)} />
-            </FieldWrap>
-          </CategoryEditRow>
-          <FormActions style={{ marginTop: 0 }}>
-            <Button type="button" onClick={saveCatEdit}>
-              Сохранить
-            </Button>
-            <Button type="button" $variant="secondary" onClick={() => setShowCatEdit(false)}>
-              Отмена
-            </Button>
-          </FormActions>
-        </Card>
-      )}
-
-      {/* ---- Add product form ---- */}
-      {showForm && (
-        <Card as="form" onSubmit={handleAdd} style={{ maxWidth: 560 }}>
-          <SectionTitle>{isKitchens ? 'Новая кухня' : 'Новый товар'}</SectionTitle>
-
-          {category.brands.length > 1 && (
-            <>
-              <Label>Бренд</Label>
-              <Select
-                value={activeBrandId}
-                onChange={(e) => {
-                  setBrandId(e.target.value);
-                  setSubcategoryId('');
-                }}
-              >
-                {category.brands.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </Select>
-            </>
-          )}
-
-          {activeBrand && activeBrand.subcategories.length > 1 && (
-            <>
-              <Label>Подкатегория</Label>
-              <Select value={activeSubId} onChange={(e) => setSubcategoryId(e.target.value)}>
-                {activeBrand.subcategories.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </Select>
-            </>
-          )}
-
-          <Label htmlFor="p-name">Название *</Label>
-          <Input
-            id="p-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder={isKitchens ? 'Например: Луна' : 'Название модели'}
-          />
-          {formErrors.name && <ErrorText>{formErrors.name}</ErrorText>}
-
-          <Label htmlFor="p-price">Цена</Label>
-          <Input
-            id="p-price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="от 200 000 ₽  или  По запросу"
-          />
-
-          <Label htmlFor="p-desc">Описание</Label>
-          <Textarea
-            id="p-desc"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Краткое описание модели..."
-          />
-
-          <Label htmlFor="p-img">URL изображения</Label>
-          <Input
-            id="p-img"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            placeholder="https://..."
-          />
-          {formErrors.image && <ErrorText>{formErrors.image}</ErrorText>}
-
-          <Label htmlFor="p-src">Источник (отображается в карточке)</Label>
-          <Input
-            id="p-src"
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-            placeholder="rimi-mebel.ru"
-          />
-
-          <FormActions>
-            <Button type="submit">Добавить</Button>
-            <Button
-              type="button"
-              $variant="secondary"
-              onClick={() => {
-                setShowForm(false);
-                resetForm();
-              }}
-            >
-              Отмена
-            </Button>
-          </FormActions>
-        </Card>
-      )}
-
-      {/* ---- Brands & Subcategories management ---- */}
       <Card>
-        <SectionTitle>Бренды и подкатегории</SectionTitle>
-        {category.brands.map((brand) => (
-          <div key={brand.id} style={{ marginBottom: 12 }}>
-            <BrandHeader>
-              <BrandTitle>{brand.name}</BrandTitle>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-                {brand.entitySlug && (
-                  <Text style={{ fontSize: '11px', margin: 0 }}>
-                    производитель: <code>{brand.entitySlug}</code>
-                  </Text>
-                )}
-                <SmallButton type="button" onClick={() => openEditBrand(brand)}>
-                  <FiEdit2 size={12} /> Изменить
-                </SmallButton>
-                {brand.id !== 'default' && (
-                  <SmallButton
-                    type="button"
-                    onClick={() => handleDeleteBrand(brand)}
-                    style={{
-                      borderColor: '#c00',
-                      color: '#c00',
-                      background: 'transparent',
-                    }}
-                  >
-                    <FiTrash2 size={12} /> Удалить
-                  </SmallButton>
-                )}
-                <SmallButton
-                  type="button"
-                  onClick={() => {
-                    setAddSubForBrand(addSubForBrand === brand.id ? null : brand.id);
-                    setNewSubName('');
-                  }}
-                >
-                  <FiPlus size={12} /> Подкатегория
-                </SmallButton>
-              </div>
-            </BrandHeader>
-            <Text style={{ marginLeft: 4 }}>
-              {brand.subcategories.map((s) => s.name).join(', ')}
-            </Text>
-            {addSubForBrand === brand.id && (
-              <InlineForm onSubmit={(e) => handleAddSub(e, brand.id)}>
-                <InlineInput
-                  value={newSubName}
-                  onChange={(e) => setNewSubName(e.target.value)}
-                  placeholder="Название подкатегории"
-                  autoFocus
-                />
-                <SmallButton type="submit">Добавить</SmallButton>
-              </InlineForm>
-            )}
-          </div>
-        ))}
-        <Label style={{ marginTop: 8 }}>Привязка к справочнику производителей</Label>
-        <Select
-          value={newBrandEntityMode}
-          onChange={(e) => setNewBrandEntityMode(e.target.value)}
-          style={{ marginBottom: 8, maxWidth: 420 }}
-        >
-          <option value="__auto__">Автоматически (как раньше: по названию группы)</option>
-          <option value="__none__">Не привязывать</option>
-          {brandEntities.map((ent) => (
-            <option key={ent.slug} value={ent.slug}>
-              {ent.name} ({ent.slug})
-            </option>
-          ))}
-        </Select>
-        <InlineForm onSubmit={handleAddBrand}>
-          <InlineInput
-            value={newBrandName}
-            onChange={(e) => setNewBrandName(e.target.value)}
-            placeholder="Новый бренд..."
-          />
-          <SmallButton type="submit">
-            <FiPlus size={12} /> Бренд
-          </SmallButton>
-        </InlineForm>
+        <DisplayGroupsSection
+          brands={category.brands}
+          onEditBrand={openEditBrand}
+          onDeleteBrand={requestDeleteBrand}
+          onAddSubcategory={setSubcategoryModalBrand}
+          onAddGroup={() => setDisplayGroupAddOpen(true)}
+        />
       </Card>
 
-      {/* ---- Products grouped by brand / subcategory ---- */}
       <Card>
         <SectionTitle>Товары</SectionTitle>
 
@@ -829,20 +592,20 @@ const AdminCategoryDetail = () => {
                             <ProductMeta>{product.price}</ProductMeta>
                           </ProductBody>
                           <ActionCorner>
-                            <EditIconButton
+                            <EditIconAction
                               type="button"
                               title="Редактировать"
-                              onClick={() => openEdit(product)}
+                              onClick={() => openEditProduct(product)}
                             >
                               <FiEdit2 size={14} />
-                            </EditIconButton>
-                            <IconButton
+                            </EditIconAction>
+                            <DeleteIconAction
                               type="button"
                               title="Удалить"
-                              onClick={() => handleDeleteProduct(product)}
+                              onClick={() => requestDeleteProduct(product)}
                             >
                               <FiTrash2 size={14} />
-                            </IconButton>
+                            </DeleteIconAction>
                           </ActionCorner>
                         </ProductCard>
                       ))}
@@ -855,114 +618,202 @@ const AdminCategoryDetail = () => {
         })}
       </Card>
 
-      {/* ---- Danger zone ---- */}
       <DangerZone>
         <SectionTitle>Удаление категории</SectionTitle>
         <Text style={{ marginBottom: 16 }}>
-          Категория «{category.name}» и все {totalProducts} {productCountWord(totalProducts)} будут удалены безвозвратно.
+          Категория «{category.name}» и все {totalProducts} {productCountWord(totalProducts)} будут удалены
+          безвозвратно.
         </Text>
-        <Button type="button" $variant="danger" onClick={handleDeleteCategory}>
+        <Button type="button" $variant="danger" onClick={requestDeleteCategory}>
           <FiTrash2 size={14} />
           Удалить категорию
         </Button>
       </DangerZone>
 
+      {categoryEditOpen && (
+        <ModalShell
+          title="Редактирование категории"
+          width="480px"
+          onClose={() => setCategoryEditOpen(false)}
+        >
+          <form onSubmit={handleCategorySave}>
+            <CategoryFormFields values={catForm} onChange={patchCatForm} errors={catErrors} />
+            <ModalFormFooter
+              submitLabel="Сохранить"
+              onCancel={() => setCategoryEditOpen(false)}
+            />
+          </form>
+        </ModalShell>
+      )}
+
+      {productAddOpen && (
+        <ModalShell
+          title={isKitchens ? 'Новая кухня' : 'Новый товар'}
+          width="520px"
+          onClose={() => {
+            setProductAddOpen(false);
+            resetProductForm();
+          }}
+        >
+          <form onSubmit={handleProductAddSubmit}>
+            {category.brands.length > 1 && (
+              <>
+                <Label>Бренд</Label>
+                <Select
+                  value={activeBrandId}
+                  onChange={(e) => {
+                    setBrandId(e.target.value);
+                    setSubcategoryId('');
+                  }}
+                >
+                  {category.brands.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </Select>
+              </>
+            )}
+
+            {activeBrand && activeBrand.subcategories.length > 1 && (
+              <>
+                <Label>Подкатегория</Label>
+                <Select value={activeSubId} onChange={(e) => setSubcategoryId(e.target.value)}>
+                  {activeBrand.subcategories.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </Select>
+              </>
+            )}
+
+            <ProductFormFields
+              values={productForm}
+              onChange={patchProductForm}
+              errors={productFormErrors}
+              namePlaceholder={isKitchens ? 'Например: Луна' : 'Название модели'}
+            />
+            <ModalFormFooter
+              submitLabel="Добавить"
+              onCancel={() => {
+                setProductAddOpen(false);
+                resetProductForm();
+              }}
+            />
+          </form>
+        </ModalShell>
+      )}
+
+      {displayGroupAddOpen && (
+        <ModalShell
+          title="Новая витринная группа"
+          width="480px"
+          onClose={() => {
+            setDisplayGroupAddOpen(false);
+            setNewGroupName('');
+            setNewGroupEntityMode('__auto__');
+          }}
+        >
+          <form onSubmit={handleDisplayGroupAdd}>
+            <Label>Название группы *</Label>
+            <Input
+              value={newGroupName}
+              onChange={(e) => setNewGroupName(e.target.value)}
+              placeholder="Отображается в каталоге"
+            />
+            <BrandEntityLinkSelect
+              variant="create"
+              value={newGroupEntityMode}
+              onChange={setNewGroupEntityMode}
+              brandEntities={brandEntities}
+            />
+            <ModalFormFooter
+              submitLabel="Создать"
+              onCancel={() => {
+                setDisplayGroupAddOpen(false);
+                setNewGroupName('');
+                setNewGroupEntityMode('__auto__');
+              }}
+            />
+          </form>
+        </ModalShell>
+      )}
+
+      {subcategoryModalBrand && (
+        <ModalShell
+          title={`Подкатегория — ${subcategoryModalBrand.name}`}
+          width="420px"
+          onClose={() => {
+            setSubcategoryModalBrand(null);
+            setNewSubName('');
+          }}
+        >
+          <form onSubmit={handleSubcategoryAdd}>
+            <Label>Название *</Label>
+            <Input
+              value={newSubName}
+              onChange={(e) => setNewSubName(e.target.value)}
+              placeholder="Например: Современные"
+              autoFocus
+            />
+            <ModalFormFooter
+              submitLabel="Добавить"
+              onCancel={() => {
+                setSubcategoryModalBrand(null);
+                setNewSubName('');
+              }}
+            />
+          </form>
+        </ModalShell>
+      )}
+
       {editBrandGroup && (
-        <ModalOverlay onClick={() => setEditBrandGroup(null)}>
-          <ModalCard onClick={(e) => e.stopPropagation()} $width="440px">
-            <ModalTitle>Витринная группа</ModalTitle>
-            <form onSubmit={saveEditBrand}>
-              <Label>Название *</Label>
-              <Input value={editBrandName} onChange={(e) => setEditBrandName(e.target.value)} />
-              {editBrandGroup.id !== 'default' && (
-                <>
-                  <Label>Производитель (справочник)</Label>
-                  <Select
-                    value={editBrandEntitySlug}
-                    onChange={(e) => setEditBrandEntitySlug(e.target.value)}
-                  >
-                    <option value="__none__">Не привязан</option>
-                    {brandEntities.map((ent) => (
-                      <option key={ent.slug} value={ent.slug}>
-                        {ent.name} ({ent.slug})
-                      </option>
-                    ))}
-                  </Select>
-                </>
-              )}
-              {editBrandGroup.id === 'default' && (
-                <Text style={{ marginTop: 8 }}>
-                  У служебной группы «Все бренды» нельзя менять привязку к производителю.
-                </Text>
-              )}
-              <FormActions>
-                <Button type="submit">Сохранить</Button>
-                <Button type="button" $variant="secondary" onClick={() => setEditBrandGroup(null)}>
-                  Отмена
-                </Button>
-              </FormActions>
-            </form>
-          </ModalCard>
-        </ModalOverlay>
+        <ModalShell
+          title="Витринная группа"
+          width="440px"
+          onClose={() => setEditBrandGroup(null)}
+        >
+          <form onSubmit={saveEditBrand}>
+            <Label>Название *</Label>
+            <Input value={editBrandName} onChange={(e) => setEditBrandName(e.target.value)} />
+            {editBrandGroup.id !== 'default' ? (
+              <BrandEntityLinkSelect
+                variant="edit"
+                value={editBrandEntitySlug}
+                onChange={setEditBrandEntitySlug}
+                brandEntities={brandEntities}
+              />
+            ) : (
+              <Text style={{ marginTop: 8 }}>
+                У служебной группы «Все бренды» нельзя менять привязку к производителю.
+              </Text>
+            )}
+            <ModalFormFooter submitLabel="Сохранить" onCancel={() => setEditBrandGroup(null)} />
+          </form>
+        </ModalShell>
       )}
 
-      {/* ---- Confirm delete modal ---- */}
-      {confirm && (
-        <ModalOverlay onClick={() => setConfirm(null)}>
-          <ModalCard onClick={(e) => e.stopPropagation()} $width="400px">
-            <ModalTitle>{confirm.title}</ModalTitle>
-            <ModalMessage>{confirm.message}</ModalMessage>
-            <ConfirmActions>
-              <Button type="button" $variant="secondary" onClick={() => setConfirm(null)}>
-                Отмена
-              </Button>
-              <Button
-                type="button"
-                $variant="danger"
-                onClick={() => {
-                  confirm.onConfirm();
-                }}
-              >
-                Удалить
-              </Button>
-            </ConfirmActions>
-          </ModalCard>
-        </ModalOverlay>
-      )}
-
-      {/* ---- Edit product modal ---- */}
       {editProduct && (
-        <ModalOverlay onClick={() => setEditProduct(null)}>
-          <ModalCard onClick={(e) => e.stopPropagation()}>
-            <ModalTitle>Редактирование товара</ModalTitle>
-            <form onSubmit={handleEditSave}>
-              <Label>Название *</Label>
-              <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
-              {editErrors.name && <ErrorText>{editErrors.name}</ErrorText>}
-
-              <Label>Цена</Label>
-              <Input value={editPrice} onChange={(e) => setEditPrice(e.target.value)} />
-
-              <Label>Описание</Label>
-              <Textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
-
-              <Label>URL изображения</Label>
-              <Input value={editImage} onChange={(e) => setEditImage(e.target.value)} />
-              {editErrors.image && <ErrorText>{editErrors.image}</ErrorText>}
-
-              <Label>Источник</Label>
-              <Input value={editSource} onChange={(e) => setEditSource(e.target.value)} />
-
-              <FormActions>
-                <Button type="submit">Сохранить</Button>
-                <Button type="button" $variant="secondary" onClick={() => setEditProduct(null)}>
-                  Отмена
-                </Button>
-              </FormActions>
-            </form>
-          </ModalCard>
-        </ModalOverlay>
+        <ModalShell title="Редактирование товара" width="520px" onClose={() => setEditProduct(null)}>
+          <form onSubmit={handleEditProductSubmit}>
+            <ProductFormFields
+              values={editProductForm}
+              onChange={patchEditProductForm}
+              errors={editProductErrors}
+            />
+            <ModalFormFooter submitLabel="Сохранить" onCancel={() => setEditProduct(null)} />
+          </form>
+        </ModalShell>
       )}
+
+      <ConfirmModal
+        open={Boolean(confirm)}
+        onClose={() => setConfirm(null)}
+        title={confirm?.title}
+        message={confirm?.message}
+        onConfirm={confirm?.onConfirm}
+      />
     </>
   );
 };

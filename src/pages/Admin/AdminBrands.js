@@ -3,24 +3,15 @@ import { useOutletContext } from 'react-router-dom';
 import styled from 'styled-components';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import { useCatalog } from '../../context/CatalogContext';
+import { Card, PageTitle, PageHeader, SectionTitle, Button, Text } from './AdminUI';
 import {
-  Card,
-  PageTitle,
-  PageHeader,
-  SectionTitle,
-  Label,
-  Input,
-  Textarea,
-  FormActions,
-  Button,
-  Text,
-  ModalOverlay,
-  ModalCard,
-  ModalTitle,
-  ModalMessage,
-  ConfirmActions,
-  IconButton,
-} from './AdminUI';
+  ModalShell,
+  ConfirmModal,
+  ModalFormFooter,
+  BrandEntityFormFields,
+  EditIconAction,
+  DeleteIconAction,
+} from './components';
 
 const Table = styled.table`
   width: 100%;
@@ -56,40 +47,32 @@ const Actions = styled.div`
   gap: 6px;
 `;
 
-const Grid2 = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${(p) => p.theme.spacing.md};
-
-  @media (max-width: ${(p) => p.theme.breakpoints.mobile}) {
-    grid-template-columns: 1fr;
-  }
-`;
+const emptyCreate = () => ({
+  name: '',
+  slug: '',
+  logoUrl: '',
+  website: '',
+  description: '',
+});
 
 const AdminBrands = () => {
   const { showToast } = useOutletContext();
-  const {
-    fetchBrandEntities,
-    createBrandEntity,
-    updateBrandEntity,
-    deleteBrandEntity,
-  } = useCatalog();
+  const { fetchBrandEntities, createBrandEntity, updateBrandEntity, deleteBrandEntity } = useCatalog();
 
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [createName, setCreateName] = useState('');
-  const [createSlug, setCreateSlug] = useState('');
-  const [createLogo, setCreateLogo] = useState('');
-  const [createWebsite, setCreateWebsite] = useState('');
-  const [createDesc, setCreateDesc] = useState('');
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createValues, setCreateValues] = useState(emptyCreate);
 
-  const [editRow, setEditRow] = useState(null);
-  const [editName, setEditName] = useState('');
-  const [editLogo, setEditLogo] = useState('');
-  const [editWebsite, setEditWebsite] = useState('');
-  const [editDesc, setEditDesc] = useState('');
-  const [editSort, setEditSort] = useState('0');
+  const [editSlug, setEditSlug] = useState(null);
+  const [editValues, setEditValues] = useState({
+    name: '',
+    logoUrl: '',
+    website: '',
+    description: '',
+    sortOrder: '0',
+  });
 
   const [confirmDelete, setConfirmDelete] = useState(null);
 
@@ -110,25 +93,34 @@ const AdminBrands = () => {
     reload();
   }, [reload]);
 
-  const handleCreate = async (e) => {
+  const patchCreate = (field, value) => {
+    setCreateValues((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const patchEdit = (field, value) => {
+    setEditValues((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const openCreate = () => {
+    setCreateValues(emptyCreate());
+    setCreateOpen(true);
+  };
+
+  const handleCreateSubmit = async (e) => {
     e.preventDefault();
-    const name = createName.trim();
+    const name = createValues.name.trim();
     if (!name) return;
     try {
       const payload = {
         name,
-        ...(createSlug.trim() ? { slug: createSlug.trim() } : {}),
-        logoUrl: createLogo.trim() || undefined,
-        website: createWebsite.trim() || undefined,
-        description: createDesc.trim() || undefined,
+        ...(createValues.slug.trim() ? { slug: createValues.slug.trim() } : {}),
+        logoUrl: createValues.logoUrl.trim() || undefined,
+        website: createValues.website.trim() || undefined,
+        description: createValues.description.trim() || undefined,
       };
       await createBrandEntity(payload);
       showToast(`Производитель «${name}» создан`);
-      setCreateName('');
-      setCreateSlug('');
-      setCreateLogo('');
-      setCreateWebsite('');
-      setCreateDesc('');
+      setCreateOpen(false);
       await reload();
     } catch (err) {
       showToast(err.message || 'Не удалось создать', { type: 'error' });
@@ -136,27 +128,29 @@ const AdminBrands = () => {
   };
 
   const openEdit = (row) => {
-    setEditRow(row);
-    setEditName(row.name);
-    setEditLogo(row.logoUrl || '');
-    setEditWebsite(row.website || '');
-    setEditDesc(row.description || '');
-    setEditSort(String(row.sortOrder ?? 0));
+    setEditSlug(row.slug);
+    setEditValues({
+      name: row.name,
+      logoUrl: row.logoUrl || '',
+      website: row.website || '',
+      description: row.description || '',
+      sortOrder: String(row.sortOrder ?? 0),
+    });
   };
 
-  const saveEdit = async (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
-    if (!editRow || !editName.trim()) return;
+    if (!editSlug || !editValues.name.trim()) return;
     try {
-      await updateBrandEntity(editRow.slug, {
-        name: editName.trim(),
-        logoUrl: editLogo.trim() || null,
-        website: editWebsite.trim() || null,
-        description: editDesc.trim() || null,
-        sortOrder: Number(editSort) || 0,
+      await updateBrandEntity(editSlug, {
+        name: editValues.name.trim(),
+        logoUrl: editValues.logoUrl.trim() || null,
+        website: editValues.website.trim() || null,
+        description: editValues.description.trim() || null,
+        sortOrder: Number(editValues.sortOrder) || 0,
       });
       showToast('Сохранено');
-      setEditRow(null);
+      setEditSlug(null);
       await reload();
     } catch (err) {
       showToast(err.message || 'Не удалось сохранить', { type: 'error' });
@@ -186,44 +180,17 @@ const AdminBrands = () => {
             здесь.
           </Text>
         </div>
+        <Button type="button" onClick={openCreate}>
+          <FiPlus size={16} /> Добавить производителя
+        </Button>
       </PageHeader>
-
-      <Card as="form" onSubmit={handleCreate}>
-        <SectionTitle>
-          <FiPlus size={18} style={{ verticalAlign: '-3px', marginRight: 6 }} />
-          Новый производитель
-        </SectionTitle>
-        <Grid2>
-          <div>
-            <Label>Название *</Label>
-            <Input value={createName} onChange={(e) => setCreateName(e.target.value)} placeholder="Например: Rimi" />
-          </div>
-          <div>
-            <Label>Slug (необязательно)</Label>
-            <Input
-              value={createSlug}
-              onChange={(e) => setCreateSlug(e.target.value)}
-              placeholder="Латиница, будет из названия если пусто"
-            />
-          </div>
-        </Grid2>
-        <Label>URL логотипа</Label>
-        <Input value={createLogo} onChange={(e) => setCreateLogo(e.target.value)} placeholder="https://..." />
-        <Label>Сайт</Label>
-        <Input value={createWebsite} onChange={(e) => setCreateWebsite(e.target.value)} placeholder="https://..." />
-        <Label>Описание</Label>
-        <Textarea value={createDesc} onChange={(e) => setCreateDesc(e.target.value)} rows={3} />
-        <FormActions style={{ marginTop: 0 }}>
-          <Button type="submit">Создать</Button>
-        </FormActions>
-      </Card>
 
       <Card>
         <SectionTitle>Список</SectionTitle>
         {loading ? (
           <Text>Загрузка…</Text>
         ) : list.length === 0 ? (
-          <Text>Пока нет записей. Добавьте производителя выше.</Text>
+          <Text>Пока нет записей. Нажмите «Добавить производителя».</Text>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <Table>
@@ -247,12 +214,12 @@ const AdminBrands = () => {
                     <td>{row.productsCount ?? 0}</td>
                     <td>
                       <Actions>
-                        <IconButton type="button" title="Изменить" onClick={() => openEdit(row)}>
+                        <EditIconAction type="button" title="Изменить" onClick={() => openEdit(row)}>
                           <FiEdit2 size={14} />
-                        </IconButton>
-                        <IconButton type="button" title="Удалить" onClick={() => setConfirmDelete(row)}>
+                        </EditIconAction>
+                        <DeleteIconAction type="button" title="Удалить" onClick={() => setConfirmDelete(row)}>
                           <FiTrash2 size={14} />
-                        </IconButton>
+                        </DeleteIconAction>
                       </Actions>
                     </td>
                   </tr>
@@ -263,52 +230,47 @@ const AdminBrands = () => {
         )}
       </Card>
 
-      {editRow && (
-        <ModalOverlay onClick={() => setEditRow(null)}>
-          <ModalCard onClick={(e) => e.stopPropagation()} $width="480px">
-            <ModalTitle>Редактировать: {editRow.slug}</ModalTitle>
-            <form onSubmit={saveEdit}>
-              <Label>Название *</Label>
-              <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
-              <Label>URL логотипа</Label>
-              <Input value={editLogo} onChange={(e) => setEditLogo(e.target.value)} />
-              <Label>Сайт</Label>
-              <Input value={editWebsite} onChange={(e) => setEditWebsite(e.target.value)} />
-              <Label>Описание</Label>
-              <Textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} rows={3} />
-              <Label>Порядок сортировки</Label>
-              <Input value={editSort} onChange={(e) => setEditSort(e.target.value)} type="number" />
-              <FormActions>
-                <Button type="submit">Сохранить</Button>
-                <Button type="button" $variant="secondary" onClick={() => setEditRow(null)}>
-                  Отмена
-                </Button>
-              </FormActions>
-            </form>
-          </ModalCard>
-        </ModalOverlay>
+      {createOpen && (
+        <ModalShell title="Новый производитель" width="520px" onClose={() => setCreateOpen(false)}>
+          <form onSubmit={handleCreateSubmit}>
+            <BrandEntityFormFields mode="create" values={createValues} onChange={patchCreate} />
+            <ModalFormFooter submitLabel="Создать" onCancel={() => setCreateOpen(false)} />
+          </form>
+        </ModalShell>
       )}
 
-      {confirmDelete && (
-        <ModalOverlay onClick={() => setConfirmDelete(null)}>
-          <ModalCard onClick={(e) => e.stopPropagation()} $width="420px">
-            <ModalTitle>Удалить из справочника?</ModalTitle>
-            <ModalMessage>
-              «{confirmDelete.name}» будет удалён. Привязки витринных групп и поле «производитель» у товаров будут
-              сброшены ({confirmDelete.placementsCount ?? 0} витрин, {confirmDelete.productsCount ?? 0} товаров с
-              прямой ссылкой).
-            </ModalMessage>
-            <ConfirmActions>
-              <Button type="button" $variant="secondary" onClick={() => setConfirmDelete(null)}>
-                Отмена
-              </Button>
-              <Button type="button" $variant="danger" onClick={doDelete}>
-                Удалить
-              </Button>
-            </ConfirmActions>
-          </ModalCard>
-        </ModalOverlay>
+      {editSlug && (
+        <ModalShell title="Редактировать производителя" width="520px" onClose={() => setEditSlug(null)}>
+          <form onSubmit={handleEditSubmit}>
+            <BrandEntityFormFields
+              mode="edit"
+              slugReadOnly={editSlug}
+              values={{
+                name: editValues.name,
+                slug: editSlug,
+                logoUrl: editValues.logoUrl,
+                website: editValues.website,
+                description: editValues.description,
+                sortOrder: editValues.sortOrder,
+              }}
+              onChange={patchEdit}
+            />
+            <ModalFormFooter submitLabel="Сохранить" onCancel={() => setEditSlug(null)} />
+          </form>
+        </ModalShell>
       )}
+
+      <ConfirmModal
+        open={Boolean(confirmDelete)}
+        onClose={() => setConfirmDelete(null)}
+        title="Удалить из справочника?"
+        message={
+          confirmDelete
+            ? `«${confirmDelete.name}» будет удалён. Привязки витринных групп и поле «производитель» у товаров будут сброшены (${confirmDelete.placementsCount ?? 0} витрин, ${confirmDelete.productsCount ?? 0} товаров с прямой ссылкой).`
+            : ''
+        }
+        onConfirm={doDelete}
+      />
     </>
   );
 };

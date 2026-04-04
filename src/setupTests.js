@@ -3,3 +3,33 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+import { TextDecoder, TextEncoder } from 'util';
+
+// react-router v7 expects Web APIs; Jest/jsdom may not expose them early enough
+if (typeof globalThis.TextEncoder === 'undefined') {
+  globalThis.TextEncoder = TextEncoder;
+}
+if (typeof globalThis.TextDecoder === 'undefined') {
+  globalThis.TextDecoder = TextDecoder;
+}
+
+window.scrollTo = jest.fn();
+
+global.requestAnimationFrame = (cb) => setTimeout(cb, 0);
+global.cancelAnimationFrame = (id) => clearTimeout(id);
+
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
+global.IntersectionObserver = class IntersectionObserver {
+  constructor() {}
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return [];
+  }
+};
