@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCatalog } from '../../context/CatalogContext';
-import { FiFolder, FiPlus, FiPackage, FiLayers } from 'react-icons/fi';
+import { FiFolder, FiPlus, FiPackage, FiLayers, FiTag } from 'react-icons/fi';
 import { Card, PageTitle, Text, ButtonLink } from './AdminUI';
 import styled from 'styled-components';
 
@@ -101,6 +101,10 @@ const AdminDashboard = () => {
           <ButtonLink to="/admin/categories/new" $variant="secondary">
             <FiPlus size={16} />
             Новая категория
+          </ButtonLink>
+          <ButtonLink to="/admin/brands" $variant="secondary">
+            <FiTag size={16} />
+            Справочник брендов
           </ButtonLink>
         </Actions>
       </Card>

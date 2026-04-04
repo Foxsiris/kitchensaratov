@@ -95,10 +95,20 @@
 
 В путях вида `/api/admin/categories/:categoryId` параметр **`categoryId` — slug категории**, не UUID.
 
-Справочник глобальных брендов:
+Справочник глобальных брендов (производители):
 
-- `GET /api/admin/brand-entities`
+- `GET /api/admin/brand-entities` — в ответе `placementsCount` (витринные группы) и `productsCount` (товары с `brand_entity_id`).
+- `POST /api/admin/brand-entities` — тело: `name`, опционально `slug`, `logoUrl`, `website`, `description`, `sortOrder`.
 - `PATCH /api/admin/brand-entities/:slug`
+- `DELETE /api/admin/brand-entities/:slug` — сбрасывает привязки у групп и товаров (`ON DELETE SET NULL`).
+
+Витринная группа в категории (уровень «бренд» в JSON каталога):
+
+- `POST /api/admin/categories/:categoryId/brands` — тело: `name`, опционально `entitySlug`: не передавать (авто как раньше), `""` — без привязки к справочнику, иначе slug существующей записи `brand_entities`.
+- `PATCH /api/admin/categories/:categoryId/brands/:brandSlug` — `name`, опционально `entitySlug` (`""` снимает привязку). Группа `default`: только `name`.
+- `DELETE /api/admin/categories/:categoryId/brands/:brandSlug` — нельзя для `default`; каскадно удаляет секции и товары группы. Ответ: `deletedProducts`.
+
+Админка: страница **`/admin/brands`** (справочник), в карточке категории — редактирование и удаление витринных групп.
 
 ## Модель данных (кратко)
 

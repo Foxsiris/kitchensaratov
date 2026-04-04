@@ -179,17 +179,82 @@ export function CatalogProvider({ children }) {
   );
 
   const addBrand = useCallback(
-    async (categoryId, brandName) => {
+    async (categoryId, brandName, options = {}) => {
       const trimmed = (brandName || '').trim();
       if (!trimmed) return null;
+      const payload = { name: trimmed };
+      if (Object.prototype.hasOwnProperty.call(options, 'entitySlug')) {
+        payload.entitySlug = options.entitySlug === '' ? '' : options.entitySlug;
+      }
       const body = await adminFetch(`/api/admin/categories/${encodeURIComponent(categoryId)}/brands`, {
         method: 'POST',
-        body: JSON.stringify({ name: trimmed }),
+        body: JSON.stringify(payload),
       });
       await loadCatalog();
       return body.id || null;
     },
     [adminFetch, loadCatalog]
+  );
+
+  const updateDisplayGroup = useCallback(
+    async (categoryId, brandSlug, data) => {
+      await adminFetch(
+        `/api/admin/categories/${encodeURIComponent(categoryId)}/brands/${encodeURIComponent(brandSlug)}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify(data),
+        }
+      );
+      await loadCatalog();
+    },
+    [adminFetch, loadCatalog]
+  );
+
+  const deleteDisplayGroup = useCallback(
+    async (categoryId, brandSlug) => {
+      const body = await adminFetch(
+        `/api/admin/categories/${encodeURIComponent(categoryId)}/brands/${encodeURIComponent(brandSlug)}`,
+        { method: 'DELETE' }
+      );
+      await loadCatalog();
+      return body;
+    },
+    [adminFetch, loadCatalog]
+  );
+
+  const fetchBrandEntities = useCallback(async () => {
+    const data = await adminFetch('/api/admin/brand-entities');
+    return Array.isArray(data.brandEntities) ? data.brandEntities : [];
+  }, [adminFetch]);
+
+  const createBrandEntity = useCallback(
+    async (payload) => {
+      const body = await adminFetch('/api/admin/brand-entities', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      return body.slug || null;
+    },
+    [adminFetch]
+  );
+
+  const updateBrandEntity = useCallback(
+    async (slug, payload) => {
+      await adminFetch(`/api/admin/brand-entities/${encodeURIComponent(slug)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+    },
+    [adminFetch]
+  );
+
+  const deleteBrandEntity = useCallback(
+    async (slug) => {
+      await adminFetch(`/api/admin/brand-entities/${encodeURIComponent(slug)}`, {
+        method: 'DELETE',
+      });
+    },
+    [adminFetch]
   );
 
   const addSubcategory = useCallback(
@@ -271,6 +336,12 @@ export function CatalogProvider({ children }) {
     updateCategory,
     deleteCategory,
     addBrand,
+    updateDisplayGroup,
+    deleteDisplayGroup,
+    fetchBrandEntities,
+    createBrandEntity,
+    updateBrandEntity,
+    deleteBrandEntity,
     addSubcategory,
     addProduct,
     updateProduct,

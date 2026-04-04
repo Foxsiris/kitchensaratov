@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCatalog } from '../../context/CatalogContext';
@@ -237,7 +237,31 @@ const AdminCategoryDetail = () => {
     deleteCategory,
     addBrand,
     addSubcategory,
+    updateDisplayGroup,
+    deleteDisplayGroup,
+    fetchBrandEntities,
   } = useCatalog();
+
+  const [brandEntities, setBrandEntities] = useState([]);
+  const [newBrandEntityMode, setNewBrandEntityMode] = useState('__auto__');
+  const [editBrandGroup, setEditBrandGroup] = useState(null);
+  const [editBrandName, setEditBrandName] = useState('');
+  const [editBrandEntitySlug, setEditBrandEntitySlug] = useState('__none__');
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const rows = await fetchBrandEntities();
+        if (!cancelled) setBrandEntities(rows);
+      } catch {
+        if (!cancelled) setBrandEntities([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchBrandEntities]);
 
   // Add product form
   const [showForm, setShowForm] = useState(false);
@@ -449,12 +473,63 @@ const AdminCategoryDetail = () => {
     e.preventDefault();
     if (!newBrandName.trim()) return;
     try {
-      await addBrand(id, newBrandName);
+      const opts = {};
+      if (newBrandEntityMode === '__none__') {
+        opts.entitySlug = '';
+      } else if (newBrandEntityMode !== '__auto__') {
+        opts.entitySlug = newBrandEntityMode;
+      }
+      await addBrand(id, newBrandName, opts);
       showToast(`Бренд «${newBrandName.trim()}» добавлен`);
       setNewBrandName('');
+      setNewBrandEntityMode('__auto__');
     } catch (err) {
       showToast(err.message || 'Не удалось добавить бренд', { type: 'error' });
     }
+  };
+
+  const countProductsInBrand = (brand) =>
+    brand.subcategories.reduce((acc, s) => acc + s.products.length, 0);
+
+  const openEditBrand = (brand) => {
+    setEditBrandGroup(brand);
+    setEditBrandName(brand.name);
+    setEditBrandEntitySlug(brand.entitySlug || '__none__');
+  };
+
+  const saveEditBrand = async (e) => {
+    e.preventDefault();
+    if (!editBrandGroup || !editBrandName.trim()) return;
+    try {
+      const payload = { name: editBrandName.trim() };
+      if (editBrandGroup.id !== 'default') {
+        payload.entitySlug =
+          editBrandEntitySlug === '__none__' ? '' : editBrandEntitySlug;
+      }
+      await updateDisplayGroup(id, editBrandGroup.id, payload);
+      showToast('Сохранено');
+      setEditBrandGroup(null);
+    } catch (err) {
+      showToast(err.message || 'Не удалось сохранить', { type: 'error' });
+    }
+  };
+
+  const handleDeleteBrand = (brand) => {
+    const n = countProductsInBrand(brand);
+    setConfirm({
+      title: 'Удалить витринную группу?',
+      message: `«${brand.name}» и все товары внутри (${n} ${productCountWord(n)}) будут удалены безвозвратно.`,
+      onConfirm: async () => {
+        try {
+          await deleteDisplayGroup(id, brand.id);
+          showToast(`Группа «${brand.name}» удалена`);
+          setConfirm(null);
+        } catch (err) {
+          showToast(err.message || 'Не удалось удалить', { type: 'error' });
+          setConfirm(null);
+        }
+      },
+    });
   };
 
   // Subcategory add
@@ -630,15 +705,38 @@ const AdminCategoryDetail = () => {
           <div key={brand.id} style={{ marginBottom: 12 }}>
             <BrandHeader>
               <BrandTitle>{brand.name}</BrandTitle>
-              <SmallButton
-                type="button"
-                onClick={() => {
-                  setAddSubForBrand(addSubForBrand === brand.id ? null : brand.id);
-                  setNewSubName('');
-                }}
-              >
-                <FiPlus size={12} /> Подкатегория
-              </SmallButton>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+                {brand.entitySlug && (
+                  <Text style={{ fontSize: '11px', margin: 0 }}>
+                    производитель: <code>{brand.entitySlug}</code>
+                  </Text>
+                )}
+                <SmallButton type="button" onClick={() => openEditBrand(brand)}>
+                  <FiEdit2 size={12} /> Изменить
+                </SmallButton>
+                {brand.id !== 'default' && (
+                  <SmallButton
+                    type="button"
+                    onClick={() => handleDeleteBrand(brand)}
+                    style={{
+                      borderColor: '#c00',
+                      color: '#c00',
+                      background: 'transparent',
+                    }}
+                  >
+                    <FiTrash2 size={12} /> Удалить
+                  </SmallButton>
+                )}
+                <SmallButton
+                  type="button"
+                  onClick={() => {
+                    setAddSubForBrand(addSubForBrand === brand.id ? null : brand.id);
+                    setNewSubName('');
+                  }}
+                >
+                  <FiPlus size={12} /> Подкатегория
+                </SmallButton>
+              </div>
             </BrandHeader>
             <Text style={{ marginLeft: 4 }}>
               {brand.subcategories.map((s) => s.name).join(', ')}
@@ -656,6 +754,20 @@ const AdminCategoryDetail = () => {
             )}
           </div>
         ))}
+        <Label style={{ marginTop: 8 }}>Привязка к справочнику производителей</Label>
+        <Select
+          value={newBrandEntityMode}
+          onChange={(e) => setNewBrandEntityMode(e.target.value)}
+          style={{ marginBottom: 8, maxWidth: 420 }}
+        >
+          <option value="__auto__">Автоматически (как раньше: по названию группы)</option>
+          <option value="__none__">Не привязывать</option>
+          {brandEntities.map((ent) => (
+            <option key={ent.slug} value={ent.slug}>
+              {ent.name} ({ent.slug})
+            </option>
+          ))}
+        </Select>
         <InlineForm onSubmit={handleAddBrand}>
           <InlineInput
             value={newBrandName}
@@ -754,6 +866,45 @@ const AdminCategoryDetail = () => {
           Удалить категорию
         </Button>
       </DangerZone>
+
+      {editBrandGroup && (
+        <ModalOverlay onClick={() => setEditBrandGroup(null)}>
+          <ModalCard onClick={(e) => e.stopPropagation()} $width="440px">
+            <ModalTitle>Витринная группа</ModalTitle>
+            <form onSubmit={saveEditBrand}>
+              <Label>Название *</Label>
+              <Input value={editBrandName} onChange={(e) => setEditBrandName(e.target.value)} />
+              {editBrandGroup.id !== 'default' && (
+                <>
+                  <Label>Производитель (справочник)</Label>
+                  <Select
+                    value={editBrandEntitySlug}
+                    onChange={(e) => setEditBrandEntitySlug(e.target.value)}
+                  >
+                    <option value="__none__">Не привязан</option>
+                    {brandEntities.map((ent) => (
+                      <option key={ent.slug} value={ent.slug}>
+                        {ent.name} ({ent.slug})
+                      </option>
+                    ))}
+                  </Select>
+                </>
+              )}
+              {editBrandGroup.id === 'default' && (
+                <Text style={{ marginTop: 8 }}>
+                  У служебной группы «Все бренды» нельзя менять привязку к производителю.
+                </Text>
+              )}
+              <FormActions>
+                <Button type="submit">Сохранить</Button>
+                <Button type="button" $variant="secondary" onClick={() => setEditBrandGroup(null)}>
+                  Отмена
+                </Button>
+              </FormActions>
+            </form>
+          </ModalCard>
+        </ModalOverlay>
+      )}
 
       {/* ---- Confirm delete modal ---- */}
       {confirm && (

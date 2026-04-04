@@ -198,6 +198,7 @@ const AdminLayout = () => {
   const links = [
     { to: '/admin', label: 'Обзор', exact: true },
     { to: '/admin/categories', label: 'Категории' },
+    { to: '/admin/brands', label: 'Бренды' },
     { to: '/', label: 'На сайт →' },
   ];
 
