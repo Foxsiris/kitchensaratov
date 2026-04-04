@@ -15,7 +15,7 @@ const Grid2Styled = styled.div`
 /**
  * Поля формы справочника производителя (создание и редактирование).
  */
-export function BrandEntityFormFields({ mode, values, onChange, slugReadOnly }) {
+export function BrandEntityFormFields({ mode, values, onChange, slugReadOnly, uploadImage }) {
   const { name, slug, logoUrl, website, description, sortOrder } = values;
 
   return (
