@@ -10,17 +10,24 @@ const ModalOverlay = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
+  background: rgba(8, 8, 10, 0.58);
+  backdrop-filter: blur(14px) saturate(1.05);
+  -webkit-backdrop-filter: blur(14px) saturate(1.05);
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: ${props => props.theme.spacing.md};
+  cursor: pointer;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     padding: 0;
     align-items: flex-end;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 `;
 
@@ -29,15 +36,23 @@ const ModalContent = styled(motion.div)`
   padding: ${props => props.theme.spacing['3xl']};
   max-width: 560px;
   width: 100%;
-  max-height: 90vh;
+  max-height: min(90vh, 720px);
   overflow-y: auto;
   position: relative;
+  border-radius: 22px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 28px 80px rgba(0, 0, 0, 0.14),
+    0 10px 32px rgba(0, 0, 0, 0.08);
+  cursor: default;
+  -webkit-overflow-scrolling: touch;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     max-width: 100%;
     max-height: 92vh;
-    border-radius: 20px 20px 0 0;
+    border-radius: 22px 22px 0 0;
     padding: ${props => props.theme.spacing.xl} ${props => props.theme.spacing.lg} ${props => props.theme.spacing.lg};
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.12);
   }
 `;
 
@@ -45,30 +60,51 @@ const CloseButton = styled.button`
   position: absolute;
   top: ${props => props.theme.spacing.lg};
   right: ${props => props.theme.spacing.lg};
-  background: none;
-  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${props => props.theme.colors.light};
+  border: 1px solid ${props => props.theme.colors.border};
   font-size: 1.25rem;
-  color: ${props => props.theme.colors.gray};
+  color: ${props => props.theme.colors.grayDark};
   cursor: pointer;
   transition: ${props => props.theme.transitions.fast};
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 
   &:hover {
+    background: ${props => props.theme.colors.white};
     color: ${props => props.theme.colors.primary};
+    border-color: rgba(0, 0, 0, 0.12);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${props => props.theme.colors.primary};
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: scale(0.96);
   }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     top: 16px;
     right: 16px;
+    width: 40px;
+    height: 40px;
   }
 `;
 
 const ModalHeader = styled.div`
   margin-bottom: ${props => props.theme.spacing['2xl']};
+  padding-right: 52px;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     margin-bottom: ${props => props.theme.spacing.xl};
+    padding-right: 48px;
   }
 `;
 
@@ -76,8 +112,10 @@ const ModalTitle = styled.h2`
   font-family: ${props => props.theme.fonts.secondary};
   font-size: ${props => props.theme.fontSizes['2xl']};
   color: ${props => props.theme.colors.primary};
-  font-weight: 400;
-  margin-bottom: ${props => props.theme.spacing.sm};
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 ${props => props.theme.spacing.sm};
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     font-size: ${props => props.theme.fontSizes.xl};
@@ -85,9 +123,10 @@ const ModalTitle = styled.h2`
 `;
 
 const ModalSubtitle = styled.p`
-  color: ${props => props.theme.colors.gray};
+  color: ${props => props.theme.colors.grayDark};
   font-size: ${props => props.theme.fontSizes.sm};
-  line-height: 1.6;
+  line-height: 1.65;
+  margin: 0;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     font-size: 13px;
@@ -95,13 +134,17 @@ const ModalSubtitle = styled.p`
 `;
 
 const BenefitsList = styled.div`
-  border: 1px solid ${props => props.theme.colors.border};
+  background: ${props => props.theme.colors.light};
+  border: none;
+  border-radius: 14px;
   padding: ${props => props.theme.spacing.lg};
   margin-bottom: ${props => props.theme.spacing.xl};
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     padding: ${props => props.theme.spacing.md};
     margin-bottom: ${props => props.theme.spacing.lg};
+    border-radius: 12px;
   }
 `;
 
@@ -173,12 +216,15 @@ const Label = styled.label`
 const Input = styled.input`
   padding: ${props => props.theme.spacing.md};
   border: 1px solid ${props => props.theme.colors.border};
+  border-radius: 10px;
   font-size: ${props => props.theme.fontSizes.sm};
   transition: ${props => props.theme.transitions.fast};
   -webkit-tap-highlight-color: transparent;
+  background: ${props => props.theme.colors.white};
 
   &:focus {
     border-color: ${props => props.theme.colors.primary};
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
     outline: none;
   }
 
@@ -198,12 +244,13 @@ const Select = styled.select`
   font-size: ${props => props.theme.fontSizes.sm};
   background: ${props => props.theme.colors.white};
   transition: ${props => props.theme.transitions.fast};
-  border-radius: 0;
+  border-radius: 10px;
   appearance: auto;
   -webkit-tap-highlight-color: transparent;
 
   &:focus {
     border-color: ${props => props.theme.colors.primary};
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
     outline: none;
   }
 
@@ -217,9 +264,10 @@ const SubmitButton = styled(motion.button)`
   background: ${props => props.theme.colors.primary};
   color: ${props => props.theme.colors.white};
   border: 1px solid ${props => props.theme.colors.primary};
+  border-radius: 12px;
   padding: ${props => props.theme.spacing.md} ${props => props.theme.spacing.xl};
   font-size: ${props => props.theme.fontSizes.xs};
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.15em;
   cursor: pointer;
@@ -227,10 +275,18 @@ const SubmitButton = styled(motion.button)`
   width: 100%;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
 
   &:hover {
-    background: transparent;
-    color: ${props => props.theme.colors.primary};
+    background: ${props => props.theme.colors.dark};
+    border-color: ${props => props.theme.colors.dark};
+    color: ${props => props.theme.colors.white};
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${props => props.theme.colors.primary};
+    outline-offset: 3px;
   }
 
   &:disabled {
@@ -245,15 +301,19 @@ const SubmitButton = styled(motion.button)`
 `;
 
 const SuccessMessage = styled(motion.div)`
-  background: ${props => props.theme.colors.primary};
+  background: linear-gradient(135deg, ${props => props.theme.colors.primary} 0%, ${props => props.theme.colors.secondary} 100%);
   color: ${props => props.theme.colors.white};
-  padding: ${props => props.theme.spacing.lg};
+  padding: ${props => props.theme.spacing.xl};
   text-align: center;
   font-size: ${props => props.theme.fontSizes.sm};
+  line-height: 1.6;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    padding: ${props => props.theme.spacing.md};
+    padding: ${props => props.theme.spacing.lg};
     font-size: 13px;
+    border-radius: 12px;
   }
 `;
 
@@ -302,22 +362,29 @@ const InstallmentModal = () => {
     <AnimatePresence>
       {isOpen && (
         <ModalOverlay
+          role="presentation"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+          onClick={closeModal}
         >
           <ModalContent
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="installment-modal-title"
+            initial={{ opacity: 0, y: 28, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.98 }}
+            transition={{ duration: 0.38, ease: [0.34, 1.02, 0.32, 1] }}
             onClick={(e) => e.stopPropagation()}
           >
-            <CloseButton onClick={closeModal}>
-              <FiX />
+            <CloseButton type="button" onClick={closeModal} aria-label="Закрыть окно">
+              <FiX aria-hidden />
             </CloseButton>
 
             <ModalHeader>
-              <ModalTitle>Оформить рассрочку</ModalTitle>
+              <ModalTitle id="installment-modal-title">Оформить рассрочку</ModalTitle>
               <ModalSubtitle>
                 Получите кухню в рассрочку без переплат и скрытых комиссий
               </ModalSubtitle>

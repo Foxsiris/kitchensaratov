@@ -283,42 +283,96 @@ export const ErrorText = styled.span`
 
 /* ---- Modal / Overlay ---- */
 
+const adminModalBackdropIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const adminModalCardIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+`;
+
 export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
   z-index: 500;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: clamp(16px, 4vw, 28px);
+  background: rgba(15, 15, 15, 0.52);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: ${adminModalBackdropIn} 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 1;
+  }
 `;
 
 export const ModalCard = styled.div`
   background: ${(p) => p.theme.colors.white};
-  border-radius: 12px;
+  border-radius: 20px;
   padding: ${(p) => p.theme.spacing.xl};
   width: 100%;
   max-width: ${(p) => p.$width || '520px'};
-  max-height: 90vh;
+  max-height: min(90vh, 880px);
   overflow-y: auto;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  overflow-x: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04),
+    0 24px 64px rgba(0, 0, 0, 0.14),
+    0 8px 24px rgba(0, 0, 0, 0.08);
+  animation: ${adminModalCardIn} 0.32s cubic-bezier(0.34, 1.02, 0.32, 1) forwards;
+  transform-origin: center center;
+  -webkit-overflow-scrolling: touch;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 
   @media (max-width: ${(p) => p.theme.breakpoints.mobile}) {
     padding: ${(p) => p.theme.spacing.lg};
+    border-radius: 18px;
+    max-height: 92vh;
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${(p) => p.theme.colors.primary};
+    outline-offset: 2px;
   }
 `;
 
 export const ModalTitle = styled.h2`
   font-family: ${(p) => p.theme.fonts.secondary};
   font-size: ${(p) => p.theme.fontSizes.xl};
-  font-weight: 400;
-  margin: 0 0 ${(p) => p.theme.spacing.lg};
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: ${(p) => p.theme.colors.dark};
+  margin: 0 0 ${(p) => p.theme.spacing.md};
+  padding-bottom: ${(p) => p.theme.spacing.md};
+  border-bottom: 1px solid ${(p) => p.theme.colors.border};
 `;
 
 export const ModalMessage = styled.p`
-  color: ${(p) => p.theme.colors.gray};
+  color: ${(p) => p.theme.colors.grayDark};
   font-size: ${(p) => p.theme.fontSizes.sm};
+  line-height: 1.6;
   margin: 0 0 ${(p) => p.theme.spacing.lg};
 `;
 

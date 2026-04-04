@@ -10,17 +10,24 @@ import { useModal } from '../../hooks/useModal';
 const ModalOverlay = styled(motion.div)`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(10px);
+  background: rgba(8, 8, 10, 0.62);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: ${p => p.theme.spacing.md};
+  cursor: pointer;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     padding: 8px;
     align-items: flex-end;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 `;
 
@@ -32,47 +39,67 @@ const ModalBox = styled(motion.div)`
   max-width: 820px;
   width: 100%;
   max-height: 92vh;
+  overflow: hidden;
   overflow-y: auto;
   position: relative;
   display: grid;
   grid-template-columns: 1.3fr 1fr;
+  border-radius: 22px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 32px 96px rgba(0, 0, 0, 0.45),
+    0 12px 40px rgba(0, 0, 0, 0.25);
+  cursor: default;
+  -webkit-overflow-scrolling: touch;
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     grid-template-columns: 1fr;
     max-width: 100%;
     max-height: 90vh;
-    border-radius: 16px 16px 0 0;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.35);
   }
 `;
 
 const CloseBtn = styled.button`
   position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  background: none;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.5);
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 5;
-  transition: all 0.2s;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.28);
     color: ${p => p.theme.colors.white};
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 3px;
+  }
+
+  &:active {
+    transform: scale(0.96);
   }
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     top: 12px;
     right: 12px;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
 `;
 
@@ -158,17 +185,20 @@ const InputLabel = styled.label`
 const Input = styled.input`
   width: 100%;
   padding: 14px 16px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
   color: ${p => p.theme.colors.white};
   font-size: ${p => p.theme.fontSizes.sm};
   font-family: inherit;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   -webkit-appearance: none;
   appearance: none;
 
   &:focus {
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.42);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
     outline: none;
   }
 
@@ -185,19 +215,22 @@ const Input = styled.input`
 const TextArea = styled.textarea`
   width: 100%;
   padding: 14px 16px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
   color: ${p => p.theme.colors.white};
   font-size: ${p => p.theme.fontSizes.sm};
   font-family: inherit;
   min-height: 80px;
   resize: vertical;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   -webkit-appearance: none;
   appearance: none;
 
   &:focus {
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.42);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
     outline: none;
   }
 
@@ -225,19 +258,27 @@ const SubmitBtn = styled(motion.button)`
   background: ${p => p.theme.colors.white};
   color: ${p => p.theme.colors.primary};
   border: none;
+  border-radius: 12px;
   font-family: ${p => p.theme.fonts.primary};
   font-size: ${p => p.theme.fontSizes.xs};
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.18em;
   cursor: pointer;
-  transition: all 0.25s;
+  transition: background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
   margin-top: 8px;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.9);
+    outline-offset: 3px;
   }
 
   &:disabled {
@@ -335,6 +376,7 @@ const MessengerBtn = styled.a`
   width: 100%;
   padding: 13px;
   border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
   background: transparent;
   color: ${p => p.theme.colors.white};
   text-decoration: none;
@@ -478,19 +520,27 @@ const CallbackModal = () => {
     <AnimatePresence>
       {isOpen && (
         <ModalOverlay
+          role="presentation"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+          onClick={closeModal}
         >
           <ModalBox
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={
+              isSuccess ? 'callback-modal-success-title' : 'callback-modal-title'
+            }
+            initial={{ opacity: 0, y: 28, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 24, scale: 0.97 }}
-            transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+            exit={{ opacity: 0, y: 20, scale: 0.98 }}
+            transition={{ duration: 0.38, ease: [0.34, 1.02, 0.32, 1] }}
             onClick={(e) => e.stopPropagation()}
           >
-            <CloseBtn onClick={closeModal}>
-              <FiX size={18} />
+            <CloseBtn type="button" onClick={closeModal} aria-label="Закрыть окно">
+              <FiX size={20} aria-hidden />
             </CloseBtn>
 
             {isSuccess ? (
@@ -499,7 +549,7 @@ const CallbackModal = () => {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <SuccessIcon>&#10003;</SuccessIcon>
-                <SuccessTitle>Заявка отправлена</SuccessTitle>
+                <SuccessTitle id="callback-modal-success-title">Заявка отправлена</SuccessTitle>
                 <SuccessText>
                   Спасибо! Директор шоурума свяжется с вами в ближайшее время
                   для обсуждения деталей проекта.
@@ -509,7 +559,7 @@ const CallbackModal = () => {
               <>
                 {/* LEFT: form */}
                 <FormSide>
-                  <ModalTitle>
+                  <ModalTitle id="callback-modal-title">
                     Запросите расчёт стоимости вашей кухни или мебели
                   </ModalTitle>
                   <ModalSubtitle>

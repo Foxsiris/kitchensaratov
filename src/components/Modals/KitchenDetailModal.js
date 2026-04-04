@@ -9,32 +9,44 @@ const ModalOverlay = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
+  background: rgba(8, 8, 10, 0.65);
+  backdrop-filter: blur(12px) saturate(1.05);
+  -webkit-backdrop-filter: blur(12px) saturate(1.05);
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: ${props => props.theme.spacing.md};
+  cursor: pointer;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     padding: 0;
     align-items: flex-end;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
 `;
 
 const ModalContent = styled(motion.div)`
   background: white;
-  border-radius: ${props => props.theme.borderRadius.xl};
+  border-radius: 22px;
   max-width: 1000px;
   width: 100%;
-  max-height: 90vh;
+  max-height: min(90vh, 880px);
   overflow-y: auto;
   position: relative;
-  box-shadow: ${props => props.theme.shadows.xl};
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 32px 80px rgba(0, 0, 0, 0.2),
+    0 12px 40px rgba(0, 0, 0, 0.1);
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
+  cursor: default;
+  -webkit-overflow-scrolling: touch;
 
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
     grid-template-columns: 1fr;
@@ -44,7 +56,8 @@ const ModalContent = styled(motion.div)`
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     max-width: 100%;
     max-height: 92vh;
-    border-radius: 20px 20px 0 0;
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.18);
   }
 `;
 
@@ -52,16 +65,16 @@ const ImageSection = styled.div`
   position: relative;
   min-height: 500px;
   background: ${props => props.theme.colors.light};
-  border-radius: ${props => props.theme.borderRadius.xl} 0 0 ${props => props.theme.borderRadius.xl};
+  border-radius: 22px 0 0 22px;
   overflow: hidden;
 
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
-    border-radius: ${props => props.theme.borderRadius.xl} ${props => props.theme.borderRadius.xl} 0 0;
+    border-radius: 22px 22px 0 0;
   }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     min-height: 360px;
-    border-radius: 20px 20px 0 0;
+    border-radius: 22px 22px 0 0;
   }
 `;
 
@@ -196,11 +209,11 @@ const CloseButton = styled.button`
   position: absolute;
   top: ${props => props.theme.spacing.lg};
   right: ${props => props.theme.spacing.lg};
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -210,17 +223,28 @@ const CloseButton = styled.button`
   z-index: 10;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 
   &:hover {
     background: white;
-    transform: scale(1.1);
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.12);
+    transform: scale(1.04);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${props => props.theme.colors.primary};
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     top: 16px;
     right: 16px;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
 `;
 
@@ -395,18 +419,25 @@ const KitchenDetailModal = ({ isOpen, onClose, kitchen }) => {
     <AnimatePresence>
       {isOpen && (
         <ModalOverlay
+          role="presentation"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+          onClick={onClose}
         >
           <ModalContent
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="kitchen-detail-modal-title"
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.98 }}
+            transition={{ duration: 0.38, ease: [0.34, 1.02, 0.32, 1] }}
             onClick={(e) => e.stopPropagation()}
           >
-            <CloseButton onClick={onClose}>
-              <FiX />
+            <CloseButton type="button" onClick={onClose} aria-label="Закрыть окно">
+              <FiX aria-hidden />
             </CloseButton>
 
             <ImageSection>
@@ -442,7 +473,7 @@ const KitchenDetailModal = ({ isOpen, onClose, kitchen }) => {
             </ImageSection>
 
             <ContentSection>
-              <KitchenTitle>{kitchen.title}</KitchenTitle>
+              <KitchenTitle id="kitchen-detail-modal-title">{kitchen.title}</KitchenTitle>
               <KitchenPrice>{kitchen.price}</KitchenPrice>
               <KitchenDescription>{kitchen.description}</KitchenDescription>
 

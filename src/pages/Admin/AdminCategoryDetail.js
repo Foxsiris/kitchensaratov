@@ -654,7 +654,7 @@ const AdminCategoryDetail = () => {
       )}
 
       {productAddOpen && (
-        <ModalShell title={isKitchens ? 'Новая кухня' : 'Новый товар'} width="520px">
+        <ModalShell title={isKitchens ? 'Новая кухня' : 'Новый товар'} width="600px">
           <form onSubmit={handleProductAddSubmit}>
             {category.brands.length > 1 && (
               <>
@@ -777,7 +777,7 @@ const AdminCategoryDetail = () => {
       )}
 
       {editProduct && (
-        <ModalShell title="Редактирование товара" width="520px">
+        <ModalShell title="Редактирование товара" width="600px">
           <form onSubmit={handleEditProductSubmit}>
             <ProductFormFields
               values={editProductForm}
