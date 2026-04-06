@@ -27,7 +27,7 @@
 | `Dockerfile` | Сборка фронта + nginx |
 | `server/Dockerfile` | Сборка API (в образе — тесты, миграции, seed, старт) |
 | `docker-compose.yml` | Сервисы `db`, `api`, `web` |
-| `.github/workflows/test.yml` | CI: тесты фронта и сервера |
+| `.github/workflows/deploy.yml` | Push в `main`: проверки (тесты, сборка фронта, тесты API) и деплой на сервер по SSH |
 
 ---
 
@@ -144,12 +144,14 @@ npm test
 
 ---
 
-## CI
+## CI / деплой
 
-Файл **[.github/workflows/test.yml](../.github/workflows/test.yml)** на push и pull request:
+Файл **[.github/workflows/deploy.yml](../.github/workflows/deploy.yml)** запускается при **push в `main`**:
 
-- job **frontend**: `npm ci` → `npm run test:ci`;
-- job **server**: `npm ci` в `server/` → `npm test`.
+- job **check**: `npm ci` → тесты фронта (`test:ci`) → сборка фронта (`build`) → в `server/`: `npm ci` → `prisma generate` → `npm test`;
+- job **deploy** (после успеха **check**): SSH → каталог **`~/kitchensaratov`** → `git pull` → `docker compose up -d --build`.
+
+Секреты в GitHub Actions: **`SERVER_HOST`**, **`SERVER_USER`**, **`SERVER_SSH_KEY`** (приватный ключ). На сервере репозиторий должен лежать в `~/kitchensaratov` (или поправьте путь в `deploy.yml`).
 
 ---
 
