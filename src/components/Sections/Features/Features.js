@@ -127,9 +127,19 @@ const FeatureCard = styled(motion.div)`
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     grid-column: span 1;
     min-height: auto;
-    padding: ${props => props.theme.spacing.xl} ${props => props.theme.spacing.lg};
-    border-radius: 16px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: ${props => props.theme.spacing.sm};
+    padding: ${props => props.theme.spacing.sm} ${props => props.theme.spacing.md};
+    border-radius: 12px;
   }
+`;
+
+const FeatureBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
 `;
 
 const FeatureIcon = styled.div`
@@ -152,10 +162,12 @@ const FeatureIcon = styled.div`
   }
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    width: 48px;
-    height: 48px;
-    font-size: 1.1rem;
-    margin-bottom: ${props => props.theme.spacing.md};
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    font-size: 0.9rem;
+    margin: 0;
+    flex-shrink: 0;
   }
 `;
 
@@ -167,7 +179,9 @@ const FeatureTitle = styled.h3`
   margin-bottom: ${props => props.theme.spacing.sm};
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: ${props => props.theme.fontSizes.lg};
+    font-size: ${props => props.theme.fontSizes.sm};
+    margin-bottom: 2px;
+    line-height: 1.2;
   }
 `;
 
@@ -178,8 +192,8 @@ const FeatureDescription = styled.p`
   margin-bottom: 0;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: 13px;
-    line-height: 1.6;
+    font-size: 11px;
+    line-height: 1.35;
   }
 `;
 
@@ -253,8 +267,10 @@ const Features = () => {
                 <FeatureIcon>
                   {feature.icon}
                 </FeatureIcon>
-                <FeatureTitle>{feature.title}</FeatureTitle>
-                <FeatureDescription>{feature.description}</FeatureDescription>
+                <FeatureBody>
+                  <FeatureTitle>{feature.title}</FeatureTitle>
+                  <FeatureDescription>{feature.description}</FeatureDescription>
+                </FeatureBody>
               </FeatureCard>
             ))}
           </FeaturesGrid>
