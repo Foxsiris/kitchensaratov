@@ -32,10 +32,22 @@ const HeaderContent = styled.div`
   padding-left: ${p => p.theme.spacing.xl};
   padding-right: ${p => p.theme.spacing.xl};
 
+  @media (max-width: ${p => p.theme.breakpoints.tablet}) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: ${p => p.theme.spacing.md};
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.tablet}) and (min-width: 769px) {
+    padding-left: calc(${p => p.theme.spacing.xl} + ${p => p.theme.spacing.xl});
+    padding-right: calc(${p => p.theme.spacing.xl} + ${p => p.theme.spacing.xl});
+  }
+
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
     padding: 14px 0;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: calc(8px + ${p => p.theme.spacing.lg});
+    padding-right: calc(8px + ${p => p.theme.spacing.lg});
   }
 `;
 
@@ -53,8 +65,20 @@ const Logo = styled(Link)`
 
   &:hover { opacity: 1; }
 
+  @media (max-width: ${p => p.theme.breakpoints.tablet}) {
+    justify-self: start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    text-align: left;
+    white-space: normal;
+    min-width: 0;
+    line-height: 1.25;
+    column-gap: 0.35em;
+    row-gap: 0;
+  }
+
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
-    font-size: ${p => p.theme.fontSizes.xl};
+    font-size: ${p => p.theme.fontSizes.lg};
   }
 `;
 
@@ -530,7 +554,8 @@ const Header = () => {
       >
         <HeaderContent>
           <Logo to="/" $onDark={onDarkHero}>
-            Кухни <LogoAccent>Саратов</LogoAccent>
+            Интерьеры и кухни{' '}
+            <LogoAccent>в&nbsp;Саратове</LogoAccent>
           </Logo>
 
           <Nav>
