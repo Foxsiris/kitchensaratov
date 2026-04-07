@@ -628,9 +628,9 @@ const Header = () => {
           </Nav>
 
           <RightSection>
-            <PhoneLink href="tel:+79000000000" $onDark={onDarkHero}>
+            <PhoneLink href="tel:+79173125555" $onDark={onDarkHero}>
               <FiPhone size={14} />
-              +7 (900) 000-00-00
+              +7 (917) 312-55-55
             </PhoneLink>
 
             <CTAButton $onDark={onDarkHero} onClick={() => openModal('callback')}>
@@ -688,8 +688,8 @@ const Header = () => {
               Оставить заявку
             </MobileButton>
 
-            <MobilePhone href="tel:+79000000000">
-              +7 (900) 000-00-00
+            <MobilePhone href="tel:+79173125555">
+              +7 (917) 312-55-55
             </MobilePhone>
           </MobileMenu>
         )}

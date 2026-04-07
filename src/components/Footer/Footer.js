@@ -279,7 +279,7 @@ const Footer = () => {
             <SectionTitle>Контакты</SectionTitle>
             <ContactItem>
               <FiPhone size={14} />
-              <ContactLink href="tel:+79000000000">+7 (900) 000-00-00</ContactLink>
+              <ContactLink href="tel:+79173125555">+7 (917) 312-55-55</ContactLink>
             </ContactItem>
             <ContactItem>
               <FiMail size={14} />

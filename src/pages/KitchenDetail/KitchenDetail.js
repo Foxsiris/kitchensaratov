@@ -1520,7 +1520,7 @@ const KitchenDetail = () => {
                   </BulletList>
 
                   <SpecsCTA onClick={() => openModal('callback')}>
-                    Узнайте стоимость вашей кухни
+                    Узнайте стоимость вашего проекта
                   </SpecsCTA>
                 </SpecsRight>
               </SpecsInner>

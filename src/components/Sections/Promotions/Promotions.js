@@ -444,13 +444,13 @@ const Promotions = () => {
             />
             <CTAConsultantText>
               <h4>Каминская Жанна</h4>
-              <p>Директор шоурума</p>
+              <p>Директор салона</p>
             </CTAConsultantText>
             <CTAActionButton
               whileTap={{ scale: 0.98 }}
               onClick={() => openModal('callback')}
             >
-              Узнайте стоимость<br />вашей кухни
+              Узнайте стоимость<br />вашего проекта
               <FiArrowRight size={14} />
             </CTAActionButton>
           </CTAConsultantPill>

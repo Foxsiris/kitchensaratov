@@ -283,7 +283,7 @@ const CTA = () => {
     {
       icon: <FiPhone size={16} />,
       label: 'Телефон',
-      value: '+7 (900) 000-00-00'
+      value: '+7 (917) 312-55-55'
     },
     {
       icon: <FiMail size={16} />,

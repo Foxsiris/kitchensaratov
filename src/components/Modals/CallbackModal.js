@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiX, FiPhone, FiUser, FiSend } from 'react-icons/fi';
+import { FiX, FiPhone, FiMessageCircle, FiSend } from 'react-icons/fi';
 import { useModal } from '../../hooks/useModal';
+
+const DIRECTOR_PHOTO = `${process.env.PUBLIC_URL || ''}/assets/IMG_4452.JPG`;
+const DIRECTOR_PHONE_TEL = '+79173125555';
+const DIRECTOR_PHONE_DISPLAY = '+7 (917) 312-55-55';
+const TELEGRAM_BY_PHONE_HREF = 'https://t.me/+79173125555';
+const MAX_WEB_HREF = 'https://web.max.ru/';
 
 /* ============================
    OVERLAY
@@ -319,7 +325,7 @@ const Avatar = styled.div`
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80') center/cover no-repeat;
+  background: url(${DIRECTOR_PHOTO}) center/cover no-repeat;
   border: 2px solid rgba(255, 255, 255, 0.1);
 
   @media (max-width: ${p => p.theme.breakpoints.mobile}) {
@@ -551,7 +557,7 @@ const CallbackModal = () => {
                 <SuccessIcon>&#10003;</SuccessIcon>
                 <SuccessTitle id="callback-modal-success-title">Заявка отправлена</SuccessTitle>
                 <SuccessText>
-                  Спасибо! Директор шоурума свяжется с вами в ближайшее время
+                  Спасибо! Директор салона свяжется с вами в ближайшее время
                   для обсуждения деталей проекта.
                 </SuccessText>
               </SuccessView>
@@ -560,10 +566,10 @@ const CallbackModal = () => {
                 {/* LEFT: form */}
                 <FormSide>
                   <ModalTitle id="callback-modal-title">
-                    Запросите расчёт стоимости вашей кухни или мебели
+                    Запросите расчёт стоимости вашего проекта
                   </ModalTitle>
                   <ModalSubtitle>
-                    Директор шоурума лично проконсультирует вас по стоимости и деталям проекта
+                    Директор салона лично проконсультирует вас по стоимости и деталям проекта
                   </ModalSubtitle>
 
                   <Form onSubmit={handleSubmit}>
@@ -622,29 +628,40 @@ const CallbackModal = () => {
                       disabled={isSubmitting}
                       whileTap={{ scale: 0.98 }}
                     >
-                      {isSubmitting ? 'Отправляем...' : 'Узнайте стоимость вашей кухни'}
+                      {isSubmitting ? 'Отправляем...' : 'Узнайте стоимость вашего проекта'}
                     </SubmitBtn>
                   </Form>
                 </FormSide>
 
                 {/* RIGHT: consultant */}
                 <ConsultantSide>
-                  <Avatar />
-                  <ConsultantName>Иванова Анна</ConsultantName>
-                  <ConsultantRole>Директор шоурума</ConsultantRole>
+                  <Avatar role="img" aria-label="Уткина Елена, директор салона" />
+                  <ConsultantName>Уткина Елена</ConsultantName>
+                  <ConsultantRole>Директор салона</ConsultantRole>
 
-                  <PhoneNumber href="tel:+79000000000">
+                  <PhoneNumber href={`tel:${DIRECTOR_PHONE_TEL}`}>
                     <FiPhone size={13} />
-                    +7 (900) 000-00-00
+                    {DIRECTOR_PHONE_DISPLAY}
                   </PhoneNumber>
 
                   <MessengerLinks>
                     <MessengerLabel>Связаться в:</MessengerLabel>
-                    <MessengerBtn href="https://wa.me/79000000000" target="_blank" rel="noopener noreferrer">
-                      <FiUser size={14} />
-                      WhatsApp
+                    {/* TODO: вставить корректную ссылку на профиль в Max */}
+                    <MessengerBtn
+                      href={MAX_WEB_HREF}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="MAX — напишите нам по номеру в приложении или в веб-версии"
+                    >
+                      <FiMessageCircle size={14} />
+                      Max
                     </MessengerBtn>
-                    <MessengerBtn href="https://t.me/username" target="_blank" rel="noopener noreferrer">
+                    <MessengerBtn
+                      href={TELEGRAM_BY_PHONE_HREF}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`Telegram: ${DIRECTOR_PHONE_DISPLAY}`}
+                    >
                       <FiSend size={14} />
                       Telegram
                     </MessengerBtn>
