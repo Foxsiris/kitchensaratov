@@ -41,17 +41,17 @@ const SectionTitle = styled(motion.h2)`
   }
 `;
 
-/* ---- Mosaic Grid ---- */
+/* ---- Mosaic: кухни / шкафы+гардероб+комоды / столы | стулья ---- */
 const MosaicGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  gap: 6px;
-
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
+  grid-template-rows:
+    minmax(200px, 36vw)
+    minmax(180px, 28vw)
+    minmax(180px, 28vw)
+    minmax(160px, 26vw);
+  gap: ${props => props.theme.spacing.sm};
+  align-items: stretch;
 `;
 
 /* Individual card */
@@ -59,16 +59,49 @@ const CategoryCard = styled(motion.div)`
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  border-radius: 24px;
+  min-height: 0;
+  align-self: stretch;
 
-  /* First card spans both columns (full width) */
-  &:nth-child(1) {
+  ${(props) =>
+    props.$area === 'hero' &&
+    `
     grid-column: 1 / -1;
-  }
+    grid-row: 1;
+  `}
+  ${(props) =>
+    props.$area === 'tall' &&
+    `
+    grid-column: 1;
+    grid-row: 2 / span 2;
+  `}
+  ${(props) =>
+    props.$area === 'rt' &&
+    `
+    grid-column: 2;
+    grid-row: 2;
+  `}
+  ${(props) =>
+    props.$area === 'rb' &&
+    `
+    grid-column: 2;
+    grid-row: 3;
+  `}
+  ${(props) =>
+    props.$area === 'b1' &&
+    `
+    grid-column: 1;
+    grid-row: 4;
+  `}
+  ${(props) =>
+    props.$area === 'b2' &&
+    `
+    grid-column: 2;
+    grid-row: 4;
+  `}
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    &:nth-child(1) {
-      grid-column: 1;
-    }
+    border-radius: 20px;
   }
 `;
 
@@ -77,25 +110,19 @@ const CardLink = styled(Link)`
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: 160px;
   text-decoration: none;
 `;
 
 const CardImage = styled.div`
   width: 100%;
-  height: ${props => props.$height || '420px'};
+  height: 100%;
+  min-height: 160px;
   background: url(${props => props.$src}) center/cover no-repeat;
   transition: transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   ${CategoryCard}:hover & {
     transform: scale(1.05);
-  }
-
-  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
-    height: ${props => props.$heightTablet || '320px'};
-  }
-
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    height: ${props => props.$heightMobile || '240px'};
   }
 `;
 
@@ -239,18 +266,31 @@ const SUBTITLES = {
   chairs: 'Комфорт и стиль',
 };
 
+/** Порядок и раскладка как в макете (одинаково на всех ширинах) */
+const MOSAIC_SLOTS = [
+  { categoryId: 'kitchens', area: 'hero' },
+  { categoryId: 'cabinets', area: 'tall', labelOverride: 'Для всей квартиры' },
+  { categoryId: 'wardrobes', area: 'rt' },
+  { categoryId: 'dressers', area: 'rb' },
+  { categoryId: 'tables', area: 'b1' },
+  { categoryId: 'chairs', area: 'b2' },
+];
+
 const CatalogPreview = () => {
   const { categories: catalogCategories } = useCatalog();
-  const categories = catalogCategories.map((cat, index) => ({
-    id: cat.id,
-    label: cat.name,
-    subtitle: SUBTITLES[cat.id] || 'Товары',
-    link: `/catalog?category=${cat.id}`,
-    image: resolveCatalogImageSrc(cat.image),
-    height: index === 0 ? '520px' : '380px',
-    heightTablet: index === 0 ? '400px' : '300px',
-    heightMobile: index === 0 ? '320px' : '280px',
-  }));
+
+  const mosaicTiles = MOSAIC_SLOTS.map((slot) => {
+    const cat = catalogCategories.find((c) => c.id === slot.categoryId);
+    if (!cat) return null;
+    return {
+      key: cat.id,
+      area: slot.area,
+      label: slot.labelOverride || cat.name,
+      subtitle: SUBTITLES[cat.id] || 'Товары',
+      link: `/catalog?category=${cat.id}`,
+      image: resolveCatalogImageSrc(cat.image),
+    };
+  }).filter(Boolean);
 
   return (
     <Section>
@@ -265,25 +305,21 @@ const CatalogPreview = () => {
         </SectionTitle>
 
         <MosaicGrid>
-          {categories.map((cat, index) => (
+          {mosaicTiles.map((tile, index) => (
             <CategoryCard
-              key={cat.id}
+              key={tile.key}
+              $area={tile.area}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.08 }}
               viewport={{ once: true }}
             >
-              <CardLink to={cat.link}>
-                <CardImage
-                  $src={cat.image}
-                  $height={cat.height}
-                  $heightTablet={cat.heightTablet}
-                  $heightMobile={cat.heightMobile}
-                />
+              <CardLink to={tile.link}>
+                <CardImage $src={tile.image} />
                 <CardOverlay />
                 <CardLabel>
-                  <LabelText>{cat.label}</LabelText>
-                  <LabelSubtext>{cat.subtitle}</LabelSubtext>
+                  <LabelText>{tile.label}</LabelText>
+                  <LabelSubtext>{tile.subtitle}</LabelSubtext>
                 </CardLabel>
                 <HoverArrow>
                   <FiArrowRight size={18} />
