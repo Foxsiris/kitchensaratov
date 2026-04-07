@@ -5,6 +5,35 @@ import { useNavigate } from 'react-router-dom';
 import { FiArrowRight, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useModal } from '../../../hooks/useModal';
 
+const heroAsset = (file) => `${process.env.PUBLIC_URL || ''}/assets/${file}`;
+
+const HERO_CAROUSEL_SLIDES = [
+  {
+    id: 1,
+    image: heroAsset('20260209_rimi_024_1292.jpg'),
+    label: 'Композиция',
+    title: 'Norma lux в шпоне',
+  },
+  {
+    id: 2,
+    image: heroAsset('20260209_rimi_003_1249.jpg'),
+    label: 'Композиция',
+    title: 'Кухня Рими',
+  },
+  {
+    id: 3,
+    image: heroAsset('20260209_rimi_035_1307.jpg'),
+    label: 'Композиция',
+    title: 'Linea di marka',
+  },
+  {
+    id: 4,
+    image: heroAsset('20260209_rimi_085_1374.jpg'),
+    label: 'Проект',
+    title: 'Гардеробная',
+  },
+];
+
 const HeroOuter = styled.div`
   padding: 0 ${props => props.theme.spacing.xl};
   background: ${props => props.theme.colors.white};
@@ -387,34 +416,15 @@ const Hero = () => {
   const { openModal } = useModal();
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const carouselData = [
-    {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-      label: 'Композиция',
-      title: 'Современная кухня'
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-      label: 'Композиция',
-      title: 'Классическая элегантность'
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
-      label: 'Композиция',
-      title: 'Скандинавский минимализм'
-    },
-  ];
+  const carouselData = HERO_CAROUSEL_SLIDES;
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % carouselData.length);
+      setCurrentSlide((prev) => (prev + 1) % HERO_CAROUSEL_SLIDES.length);
     }, 6000);
 
     return () => clearInterval(timer);
-  }, [carouselData.length]);
+  }, []);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % carouselData.length);
