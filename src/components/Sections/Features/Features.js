@@ -198,7 +198,7 @@ const Features = () => {
     {
       icon: <FiShield />,
       title: 'Лучшие фабрики',
-      description: 'Эксклюзивные поставки от Рими, Vivakitchen, Ligron и других'
+      description: 'Эксклюзивные поставки от фабрик Рими, Vivakitchen, Ligron и других'
     },
     {
       icon: <FiHeart />,
