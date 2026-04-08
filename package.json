@@ -23,7 +23,14 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:ci": "react-scripts test --watchAll=false",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "optimize:elena": "node scripts/optimize-elena-images.mjs",
+    "optimize:svetlana": "node scripts/optimize-svetlana-ushakova-images.mjs",
+    "optimize:potapova": "node scripts/optimize-potapova-images.mjs",
+    "optimize:kondratieva": "node scripts/optimize-kondratieva-images.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.5"
   },
   "eslintConfig": {
     "extends": [

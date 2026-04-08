@@ -4,6 +4,7 @@ import Hero from '../../components/Sections/Hero/Hero';
 import Features from '../../components/Sections/Features/Features';
 import Promotions from '../../components/Sections/Promotions/Promotions';
 import CatalogPreview from '../../components/Sections/CatalogPreview/CatalogPreview';
+import DesignerProjects from '../../components/Sections/DesignerProjects/DesignerProjects';
 import Testimonials from '../../components/Sections/Testimonials/Testimonials';
 import CTA from '../../components/Sections/CTA/CTA';
 
@@ -73,6 +74,7 @@ const Home = () => {
       <Hero />
       <Features />
       <CatalogPreview />
+      <DesignerProjects />
       <Promotions />
       <Testimonials />
       <CTA />
