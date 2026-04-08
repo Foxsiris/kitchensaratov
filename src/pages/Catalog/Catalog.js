@@ -579,6 +579,120 @@ const Empty = styled.div`
   padding: ${p => p.theme.spacing['3xl']} 0;
 `;
 
+const FilterRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: ${p => p.theme.spacing.sm};
+  margin-bottom: ${p => p.theme.spacing.xl};
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    margin-bottom: ${p => p.theme.spacing.lg};
+  }
+`;
+
+const FilterLabel = styled.span`
+  font-size: ${p => p.theme.fontSizes.xs};
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: ${p => p.theme.colors.gray};
+  width: 100%;
+  margin-bottom: 4px;
+
+  @media (min-width: ${p => p.theme.breakpoints.mobile}) {
+    width: auto;
+    margin-bottom: 0;
+    margin-right: ${p => p.theme.spacing.sm};
+  }
+`;
+
+const FilterChip = styled.button`
+  border: 1px solid ${p => (p.$active ? p.theme.colors.primary : p.theme.colors.border)};
+  background: ${p => (p.$active ? p.theme.colors.primary : p.theme.colors.white)};
+  color: ${p => (p.$active ? p.theme.colors.white : p.theme.colors.primary)};
+  padding: 8px 14px;
+  font-size: ${p => p.theme.fontSizes.xs};
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: ${p => p.theme.transitions.fast};
+  white-space: nowrap;
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    padding: 7px 12px;
+    font-size: 11px;
+  }
+`;
+
+const SeeAllRow = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: ${p => p.theme.spacing.md};
+  padding-bottom: ${p => p.theme.spacing.sm};
+`;
+
+const SeeAllButton = styled.button`
+  border: 1px solid ${p => p.theme.colors.primary};
+  background: transparent;
+  color: ${p => p.theme.colors.primary};
+  padding: ${p => p.theme.spacing.sm} ${p => p.theme.spacing.xl};
+  font-size: ${p => p.theme.fontSizes.xs};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: ${p => p.theme.transitions.fast};
+  display: inline-flex;
+  align-items: center;
+  gap: ${p => p.theme.spacing.sm};
+
+  &:hover {
+    background: ${p => p.theme.colors.primary};
+    color: ${p => p.theme.colors.white};
+  }
+
+  @media (max-width: ${p => p.theme.breakpoints.mobile}) {
+    width: 100%;
+    justify-content: center;
+    padding: ${p => p.theme.spacing.md};
+  }
+`;
+
+/** Сколько карточек показывать в превью бренда до «Смотреть все». */
+const BRAND_PREVIEW_LIMIT = 6;
+
+function brandKey(catId, brandId) {
+  return `${catId}::${brandId}`;
+}
+
+function collectBrandEntries(brand, filterProducts, catId, subFilterKeys = []) {
+  const entries = [];
+  brand.subcategories.forEach(sub => {
+    const subKey = `${catId}::${brand.id}::${sub.id}`;
+    if (subFilterKeys.length > 0 && !subFilterKeys.includes(subKey)) return;
+    filterProducts(sub.products).forEach(product => {
+      entries.push({ product, sub });
+    });
+  });
+  return entries;
+}
+
+/** Упорядоченные куски превью с заголовками подкатегорий при необходимости. */
+function previewChunks(entries, limit, brand) {
+  const slice = entries.slice(0, limit);
+  if (brand.subcategories.length <= 1) {
+    return [{ sub: null, products: slice.map(e => e.product) }];
+  }
+  const chunks = [];
+  slice.forEach(e => {
+    const last = chunks[chunks.length - 1];
+    if (!last || last.sub.id !== e.sub.id) {
+      chunks.push({ sub: e.sub, products: [e.product] });
+    } else {
+      last.products.push(e.product);
+    }
+  });
+  return chunks;
+}
+
 const Catalog = () => {
   const navigate = useNavigate();
   const { categories } = useCatalog();
@@ -587,10 +701,21 @@ const Catalog = () => {
   const [activeCategory, setActiveCategory] = useState(searchParams.get('category') || 'all');
   const [search, setSearch] = useState('');
   const [openBrands, setOpenBrands] = useState({});
+  /** Развёрнут полный список товаров бренда (иначе — превью). */
+  const [brandShowAll, setBrandShowAll] = useState({});
+  /** Пустой массив — все бренды; иначе только выбранные ключи `catId::brandId`. */
+  const [brandFilterKeys, setBrandFilterKeys] = useState([]);
+  /** Пустой массив — все разделы; ключи `catId::brandId::subId`. */
+  const [subFilterKeys, setSubFilterKeys] = useState([]);
 
   useEffect(() => {
     setActiveCategory(searchParams.get('category') || 'all');
   }, [searchParams]);
+
+  useEffect(() => {
+    setBrandFilterKeys([]);
+    setSubFilterKeys([]);
+  }, [activeCategory]);
 
   const handleTabClick = (categoryId) => {
     if (categoryId === 'all') {
@@ -610,22 +735,74 @@ const Catalog = () => {
     if (!query) return products;
     return products.filter(product => (
       product.name.toLowerCase().includes(query) ||
-      product.description.toLowerCase().includes(query)
+      (product.description && product.description.toLowerCase().includes(query))
     ));
   };
+
+  const toggleBrandFilter = (key) => {
+    setBrandFilterKeys(prev => (prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]));
+  };
+
+  const toggleSubFilter = (key) => {
+    setSubFilterKeys(prev => (prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]));
+  };
+
+  const brandFilterOptions = useMemo(() => {
+    const opts = [];
+    visibleCategories.forEach(cat => {
+      cat.brands.forEach(brand => {
+        const entries = collectBrandEntries(brand, filterProducts, cat.id, subFilterKeys);
+        if (entries.length === 0) return;
+        opts.push({
+          key: brandKey(cat.id, brand.id),
+          label: activeCategory === 'all' ? `${brand.name} · ${cat.name}` : brand.name,
+          count: entries.length,
+        });
+      });
+    });
+    return opts;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleCategories, search, activeCategory, subFilterKeys]);
+
+  const subFilterOptions = useMemo(() => {
+    if (activeCategory === 'all') return [];
+    const opts = [];
+    visibleCategories.forEach(cat => {
+      const brandsInCat = cat.brands.filter(b =>
+        collectBrandEntries(b, filterProducts, cat.id, []).length > 0
+      );
+      const singleBrand = brandsInCat.length <= 1;
+      cat.brands.forEach(brand => {
+        const bk = brandKey(cat.id, brand.id);
+        if (brandFilterKeys.length > 0 && !brandFilterKeys.includes(bk)) return;
+        brand.subcategories.forEach(sub => {
+          const n = filterProducts(sub.products).length;
+          if (n === 0) return;
+          const key = `${cat.id}::${brand.id}::${sub.id}`;
+          opts.push({
+            key,
+            label: singleBrand ? sub.name : `${brand.name} — ${sub.name}`,
+            count: n,
+          });
+        });
+      });
+    });
+    return opts;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visibleCategories, search, activeCategory, brandFilterKeys]);
 
   const totalCount = useMemo(() => {
     let count = 0;
     visibleCategories.forEach(cat => {
       cat.brands.forEach(brand => {
-        brand.subcategories.forEach(sub => {
-          count += filterProducts(sub.products).length;
-        });
+        const k = brandKey(cat.id, brand.id);
+        if (brandFilterKeys.length > 0 && !brandFilterKeys.includes(k)) return;
+        count += collectBrandEntries(brand, filterProducts, cat.id, subFilterKeys).length;
       });
     });
     return count;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleCategories, search]);
+  }, [visibleCategories, search, brandFilterKeys, subFilterKeys]);
 
   const activeCategoryName = activeCategory === 'all'
     ? 'Каталог мебели'
@@ -696,6 +873,54 @@ const Catalog = () => {
           <Count>{totalCount} {getCountWord(totalCount)}</Count>
         </ToolBar>
 
+        {!shouldShowMosaic && brandFilterOptions.length > 1 && (
+          <FilterRow>
+            <FilterLabel>Бренды</FilterLabel>
+            <FilterChip
+              type="button"
+              $active={brandFilterKeys.length === 0}
+              onClick={() => setBrandFilterKeys([])}
+            >
+              Все
+            </FilterChip>
+            {brandFilterOptions.map(opt => (
+              <FilterChip
+                key={opt.key}
+                type="button"
+                $active={brandFilterKeys.includes(opt.key)}
+                onClick={() => toggleBrandFilter(opt.key)}
+              >
+                {opt.label}
+                <span style={{ opacity: 0.65 }}> ({opt.count})</span>
+              </FilterChip>
+            ))}
+          </FilterRow>
+        )}
+
+        {!shouldShowMosaic && subFilterOptions.length > 1 && (
+          <FilterRow>
+            <FilterLabel>Разделы</FilterLabel>
+            <FilterChip
+              type="button"
+              $active={subFilterKeys.length === 0}
+              onClick={() => setSubFilterKeys([])}
+            >
+              Все
+            </FilterChip>
+            {subFilterOptions.map(opt => (
+              <FilterChip
+                key={opt.key}
+                type="button"
+                $active={subFilterKeys.includes(opt.key)}
+                onClick={() => toggleSubFilter(opt.key)}
+              >
+                {opt.label}
+                <span style={{ opacity: 0.65 }}> ({opt.count})</span>
+              </FilterChip>
+            ))}
+          </FilterRow>
+        )}
+
         {shouldShowMosaic && (
           <MosaicGrid>
             {categories.map((cat, idx) => (
@@ -720,7 +945,7 @@ const Catalog = () => {
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeCategory + search}
+            key={`${activeCategory}-${search}-${brandFilterKeys.slice().sort().join(',')}-${subFilterKeys.slice().sort().join(',')}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -731,14 +956,22 @@ const Catalog = () => {
                 {activeCategory === 'all' && <CategoryHeading>{cat.name}</CategoryHeading>}
 
                 {cat.brands.map(brand => {
-                  const brandKey = `${cat.id}-${brand.id}`;
-                  const isOpen = openBrands[brandKey] !== false;
-                  const hasProducts = brand.subcategories.some(sub => filterProducts(sub.products).length > 0);
-                  if (!hasProducts) return null;
+                  const sectionKey = `${cat.id}-${brand.id}`;
+                  const filterK = brandKey(cat.id, brand.id);
+                  if (brandFilterKeys.length > 0 && !brandFilterKeys.includes(filterK)) return null;
+
+                  const entries = collectBrandEntries(brand, filterProducts, cat.id, subFilterKeys);
+                  if (entries.length === 0) return null;
+
+                  const isOpen = openBrands[sectionKey] !== false;
+                  const showFullList = brandShowAll[sectionKey] === true;
+                  const hasMoreThanPreview = entries.length > BRAND_PREVIEW_LIMIT;
+                  const previewLimit = showFullList ? entries.length : Math.min(BRAND_PREVIEW_LIMIT, entries.length);
+                  const chunks = previewChunks(entries, previewLimit, brand);
 
                   return (
-                    <BrandSection key={brandKey}>
-                      <BrandHeader type="button" onClick={() => setOpenBrands(prev => ({ ...prev, [brandKey]: !prev[brandKey] }))}>
+                    <BrandSection key={sectionKey}>
+                      <BrandHeader type="button" onClick={() => setOpenBrands(prev => ({ ...prev, [sectionKey]: !prev[sectionKey] }))}>
                         <BrandName>{brand.name}</BrandName>
                         <ChevronIcon animate={{ rotate: isOpen ? 180 : 0 }}>
                           <FiChevronDown size={20} />
@@ -754,43 +987,62 @@ const Catalog = () => {
                             transition={{ duration: 0.25 }}
                             style={{ overflow: 'hidden' }}
                           >
-                            {brand.subcategories.map(sub => {
-                              const filteredProducts = filterProducts(sub.products);
-                              if (!filteredProducts.length) return null;
-                              return (
-                                <div key={sub.id}>
-                                  {brand.subcategories.length > 1 && <SubName>{sub.name}</SubName>}
+                            {(() => {
+                              let mosaicIdx = 0;
+                              return chunks.map(chunk => (
+                                <div key={chunk.sub?.id || 'single'}>
+                                  {chunk.sub && brand.subcategories.length > 1 && <SubName>{chunk.sub.name}</SubName>}
                                   <Grid>
-                                    {filteredProducts.map((product, idx) => (
-                                      <Card
-                                        key={product.id}
-                                        $mosaicIndex={idx}
-                                        onClick={() => navigate(`/product/${product.id}`)}
-                                        initial={{ opacity: 0, y: 14 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.35, delay: Math.min(idx * 0.03, 0.2) }}
-                                        viewport={{ once: true }}
-                                      >
-                                        <CardMedia $isLarge={getMosaicSpan(idx) === 6}>
-                                          <CardImage src={resolveCatalogImageSrc(product.image)} alt={product.name} loading="lazy" />
-                                          <CardOverlay>
-                                            <CircleArrow><FiArrowRight size={16} /></CircleArrow>
-                                          </CardOverlay>
-                                        </CardMedia>
-                                        <CardBody>
-                                          <CardLabel>{brand.name}</CardLabel>
-                                          <CardTitle>{product.name}</CardTitle>
-                                          <CardMeta>
-                                            <CardPrice>{product.price}</CardPrice>
-                                            <CardSource>{product.source}</CardSource>
-                                          </CardMeta>
-                                        </CardBody>
-                                      </Card>
-                                    ))}
+                                    {chunk.products.map(product => {
+                                      const idx = mosaicIdx++;
+                                      return (
+                                        <Card
+                                          key={product.id}
+                                          $mosaicIndex={idx}
+                                          onClick={() => navigate(`/product/${product.id}`)}
+                                          initial={{ opacity: 0, y: 14 }}
+                                          whileInView={{ opacity: 1, y: 0 }}
+                                          transition={{ duration: 0.35, delay: Math.min(idx * 0.03, 0.2) }}
+                                          viewport={{ once: true }}
+                                        >
+                                          <CardMedia $isLarge={getMosaicSpan(idx) === 6}>
+                                            <CardImage src={resolveCatalogImageSrc(product.image)} alt={product.name} loading="lazy" />
+                                            <CardOverlay>
+                                              <CircleArrow><FiArrowRight size={16} /></CircleArrow>
+                                            </CardOverlay>
+                                          </CardMedia>
+                                          <CardBody>
+                                            <CardLabel>{brand.name}</CardLabel>
+                                            <CardTitle>{product.name}</CardTitle>
+                                            <CardMeta>
+                                              <CardPrice>{product.price}</CardPrice>
+                                              <CardSource>{product.source}</CardSource>
+                                            </CardMeta>
+                                          </CardBody>
+                                        </Card>
+                                      );
+                                    })}
                                   </Grid>
                                 </div>
-                              );
-                            })}
+                              ));
+                            })()}
+                            {hasMoreThanPreview && (
+                              <SeeAllRow>
+                                <SeeAllButton
+                                  type="button"
+                                  onClick={() => setBrandShowAll(prev => ({ ...prev, [sectionKey]: !showFullList }))}
+                                >
+                                  {showFullList ? (
+                                    <>Свернуть</>
+                                  ) : (
+                                    <>
+                                      Смотреть все
+                                      <FiArrowRight size={14} />
+                                    </>
+                                  )}
+                                </SeeAllButton>
+                              </SeeAllRow>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
