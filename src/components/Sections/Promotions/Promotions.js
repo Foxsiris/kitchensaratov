@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FiArrowRight } from 'react-icons/fi';
 import { useModal } from '../../../hooks/useModal';
+import { apiUrl } from '../../../config/api';
 
 const PromotionsContainer = styled.section`
   padding: ${props => props.theme.spacing['5xl']} 0;
@@ -342,35 +343,59 @@ const CTAActionButton = styled(motion.button)`
   }
 `;
 
+const DEFAULT_PROMOTIONS = [
+  {
+    id: 'default-1',
+    dark: true,
+    badge: 'Скидка 30%',
+    title: 'Кухня в рассрочку 0%',
+    description: 'Оформите кухню в рассрочку без переплат на 12 месяцев. Первый взнос всего 30%.',
+    price: 'от 15 000 ₽/мес',
+    action: 'Оформить',
+  },
+  {
+    id: 'default-2',
+    dark: false,
+    badge: 'Подарок',
+    title: 'Фартук в подарок',
+    description: 'При заказе кухни получайте фартук из керамогранита или стекла в подарок.',
+    price: 'до 50 000 ₽',
+    action: 'Подробнее',
+  },
+  {
+    id: 'default-3',
+    dark: false,
+    badge: 'Ограничено',
+    title: 'Бесплатная доставка',
+    description: 'Закажите кухню до конца месяца и получите бесплатную доставку и монтаж.',
+    price: 'Бесплатно',
+    action: 'Заказать',
+  },
+];
+
 const Promotions = () => {
   const { openModal } = useModal();
+  const [promotions, setPromotions] = useState(DEFAULT_PROMOTIONS);
 
-  const promotions = [
-    {
-      dark: true,
-      badge: 'Скидка 30%',
-      title: 'Кухня в рассрочку 0%',
-      description: 'Оформите кухню в рассрочку без переплат на 12 месяцев. Первый взнос всего 30%.',
-      price: 'от 15 000 ₽/мес',
-      action: 'Оформить'
-    },
-    {
-      dark: false,
-      badge: 'Подарок',
-      title: 'Фартук в подарок',
-      description: 'При заказе кухни получайте фартук из керамогранита или стекла в подарок.',
-      price: 'до 50 000 ₽',
-      action: 'Подробнее'
-    },
-    {
-      dark: false,
-      badge: 'Ограничено',
-      title: 'Бесплатная доставка',
-      description: 'Закажите кухню до конца месяца и получите бесплатную доставку и монтаж.',
-      price: 'Бесплатно',
-      action: 'Заказать'
-    }
-  ];
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(apiUrl('/api/promotions'));
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = Array.isArray(data.promotions) ? data.promotions : [];
+        if (list.length > 0 && !cancelled) {
+          setPromotions(list);
+        }
+      } catch {
+        /* оставляем запасной контент */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <PromotionsContainer>
@@ -397,7 +422,7 @@ const Promotions = () => {
         <PromotionsGrid>
           {promotions.map((promotion, index) => (
             <PromotionCard
-              key={index}
+              key={promotion.id || index}
               $dark={promotion.dark}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}

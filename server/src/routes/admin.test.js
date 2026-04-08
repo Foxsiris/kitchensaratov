@@ -53,6 +53,13 @@ vi.mock('../db.js', () => ({
     storedImage: {
       create: vi.fn(),
     },
+    promotion: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+    },
     $transaction: vi.fn(),
   },
 }));
@@ -470,6 +477,79 @@ describe('admin routes', () => {
         .set(auth())
         .send({ name: 'Рими' });
       expect(res.status).toBe(201);
+    });
+  });
+
+  describe('promotions', () => {
+    it('GET /promotions', async () => {
+      prisma.promotion.findMany.mockResolvedValue([]);
+      const res = await request(app).get('/api/admin/promotions').set(auth());
+      expect(res.status).toBe(200);
+      expect(res.body.promotions).toEqual([]);
+    });
+
+    it('POST /promotions 400 без заголовка', async () => {
+      const res = await request(app).post('/api/admin/promotions').set(auth()).send({ badge: 'x' });
+      expect(res.status).toBe(400);
+    });
+
+    it('POST /promotions 201', async () => {
+      prisma.promotion.create.mockResolvedValue({ id: '11111111-2222-4222-8222-333333333333' });
+      const res = await request(app)
+        .post('/api/admin/promotions')
+        .set(auth())
+        .send({
+          badge: 'B',
+          title: 'T',
+          description: '',
+          price: '',
+          action: '',
+          dark: false,
+          sortOrder: 0,
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.id).toBe('11111111-2222-4222-8222-333333333333');
+    });
+
+    it('PATCH /promotions/:id 400 неверный id', async () => {
+      const res = await request(app).patch('/api/admin/promotions/bad').set(auth()).send({ title: 'X' });
+      expect(res.status).toBe(400);
+    });
+
+    it('PATCH /promotions/:id 404', async () => {
+      prisma.promotion.findUnique.mockResolvedValue(null);
+      const res = await request(app)
+        .patch('/api/admin/promotions/11111111-2222-4222-8222-333333333333')
+        .set(auth())
+        .send({ title: 'X' });
+      expect(res.status).toBe(404);
+    });
+
+    it('PATCH /promotions/:id 200', async () => {
+      prisma.promotion.findUnique.mockResolvedValue({ id: '11111111-2222-4222-8222-333333333333' });
+      prisma.promotion.update.mockResolvedValue({});
+      const res = await request(app)
+        .patch('/api/admin/promotions/11111111-2222-4222-8222-333333333333')
+        .set(auth())
+        .send({ title: 'Новое', badge: 'Н', dark: true });
+      expect(res.status).toBe(200);
+    });
+
+    it('DELETE /promotions/:id 404', async () => {
+      prisma.promotion.findUnique.mockResolvedValue(null);
+      const res = await request(app)
+        .delete('/api/admin/promotions/11111111-2222-4222-8222-333333333333')
+        .set(auth());
+      expect(res.status).toBe(404);
+    });
+
+    it('DELETE /promotions/:id 200', async () => {
+      prisma.promotion.findUnique.mockResolvedValue({ id: '11111111-2222-4222-8222-333333333333' });
+      prisma.promotion.delete.mockResolvedValue({});
+      const res = await request(app)
+        .delete('/api/admin/promotions/11111111-2222-4222-8222-333333333333')
+        .set(auth());
+      expect(res.status).toBe(200);
     });
   });
 });

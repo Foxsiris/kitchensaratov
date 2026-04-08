@@ -122,9 +122,51 @@ async function seedCatalog() {
   console.log(`Catalog seeded from ${catalogPath}`);
 }
 
+async function ensurePromotions() {
+  const count = await prisma.promotion.count();
+  if (count > 0) {
+    console.log('Promotions seed skipped: rows already exist');
+    return;
+  }
+  await prisma.promotion.createMany({
+    data: [
+      {
+        dark: true,
+        badge: 'Скидка 30%',
+        title: 'Кухня в рассрочку 0%',
+        description:
+          'Оформите кухню в рассрочку без переплат на 12 месяцев. Первый взнос всего 30%.',
+        priceDisplay: 'от 15 000 ₽/мес',
+        actionLabel: 'Оформить',
+        sortOrder: 0,
+      },
+      {
+        dark: false,
+        badge: 'Подарок',
+        title: 'Фартук в подарок',
+        description: 'При заказе кухни получайте фартук из керамогранита или стекла в подарок.',
+        priceDisplay: 'до 50 000 ₽',
+        actionLabel: 'Подробнее',
+        sortOrder: 1,
+      },
+      {
+        dark: false,
+        badge: 'Ограничено',
+        title: 'Бесплатная доставка',
+        description: 'Закажите кухню до конца месяца и получите бесплатную доставку и монтаж.',
+        priceDisplay: 'Бесплатно',
+        actionLabel: 'Заказать',
+        sortOrder: 2,
+      },
+    ],
+  });
+  console.log('Default promotions seeded');
+}
+
 async function main() {
   await seedCatalog();
   await ensureAdmin();
+  await ensurePromotions();
 }
 
 main()

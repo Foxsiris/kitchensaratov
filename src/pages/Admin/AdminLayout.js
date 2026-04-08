@@ -199,6 +199,7 @@ const AdminLayout = () => {
     { to: '/admin', label: 'Обзор', exact: true },
     { to: '/admin/categories', label: 'Категории' },
     { to: '/admin/brands', label: 'Бренды' },
+    { to: '/admin/promotions', label: 'Акции' },
     { to: '/', label: 'На сайт →' },
   ];
 

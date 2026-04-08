@@ -9,6 +9,7 @@ vi.mock('../db.js', () => ({
     category: { findMany: vi.fn() },
     product: { findUnique: vi.fn() },
     storedImage: { findUnique: vi.fn() },
+    promotion: { findMany: vi.fn() },
   },
 }));
 
@@ -54,6 +55,33 @@ describe('public routes', () => {
     expect(res.status).toBe(200);
     expect(res.body.ok).toBe(true);
     expect(res.body.service).toBe('kitchensaratov-api');
+  });
+
+  it('GET /api/promotions — список', async () => {
+    prisma.promotion.findMany.mockResolvedValue([
+      {
+        id: '11111111-2222-4222-8222-333333333333',
+        dark: true,
+        badge: 'B',
+        title: 'T',
+        description: 'D',
+        priceDisplay: 'P',
+        actionLabel: 'A',
+        sortOrder: 0,
+      },
+    ]);
+    const res = await request(app).get('/api/promotions');
+    expect(res.status).toBe(200);
+    expect(res.body.promotions).toHaveLength(1);
+    expect(res.body.promotions[0]).toMatchObject({
+      id: '11111111-2222-4222-8222-333333333333',
+      dark: true,
+      badge: 'B',
+      title: 'T',
+      description: 'D',
+      price: 'P',
+      action: 'A',
+    });
   });
 
   it('GET /api/catalog — пустой список', async () => {

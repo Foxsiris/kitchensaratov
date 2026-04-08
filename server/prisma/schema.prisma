@@ -167,3 +167,20 @@ model AdminUser {
   @@index([isActive])
   @@map("admin_users")
 }
+
+/// Карточки блока «Акции» на главной странице.
+model Promotion {
+  id            String   @id @default(uuid()) @db.Uuid
+  dark          Boolean  @default(false)
+  badge         String   @db.VarChar(256)
+  title         String   @db.VarChar(512)
+  description   String   @default("") @db.Text
+  priceDisplay  String   @map("price_display") @db.VarChar(512)
+  actionLabel   String   @map("action_label") @db.VarChar(256)
+  sortOrder     Int      @default(0) @map("sort_order")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([sortOrder])
+  @@map("promotions")
+}

@@ -281,6 +281,41 @@ export function CatalogProvider({ children }) {
     [adminFetch]
   );
 
+  const fetchPromotions = useCallback(async () => {
+    const data = await adminFetch('/api/admin/promotions');
+    return Array.isArray(data.promotions) ? data.promotions : [];
+  }, [adminFetch]);
+
+  const createPromotion = useCallback(
+    async (payload) => {
+      const body = await adminFetch('/api/admin/promotions', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      return body.id || null;
+    },
+    [adminFetch]
+  );
+
+  const updatePromotion = useCallback(
+    async (id, payload) => {
+      await adminFetch(`/api/admin/promotions/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+    },
+    [adminFetch]
+  );
+
+  const deletePromotion = useCallback(
+    async (id) => {
+      await adminFetch(`/api/admin/promotions/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      });
+    },
+    [adminFetch]
+  );
+
   const addSubcategory = useCallback(
     async (categoryId, brandId, subName) => {
       const trimmed = (subName || '').trim();
@@ -374,6 +409,10 @@ export function CatalogProvider({ children }) {
     createBrandEntity,
     updateBrandEntity,
     deleteBrandEntity,
+    fetchPromotions,
+    createPromotion,
+    updatePromotion,
+    deletePromotion,
     addSubcategory,
     addProduct,
     updateProduct,

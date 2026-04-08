@@ -18,6 +18,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminCategories from './pages/Admin/AdminCategories';
 import AdminCategoryDetail from './pages/Admin/AdminCategoryDetail';
 import AdminBrands from './pages/Admin/AdminBrands';
+import AdminPromotions from './pages/Admin/AdminPromotions';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
                     <Route path="categories" element={<AdminCategories />} />
                     <Route path="categories/:id" element={<AdminCategoryDetail />} />
                     <Route path="brands" element={<AdminBrands />} />
+                    <Route path="promotions" element={<AdminPromotions />} />
                   </Route>
                   <Route element={<MainLayout />}>
                     <Route path="/" element={<Home />} />

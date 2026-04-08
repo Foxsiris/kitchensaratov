@@ -1,6 +1,6 @@
 import React from 'react';
 import { useCatalog } from '../../context/CatalogContext';
-import { FiFolder, FiPackage, FiLayers, FiTag } from 'react-icons/fi';
+import { FiFolder, FiPackage, FiLayers, FiTag, FiPercent } from 'react-icons/fi';
 import { Card, PageTitle, Text, ButtonLink } from './AdminUI';
 import styled from 'styled-components';
 
@@ -92,7 +92,7 @@ const AdminDashboard = () => {
       <Card>
         <Text style={{ marginBottom: 16 }}>
           Управляйте каталогом: категории и товары — в разделе «Категории», справочник производителей — в
-          «Справочник брендов».
+          «Справочник брендов», карточки на главной — в «Акции».
         </Text>
         <Actions>
           <ButtonLink to="/admin/categories">
@@ -102,6 +102,10 @@ const AdminDashboard = () => {
           <ButtonLink to="/admin/brands" $variant="secondary">
             <FiTag size={16} />
             Справочник брендов
+          </ButtonLink>
+          <ButtonLink to="/admin/promotions" $variant="secondary">
+            <FiPercent size={16} />
+            Акции
           </ButtonLink>
         </Actions>
       </Card>

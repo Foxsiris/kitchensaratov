@@ -28,6 +28,31 @@ router.get('/health', (_req, res) => {
   res.json({ ok: true, service: 'kitchensaratov-api' });
 });
 
+function formatPromotionPublic(row) {
+  return {
+    id: row.id,
+    dark: row.dark,
+    badge: row.badge,
+    title: row.title,
+    description: row.description,
+    price: row.priceDisplay,
+    action: row.actionLabel,
+    sortOrder: row.sortOrder,
+  };
+}
+
+router.get('/promotions', async (_req, res) => {
+  try {
+    const rows = await prisma.promotion.findMany({
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+    });
+    res.json({ promotions: rows.map(formatPromotionPublic) });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Не удалось загрузить акции' });
+  }
+});
+
 router.get('/catalog', async (_req, res) => {
   try {
     const rows = await prisma.category.findMany({

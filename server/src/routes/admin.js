@@ -8,8 +8,26 @@ import { catalogInclude } from '../lib/catalogQueries.js';
 import { formatCatalogTree, DEFAULT_IMAGE } from '../lib/catalogFormat.js';
 import { toSlug, uniqueSlug } from '../lib/slug.js';
 import { isAllowedImageReference } from '../lib/imageRef.js';
+import { isStoredMediaId } from '../lib/storedMedia.js';
 
 const router = Router();
+
+function isPromotionId(id) {
+  return typeof id === 'string' && isStoredMediaId(id);
+}
+
+function formatPromotionAdmin(row) {
+  return {
+    id: row.id,
+    dark: row.dark,
+    badge: row.badge,
+    title: row.title,
+    description: row.description,
+    price: row.priceDisplay,
+    action: row.actionLabel,
+    sortOrder: row.sortOrder,
+  };
+}
 router.use(requireAuth);
 
 const imageUpload = multer({
@@ -702,6 +720,113 @@ router.patch('/brand-entities/:slug', async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Не удалось обновить бренд' });
+  }
+});
+
+router.get('/promotions', async (_req, res) => {
+  try {
+    const rows = await prisma.promotion.findMany({
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+    });
+    res.json({ promotions: rows.map(formatPromotionAdmin) });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Не удалось загрузить акции' });
+  }
+});
+
+router.post('/promotions', async (req, res) => {
+  const badge = String(req.body?.badge || '').trim();
+  const title = String(req.body?.title || '').trim();
+  if (!badge || !title) {
+    return res.status(400).json({ error: 'Укажите бейдж и заголовок' });
+  }
+  const description = String(req.body?.description ?? '').trim();
+  const price = String(req.body?.price ?? '').trim();
+  const action = String(req.body?.action ?? '').trim();
+  const dark = Boolean(req.body?.dark);
+  let sortOrder = 0;
+  if (req.body?.sortOrder !== undefined) {
+    const n = Number(req.body.sortOrder);
+    if (Number.isFinite(n)) sortOrder = n;
+  }
+  try {
+    const row = await prisma.promotion.create({
+      data: {
+        badge,
+        title,
+        description,
+        priceDisplay: price,
+        actionLabel: action,
+        dark,
+        sortOrder,
+      },
+    });
+    res.status(201).json({ id: row.id });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Не удалось создать акцию' });
+  }
+});
+
+router.patch('/promotions/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!isPromotionId(id)) {
+    return res.status(400).json({ error: 'Некорректный идентификатор' });
+  }
+  try {
+    const existing = await prisma.promotion.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: 'Акция не найдена' });
+
+    const data = {};
+    if (req.body?.badge !== undefined) {
+      const b = String(req.body.badge).trim();
+      if (!b) return res.status(400).json({ error: 'Бейдж не может быть пустым' });
+      data.badge = b;
+    }
+    if (req.body?.title !== undefined) {
+      const t = String(req.body.title).trim();
+      if (!t) return res.status(400).json({ error: 'Заголовок не может быть пустым' });
+      data.title = t;
+    }
+    if (req.body?.description !== undefined) {
+      data.description = String(req.body.description).trim();
+    }
+    if (req.body?.price !== undefined) {
+      data.priceDisplay = String(req.body.price).trim();
+    }
+    if (req.body?.action !== undefined) {
+      data.actionLabel = String(req.body.action).trim();
+    }
+    if (req.body?.dark !== undefined) {
+      data.dark = Boolean(req.body.dark);
+    }
+    if (req.body?.sortOrder !== undefined) {
+      const n = Number(req.body.sortOrder);
+      if (Number.isFinite(n)) data.sortOrder = n;
+    }
+
+    await prisma.promotion.update({ where: { id }, data });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Не удалось обновить акцию' });
+  }
+});
+
+router.delete('/promotions/:id', async (req, res) => {
+  const { id } = req.params;
+  if (!isPromotionId(id)) {
+    return res.status(400).json({ error: 'Некорректный идентификатор' });
+  }
+  try {
+    const existing = await prisma.promotion.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: 'Акция не найдена' });
+    await prisma.promotion.delete({ where: { id } });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Не удалось удалить акцию' });
   }
 });
 
