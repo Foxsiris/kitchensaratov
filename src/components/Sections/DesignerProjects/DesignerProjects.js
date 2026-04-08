@@ -691,9 +691,9 @@ const DesignerProjects = () => {
             href={VIDEOBLOG_URL}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Перейти в видеоблог, откроется в новой вкладке"
+            aria-label="Перейти в Telegram-канал, откроется в новой вкладке"
           >
-            Перейти в видеоблог
+            Перейти в Telegram-канал
             <VideoblogIconWrap aria-hidden>
               <FiArrowUpRight size={20} strokeWidth={2.2} />
             </VideoblogIconWrap>
