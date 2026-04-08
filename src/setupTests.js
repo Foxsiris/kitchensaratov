@@ -15,6 +15,27 @@ if (typeof globalThis.TextDecoder === 'undefined') {
 
 window.scrollTo = jest.fn();
 
+function createMatchMediaList(query) {
+  return {
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener() {},
+    removeListener() {},
+    addEventListener() {},
+    removeEventListener() {},
+    dispatchEvent() {
+      return false;
+    },
+  };
+}
+
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  configurable: true,
+  value: (query) => createMatchMediaList(query),
+});
+
 global.requestAnimationFrame = (cb) => setTimeout(cb, 0);
 global.cancelAnimationFrame = (id) => clearTimeout(id);
 
