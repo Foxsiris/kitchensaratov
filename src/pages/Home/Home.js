@@ -74,10 +74,10 @@ const Home = () => {
   return (
     <HomeContainer>
       <Hero />
+      <FoundersIntro />
       <Features />
       <CatalogPreview />
       <SalonOpen />
-      <FoundersIntro />
       <DesignerProjects />
       <Promotions />
       <Testimonials />
