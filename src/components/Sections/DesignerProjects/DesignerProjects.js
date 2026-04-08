@@ -8,7 +8,12 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { FiImage, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import {
+  FiArrowUpRight,
+  FiImage,
+  FiChevronLeft,
+  FiChevronRight,
+} from 'react-icons/fi';
 import { theme } from '../../../styles/theme';
 import {
   ELENA_GALLERY_URLS,
@@ -18,6 +23,15 @@ import DesignerProjectGalleryModal from './DesignerProjectGalleryModal';
 
 /** Акцент кнопки на карточке (тёмно-зелёный, как в макете) */
 const CARD_ACCENT = '#1b4332';
+
+/** По умолчанию — Telegram Viva Kitchen; переопределение: REACT_APP_VIDEOBLOG_URL */
+const VIDEOBLOG_DEFAULT = 'https://t.me/+R6u4qvNIxdRjZWUy';
+
+const VIDEOBLOG_URL =
+  typeof process.env.REACT_APP_VIDEOBLOG_URL === 'string' &&
+  process.env.REACT_APP_VIDEOBLOG_URL.trim()
+    ? process.env.REACT_APP_VIDEOBLOG_URL.trim()
+    : VIDEOBLOG_DEFAULT;
 
 /** Пути к файлам в public/assets (сегменты — латиница, без пробелов) */
 const publicAsset = (...pathSegments) =>
@@ -43,6 +57,79 @@ const HeadRow = styled.div`
   @media (max-width: ${(p) => p.theme.breakpoints.mobile}) {
     padding: 0 16px;
     margin-bottom: ${(p) => p.theme.spacing.xl};
+  }
+`;
+
+const VideoblogBar = styled.div`
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 ${(p) => p.theme.spacing.xl};
+  margin-bottom: ${(p) => p.theme.spacing['2xl']};
+  display: flex;
+  justify-content: flex-start;
+  box-sizing: border-box;
+
+  @media (max-width: ${(p) => p.theme.breakpoints.mobile}) {
+    padding: 0 16px;
+    margin-bottom: ${(p) => p.theme.spacing.xl};
+  }
+`;
+
+const VideoblogLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 3vw, 28px);
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 12px 12px 12px ${(p) => p.theme.spacing.xl};
+  white-space: nowrap;
+  border-radius: 999px;
+  background: #f0f0f0;
+  color: ${(p) => p.theme.colors.primary};
+  text-decoration: none;
+  font-family: ${(p) => p.theme.fonts.primary};
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+
+  &:hover {
+    background: #e8e8e8;
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${(p) => p.theme.colors.primary};
+    outline-offset: 3px;
+  }
+
+  @media (max-width: ${(p) => p.theme.breakpoints.mobile}) {
+    padding: 10px 10px 10px 18px;
+    font-size: 10px;
+    letter-spacing: 0.11em;
+  }
+`;
+
+const VideoblogIconWrap = styled.span`
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: ${CARD_ACCENT};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  pointer-events: none;
+
+  @media (max-width: ${(p) => p.theme.breakpoints.mobile}) {
+    width: 40px;
+    height: 40px;
   }
 `;
 
@@ -592,6 +679,28 @@ const DesignerProjects = () => {
 
   return (
     <Section aria-labelledby="designer-projects-heading">
+      <motion.div
+        style={{ width: '100%' }}
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        viewport={{ once: true }}
+      >
+        <VideoblogBar>
+          <VideoblogLink
+            href={VIDEOBLOG_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Перейти в видеоблог, откроется в новой вкладке"
+          >
+            Перейти в видеоблог
+            <VideoblogIconWrap aria-hidden>
+              <FiArrowUpRight size={20} strokeWidth={2.2} />
+            </VideoblogIconWrap>
+          </VideoblogLink>
+        </VideoblogBar>
+      </motion.div>
+
       <HeadRow>
         <SectionTitle
           id="designer-projects-heading"
