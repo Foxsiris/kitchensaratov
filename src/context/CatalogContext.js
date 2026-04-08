@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { apiUrl } from '../config/api';
 import { useAuth } from './AuthContext';
+import { prepareImageForUpload } from '../utils/prepareImageForUpload';
 
 const CatalogContext = createContext(null);
 
@@ -76,8 +77,9 @@ export function CatalogProvider({ children }) {
   const uploadStoredImage = useCallback(
     async (file) => {
       if (!token) throw new Error('Нет авторизации');
+      const prepared = await prepareImageForUpload(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', prepared);
       const res = await fetch(apiUrl('/api/admin/upload'), {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
