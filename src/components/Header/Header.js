@@ -82,10 +82,6 @@ const Logo = styled(Link)`
   }
 `;
 
-const LogoAccent = styled.span`
-  font-weight: 600;
-`;
-
 const Nav = styled.nav`
   display: flex;
   align-items: center;
@@ -554,8 +550,7 @@ const Header = () => {
       >
         <HeaderContent>
           <Logo to="/" $onDark={onDarkHero}>
-            Интерьеры и кухни{' '}
-            <LogoAccent>в&nbsp;Саратове</LogoAccent>
+            ИНТЕРИКА
           </Logo>
 
           <Nav>

@@ -444,7 +444,8 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            Кухни и мебель по индивидуальным проектам
+            Мультибрендовый салон кухонь. Официальные представители фабрик
+            VIVAKITCHEN, Рими, Ligron и других.
           </Overline>
 
           <Title
