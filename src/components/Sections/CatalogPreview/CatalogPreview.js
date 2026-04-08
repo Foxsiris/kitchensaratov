@@ -257,19 +257,35 @@ const ViewAllLink = styled(Link)`
   }
 `;
 
-const SUBTITLES = {
-  kitchens: 'Рими · Vivakitchen',
-  wardrobes: 'Системы хранения',
-  cabinets: 'Встроенные решения',
-  dressers: 'Элегантное хранение',
-  tables: 'Массив дерева',
-  chairs: 'Комфорт и стиль',
-};
+/** Короткая подпись с витринных групп категории (имя производителя / линейки). */
+function labelFromDisplayGroup(brand) {
+  const raw = String(brand?.entityName || brand?.name || '').trim();
+  if (!raw) return '';
+  let m = raw.match(/^В стиле «(.+)»$/);
+  if (m) return m[1].trim();
+  m = raw.match(/^Фабрика «(.+)»$/);
+  if (m) return m[1].trim();
+  return raw;
+}
+
+function subtitleFromCategory(category) {
+  const brands = Array.isArray(category?.brands) ? category.brands : [];
+  const visible =
+    brands.length <= 1
+      ? brands
+      : brands.filter((b) => b.id !== 'default');
+  const labels = [...new Set(visible.map(labelFromDisplayGroup).filter(Boolean))];
+  if (labels.length === 0) return 'Каталог';
+  const max = 4;
+  const head = labels.slice(0, max);
+  const tail = labels.length > max ? ' и др.' : '';
+  return `${head.join(' · ')}${tail}`;
+}
 
 /** Порядок и раскладка как в макете (одинаково на всех ширинах) */
 const MOSAIC_SLOTS = [
   { categoryId: 'kitchens', area: 'hero' },
-  { categoryId: 'cabinets', area: 'tall', labelOverride: 'Для всей квартиры' },
+  { categoryId: 'cabinets', area: 'tall' },
   { categoryId: 'wardrobes', area: 'rt' },
   { categoryId: 'dressers', area: 'rb' },
   { categoryId: 'tables', area: 'b1' },
@@ -285,8 +301,8 @@ const CatalogPreview = () => {
     return {
       key: cat.id,
       area: slot.area,
-      label: slot.labelOverride || cat.name,
-      subtitle: SUBTITLES[cat.id] || 'Товары',
+      label: cat.name,
+      subtitle: subtitleFromCategory(cat),
       link: `/catalog?category=${cat.id}`,
       image: resolveCatalogImageSrc(cat.image),
     };
