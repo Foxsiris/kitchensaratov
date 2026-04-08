@@ -5,6 +5,7 @@ import Features from '../../components/Sections/Features/Features';
 import Promotions from '../../components/Sections/Promotions/Promotions';
 import CatalogPreview from '../../components/Sections/CatalogPreview/CatalogPreview';
 import SalonOpen from '../../components/Sections/SalonOpen/SalonOpen';
+import FoundersIntro from '../../components/Sections/FoundersIntro/FoundersIntro';
 import DesignerProjects from '../../components/Sections/DesignerProjects/DesignerProjects';
 import Testimonials from '../../components/Sections/Testimonials/Testimonials';
 import CTA from '../../components/Sections/CTA/CTA';
@@ -76,6 +77,7 @@ const Home = () => {
       <Features />
       <CatalogPreview />
       <SalonOpen />
+      <FoundersIntro />
       <DesignerProjects />
       <Promotions />
       <Testimonials />
