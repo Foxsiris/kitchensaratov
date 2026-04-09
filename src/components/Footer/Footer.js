@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { 
-  FiPhone, 
-  FiMail, 
-  FiMapPin, 
+import {
+  FiPhone,
+  FiMail,
+  FiMapPin,
   FiClock,
   FiInstagram
 } from 'react-icons/fi';
+import { SALON_YANDEX_MAPS_URL } from '../../utils/yandexMaps';
 
 const FooterOuter = styled.div`
   padding: 0 ${props => props.theme.spacing.xl};
@@ -188,6 +189,31 @@ const ContactLink = styled.a`
   }
 `;
 
+const ContactMapLink = styled(ContactLink).attrs({
+  target: '_blank',
+  rel: 'noopener noreferrer',
+})`
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(255, 255, 255, 0.25);
+
+  &:hover {
+    text-decoration-color: rgba(255, 255, 255, 0.55);
+  }
+`;
+
+const ContactAddress = styled.span`
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.55;
+`;
+
+const ContactPhones = styled.span`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.45;
+`;
+
 const FooterBottom = styled.div`
   display: flex;
   justify-content: space-between;
@@ -279,15 +305,34 @@ const Footer = () => {
             <SectionTitle>Контакты</SectionTitle>
             <ContactItem>
               <FiPhone size={14} />
-              <ContactLink href="tel:+79173125555">+7 (917) 312-55-55</ContactLink>
+              <ContactPhones>
+                <ContactLink href="tel:+79173125555">+7 (917) 312-55-55</ContactLink>
+                <ContactLink href="tel:+78452383333">338-333</ContactLink>
+              </ContactPhones>
             </ContactItem>
             <ContactItem>
               <FiMail size={14} />
-              <ContactLink href="mailto:info@kitchensaratov.ru">info@kitchensaratov.ru</ContactLink>
+              <ContactLink href="mailto:mebelru64elena@yandex.ru">
+                mebelru64elena@yandex.ru
+              </ContactLink>
             </ContactItem>
             <ContactItem>
               <FiMapPin size={14} />
-              <span>г. Саратов, ул. Примерная, 123</span>
+              <ContactAddress>
+                <ContactMapLink
+                  href={SALON_YANDEX_MAPS_URL.moskovskaya117a}
+                  aria-label="Московская, 117А — открыть на Яндекс.Картах"
+                >
+                  Московская, 117А
+                </ContactMapLink>
+                <br />
+                <ContactMapLink
+                  href={SALON_YANDEX_MAPS_URL.chapaeva65}
+                  aria-label="Чапаева, 65 — открыть на Яндекс.Картах"
+                >
+                  Чапаева, 65
+                </ContactMapLink>
+              </ContactAddress>
             </ContactItem>
             <ContactItem>
               <FiClock size={14} />

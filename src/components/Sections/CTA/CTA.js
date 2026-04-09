@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiPhone, FiMail, FiMapPin } from 'react-icons/fi';
 import { useModal } from '../../../hooks/useModal';
+import { SALON_YANDEX_MAPS_URL } from '../../../utils/yandexMaps';
 
 const CTAOuter = styled.div`
   padding: 0 ${props => props.theme.spacing.xl} ${props => props.theme.spacing['3xl']};
@@ -276,6 +277,22 @@ const ContactValue = styled.div`
   }
 `;
 
+const InlineTel = styled.a`
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(255, 255, 255, 0.45);
+
+  &:hover {
+    opacity: 0.88;
+  }
+`;
+
+const MapLink = styled(InlineTel).attrs({
+  target: '_blank',
+  rel: 'noopener noreferrer',
+})``;
+
 const CTA = () => {
   const { openModal } = useModal();
 
@@ -283,17 +300,39 @@ const CTA = () => {
     {
       icon: <FiPhone size={16} />,
       label: 'Телефон',
-      value: '+7 (917) 312-55-55'
+      value: (
+        <>
+          <InlineTel href="tel:+79173125555">+7 (917) 312-55-55</InlineTel>
+          <br />
+          <InlineTel href="tel:+78452383333">338-333</InlineTel>
+        </>
+      )
     },
     {
       icon: <FiMail size={16} />,
       label: 'Email',
-      value: 'info@kitchensaratov.ru'
+      value: 'mebelru64elena@yandex.ru'
     },
     {
       icon: <FiMapPin size={16} />,
-      label: 'Адрес',
-      value: 'г. Саратов, ул. Примерная, 123'
+      label: 'Салоны',
+      value: (
+        <>
+          <MapLink
+            href={SALON_YANDEX_MAPS_URL.moskovskaya117a}
+            aria-label="Московская, 117А — открыть на Яндекс.Картах"
+          >
+            Московская, 117А
+          </MapLink>
+          <br />
+          <MapLink
+            href={SALON_YANDEX_MAPS_URL.chapaeva65}
+            aria-label="Чапаева, 65 — открыть на Яндекс.Картах"
+          >
+            Чапаева, 65
+          </MapLink>
+        </>
+      )
     }
   ];
 
