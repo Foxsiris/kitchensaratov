@@ -2,8 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
-const PHOTO =
-  'Xvni-z1rfXolyPeHGIICG7RDSQHw-oA9ZwhIfdKt2AwhyJ6dqY5yTQyrw1ZRwjnLQu1tXAeC8bbay3TmY5ReSa6h.jpg';
+const PHOTO = 'founders-intro.jpg';
 
 const photoSrc = `${process.env.PUBLIC_URL || ''}/assets/${PHOTO}`;
 
@@ -76,8 +75,8 @@ const Figure = styled(motion.figure)`
   margin: 0;
   border-radius: 22px;
   overflow: hidden;
-  aspect-ratio: 3 / 4;
-  max-height: min(560px, 70vh);
+  aspect-ratio: 1 / 1;
+  max-height: min(420px, 62vh);
   box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.08),
     0 2px 8px rgba(0, 0, 0, 0.04);
@@ -86,15 +85,15 @@ const Figure = styled(motion.figure)`
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center top;
+    object-position: center center;
     display: block;
   }
 
   @media (max-width: ${(p) => p.theme.breakpoints.mobile}) {
     border-radius: 18px;
     max-height: none;
-    aspect-ratio: 3 / 4;
-    max-width: min(100%, 400px);
+    aspect-ratio: 1 / 1;
+    max-width: min(100%, 360px);
     margin: 0 auto;
   }
 `;

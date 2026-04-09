@@ -27,7 +27,8 @@
     "optimize:elena": "node scripts/optimize-elena-images.mjs",
     "optimize:svetlana": "node scripts/optimize-svetlana-ushakova-images.mjs",
     "optimize:potapova": "node scripts/optimize-potapova-images.mjs",
-    "optimize:kondratieva": "node scripts/optimize-kondratieva-images.mjs"
+    "optimize:kondratieva": "node scripts/optimize-kondratieva-images.mjs",
+    "optimize:founders-intro": "node scripts/optimize-founders-intro.mjs"
   },
   "devDependencies": {
     "sharp": "^0.33.5"
