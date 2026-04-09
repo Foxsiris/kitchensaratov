@@ -5,6 +5,8 @@ import { FiArrowRight } from 'react-icons/fi';
 import { useModal } from '../../../hooks/useModal';
 import { apiUrl } from '../../../config/api';
 
+const DIRECTOR_PHOTO = `${process.env.PUBLIC_URL || ''}/assets/IMG_4452.JPG`;
+
 const PromotionsContainer = styled.section`
   padding: ${props => props.theme.spacing['5xl']} 0;
   background: ${props => props.theme.colors.white};
@@ -464,11 +466,11 @@ const Promotions = () => {
           </CTAText>
           <CTAConsultantPill>
             <CTAAvatar
-              src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=160&q=80"
-              alt="Консультант"
+              src={DIRECTOR_PHOTO}
+              alt="Уткина Елена, директор салона"
             />
             <CTAConsultantText>
-              <h4>Каминская Жанна</h4>
+              <h4>Уткина Елена</h4>
               <p>Директор салона</p>
             </CTAConsultantText>
             <CTAActionButton
