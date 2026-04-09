@@ -27,17 +27,19 @@ const Container = styled.div`
 
 const SectionTitle = styled(motion.h2)`
   font-family: ${props => props.theme.fonts.primary};
-  font-size: ${props => props.theme.fontSizes.xs};
+  font-size: ${props => props.theme.fontSizes.md};
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.2em;
   color: ${props => props.theme.colors.primary};
-  margin-bottom: ${props => props.theme.spacing['2xl']};
+  margin-bottom: ${props => props.theme.spacing['3xl']};
+  max-width: 900px;
+  line-height: 1.45;
 
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: 10px;
-    margin-bottom: ${props => props.theme.spacing.xl};
-    letter-spacing: 0.18em;
+    font-size: ${props => props.theme.fontSizes.sm};
+    margin-bottom: ${props => props.theme.spacing['2xl']};
+    letter-spacing: 0.17em;
   }
 `;
 

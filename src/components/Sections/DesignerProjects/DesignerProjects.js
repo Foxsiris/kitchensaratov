@@ -52,11 +52,11 @@ const HeadRow = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 ${(p) => p.theme.spacing.xl};
-  margin-bottom: ${(p) => p.theme.spacing['2xl']};
+  margin-bottom: ${(p) => p.theme.spacing['3xl']};
 
   @media (max-width: ${(p) => p.theme.breakpoints.mobile}) {
     padding: 0 16px;
-    margin-bottom: ${(p) => p.theme.spacing.xl};
+    margin-bottom: ${(p) => p.theme.spacing['2xl']};
   }
 `;
 
@@ -135,18 +135,18 @@ const VideoblogIconWrap = styled.span`
 
 const SectionTitle = styled(motion.h2)`
   font-family: ${(p) => p.theme.fonts.primary};
-  font-size: ${(p) => p.theme.fontSizes.xs};
+  font-size: ${(p) => p.theme.fontSizes.md};
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   color: ${(p) => p.theme.colors.primary};
   margin: 0;
-  max-width: 720px;
-  line-height: 1.5;
+  max-width: 900px;
+  line-height: 1.45;
 
   @media (max-width: ${(p) => p.theme.breakpoints.mobile}) {
-    font-size: 10px;
-    letter-spacing: 0.16em;
+    font-size: ${(p) => p.theme.fontSizes.sm};
+    letter-spacing: 0.17em;
   }
 `;
 
