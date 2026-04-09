@@ -453,7 +453,9 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
           >
-            Интерьеры в которых хочется <TitleItalic>жить</TitleItalic>
+            Интерьеры
+            <br />
+            в которых хочется <TitleItalic>жить</TitleItalic>
           </Title>
 
           <Subtitle
