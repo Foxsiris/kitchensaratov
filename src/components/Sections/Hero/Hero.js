@@ -18,7 +18,7 @@ const HERO_CAROUSEL_SLIDES = [
     id: 2,
     image: heroAsset('20260209_rimi_003_1249.jpg'),
     label: 'Композиция',
-    title: 'Кухня Рими',
+    title: 'EGNA',
   },
   {
     id: 3,
