@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/kitchensaratov
+            cd ~/interikasalon
             git fetch origin
             git checkout main
             git pull origin main
