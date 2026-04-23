@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
+import Seo from '../../components/Seo';
+import { DEFAULT_DESCRIPTION, getSiteOrigin, buildOrganizationJsonLd } from '../../config/seo';
 import Hero from '../../components/Sections/Hero/Hero';
 import Features from '../../components/Sections/Features/Features';
 import Promotions from '../../components/Sections/Promotions/Promotions';
@@ -71,8 +73,11 @@ const HomeContainer = styled.div`
 `;
 
 const Home = () => {
+  const orgJsonLd = useMemo(() => buildOrganizationJsonLd(getSiteOrigin()), []);
+
   return (
     <HomeContainer>
+      <Seo path="/" description={DEFAULT_DESCRIPTION} jsonLd={orgJsonLd} />
       <Hero />
       <FoundersIntro />
       <Features />

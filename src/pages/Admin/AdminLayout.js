@@ -5,6 +5,7 @@ import { FiMenu, FiX, FiLogOut } from 'react-icons/fi';
 import ScrollToTop from '../../components/ScrollToTop';
 import { useAuth } from '../../context/AuthContext';
 import { ToastContainer, ToastItemWrap, ToastItem, ToastClose } from './AdminUI';
+import Seo from '../../components/Seo';
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -208,6 +209,12 @@ const AdminLayout = () => {
 
   return (
     <Wrapper>
+      <Seo
+        title="Панель администрирования"
+        description="Служебный раздел сайта, не для индексации в поиске."
+        path={location.pathname}
+        noindex
+      />
       <ScrollToTop />
       <TopBar>
         <Logo to="/admin">Панель администрирования</Logo>

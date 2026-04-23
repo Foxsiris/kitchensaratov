@@ -6,6 +6,13 @@ import { FiArrowLeft, FiArrowRight, FiPhone } from 'react-icons/fi';
 import { useCatalog } from '../../context/CatalogContext';
 import { useModal } from '../../hooks/useModal';
 import { resolveCatalogImageSrc } from '../../utils/imageUrl';
+import Seo from '../../components/Seo';
+import {
+  DEFAULT_DESCRIPTION,
+  truncateMeta,
+  buildProductJsonLd,
+  absoluteUrl,
+} from '../../config/seo';
 
 /* ============ Styled ============ */
 
@@ -520,9 +527,24 @@ const ProductDetail = () => {
     return all.filter(p => p.id !== id).slice(0, 4);
   }, [product, id, categories]);
 
+  const productJsonLd = useMemo(() => {
+    if (!product) return null;
+    const primary = galleryDisplay[0];
+    return buildProductJsonLd(product, {
+      canonicalUrl: absoluteUrl(`/product/${id}`),
+      imageUrl: primary ? absoluteUrl(primary) : undefined,
+    });
+  }, [product, id, galleryDisplay]);
+
   if (!product) {
     return (
       <Page>
+        <Seo
+          title="Товар не найден"
+          description="Такой позиции нет в каталоге. Откройте каталог и выберите другую модель."
+          path={`/product/${id}`}
+          noindex
+        />
         <Container>
           <NotFound>
             <h2>Товар не найден</h2>
@@ -537,6 +559,14 @@ const ProductDetail = () => {
 
   return (
     <Page>
+      <Seo
+        title={product.name}
+        description={product.description ? truncateMeta(product.description) : DEFAULT_DESCRIPTION}
+        path={`/product/${id}`}
+        image={heroSrc ? absoluteUrl(heroSrc) : undefined}
+        type="article"
+        jsonLd={productJsonLd}
+      />
       {/* Hero */}
       <HeroOuter>
         <HeroSection>

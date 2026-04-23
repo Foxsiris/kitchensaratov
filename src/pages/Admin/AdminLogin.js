@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../../context/AuthContext';
+import Seo from '../../components/Seo';
 import { FiLock } from 'react-icons/fi';
 
 const Page = styled.div`
@@ -127,6 +128,12 @@ const AdminLogin = () => {
 
   return (
     <Page>
+      <Seo
+        title="Вход в админку"
+        description="Служебная страница входа; не индексируется."
+        path="/admin/login"
+        noindex
+      />
       <Card onSubmit={handleSubmit}>
         <IconWrap>
           <FiLock size={24} />

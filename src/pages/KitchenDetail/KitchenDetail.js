@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight, FiX, FiChevronDown, FiCheck } from 'react-icons/fi';
 import { useModal } from '../../hooks/useModal';
+import Seo from '../../components/Seo';
+import { truncateMeta, DEFAULT_DESCRIPTION } from '../../config/seo';
 
 /* ======================================================
    DATA
@@ -1354,6 +1356,13 @@ const KitchenDetail = () => {
 
   return (
     <PageWrapper>
+      <Seo
+        title={kitchen.title}
+        description={truncateMeta(kitchen.description || kitchen.fullDescription || DEFAULT_DESCRIPTION)}
+        path={`/kitchen/${id}`}
+        image={images[0]}
+        type="article"
+      />
       {/* ========== HERO ========== */}
       <HeroSection>
         <HeroImage

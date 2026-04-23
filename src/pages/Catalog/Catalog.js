@@ -6,6 +6,7 @@ import { FiSearch, FiArrowRight, FiChevronDown, FiArrowUpRight } from 'react-ico
 import { useCatalog } from '../../context/CatalogContext';
 import { useModal } from '../../hooks/useModal';
 import { resolveCatalogImageSrc } from '../../utils/imageUrl';
+import Seo from '../../components/Seo';
 
 const Page = styled.div`
   padding-top: 80px;
@@ -818,6 +819,11 @@ const Catalog = () => {
 
   return (
     <Page>
+      <Seo
+        title="Каталог"
+        description={`${activeCategoryName}: кухни и мебель премиум-класса. Подбор по категориям и брендам, индивидуальные проекты в Саратове.`}
+        path="/catalog"
+      />
       <HeroOuter>
         <HeroBanner>
           <HeroOverline

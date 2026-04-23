@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiCheck, FiX as FiCross, FiArrowRight } from 'react-icons/fi';
 import { useModal } from '../../hooks/useModal';
+import Seo from '../../components/Seo';
 
 /* ======================================================
    SHARED
@@ -971,6 +972,12 @@ const About = () => {
 
   return (
     <>
+      <Seo
+        title="О компании"
+        description="Салон «Кухни Саратов»: ателье мебели, собственное производство, команда, материалы и этапы заказа кухонь в Саратове."
+        path="/about"
+        type="article"
+      />
       {/* ========== 1. HERO ========== */}
       <HeroOuter>
         <HeroSection>
