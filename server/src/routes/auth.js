@@ -1,11 +1,23 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../db.js';
 
 const router = Router();
 
-router.post('/login', async (req, res) => {
+const skipRateLimitInTests = () => process.env.VITEST === 'true' || process.env.NODE_ENV === 'test';
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { error: 'Слишком много попыток входа. Повторите позже.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipRateLimitInTests,
+});
+
+router.post('/login', loginLimiter, async (req, res) => {
   const password = typeof req.body?.password === 'string' ? req.body.password : '';
   if (!password) {
     return res.status(400).json({ error: 'Пароль обязателен' });

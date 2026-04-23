@@ -4,6 +4,7 @@ import publicRoutes from './routes/public.js';
 import adminRoutes from './routes/admin.js';
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '2mb' }));
 
 app.use('/api', publicRoutes);
